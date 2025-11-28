@@ -4,7 +4,7 @@ export interface Account {
   email?: string | null;
   password?: string | null;
   roleId?: number | null;
-  birthday?: string | null;      
+  birthday?: string | null;
   status?: number | null;
   createdDate?: string | null;   // ISO date string
 }
@@ -29,7 +29,7 @@ export interface Customer {
   id?: number;
   email?: string | null;
   password?: string | null;
-  createdDate?: string | null; 
+  createdDate?: string | null;
 }
 
 export interface ImportDetail {
@@ -41,7 +41,7 @@ export interface ImportDetail {
 
 export interface ImportReciept {
   id?: number;
-  createdDate?: string | null; 
+  createdDate?: string | null;
   supplierId?: number | null;
   accountId?: number | null;
   cost?: number | null;
@@ -68,10 +68,11 @@ export interface Order {
 }
 
 export interface Product {
-  id?: number;
+  id: number;
   name?: string | null;
   material?: string | null;
   categoryId?: number | null;
+  price: number;
 }
 
 export interface Role {

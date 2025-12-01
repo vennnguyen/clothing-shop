@@ -32,12 +32,24 @@ export interface Customer {
   createdDate?: string | null;
 }
 
-export interface ImportDetail {
-  productId: number;
-  supplierId: number;
-  quantity?: number | null;
-  price?: number | null;
+export interface Import {
+  id?: number;                 // tương ứng importId
+  date?: string | null;        // ISO date string
+  total?: number | null;
+  supplierId?: number | null;
+  status?: string | null;
 }
+
+export interface ImportDetail {
+  id?: number;                 // tương ứng importDetailId
+  importId?: number | null;
+  productId?: number | null;
+  quantity?: number | null;
+  unitPrice?: number | null;
+  totalPrice?: number | null;
+}
+
+
 
 export interface ImportReciept {
   id?: number;

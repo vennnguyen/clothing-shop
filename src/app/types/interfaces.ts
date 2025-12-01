@@ -89,4 +89,6 @@ export interface Status {
 export interface Supplier {
   id?: number;
   name?: string | null;
+  address?: string | null;
+  phone?: string | null;
 }

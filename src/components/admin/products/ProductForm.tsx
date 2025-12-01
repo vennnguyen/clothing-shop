@@ -18,7 +18,7 @@ export default function ProductForm({
     const [form, setForm] = useState({
         name: "",
         price: "",
-        stock: "",
+        category: "",
     });
 
     // Khi mở form sửa → đổ dữ liệu vào input
@@ -30,7 +30,7 @@ export default function ProductForm({
                 category: String(product.categoryId),
             });
         } else {
-            setForm({ name: "", price: "", stock: "" });
+            setForm({ name: "", price: "", category: "" });
         }
     }, [product, open]);
 
@@ -44,7 +44,7 @@ export default function ProductForm({
         const payload = {
             name: form.name,
             price: Number(form.price),
-            stock: Number(form.stock),
+            category: Number(form.category),
         };
 
         try {
@@ -106,13 +106,13 @@ export default function ProductForm({
                         />
                     </div>
 
-                    {/* Stock */}
+                    {/* category */}
                     <div>
                         <label className="block mb-1">Kho</label>
                         <input
                             type="number"
                             name="category"
-                            value={form.stock}
+                            value={form.category}
                             onChange={handleChange}
                             className="w-full p-2 border rounded"
                             placeholder="0"

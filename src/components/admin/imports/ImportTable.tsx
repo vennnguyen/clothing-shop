@@ -37,7 +37,7 @@ export default function ImportTable({
             <th className="p-2 border">Ngày tạo</th>
             <th className="p-2 border">Tổng cộng</th>
             <th className="p-2 border">Mã nhà cung cấp</th>
-            <th className="p-2 border">trạng thái</th>
+            <th className="p-2 border">Trạng thái</th>
             <th className="p-2 border">Hành động</th>
           </tr>
         </thead>
@@ -45,11 +45,14 @@ export default function ImportTable({
           {imports.map((s) => (
             <tr key={s.id} className="border-t text-center">
               <td className="p-2 border">{s.id}</td>
-              <td className="p-2 border">{s.date}</td>
+              <td className="p-2 border">
+                {new Date(s.createdDate).toLocaleDateString('vi-VN')}
+              </td>
               <td className="p-2 border">{s.total}</td>
               <td className="p-2 border">{s.supplierId}</td>
               <td className="p-2 border">{s.status}</td>
               <td className="p-2 border space-x-2">
+                {s.status !== "Đã xác nhận" && (
                 <button
                   className="px-2 py-1 bg-yellow-500 text-white rounded cursor-pointer"
                   onClick={() => {
@@ -60,6 +63,7 @@ export default function ImportTable({
                 >
                   Sửa
                 </button>
+                )}
                 {s.status !== "Đã xác nhận" && (
                   <button
                     className="px-2 py-1 bg-red-600 text-white rounded cursor-pointer"
@@ -92,7 +96,7 @@ export default function ImportTable({
       <ImportModal
         open={modalOpen}
         mode={modalMode}
-        impor_t={selected}
+        importData={selected}
         setOpen={setModalOpen}
         refresh={refresh}
       />

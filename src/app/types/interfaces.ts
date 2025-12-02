@@ -34,7 +34,7 @@ export interface Customer {
 
 export interface Import {
   id?: number;                 // tương ứng importId
-  date?: string | null;        // ISO date string
+  createdDate?: string | null;        // ISO date string
   total?: number | null;
   supplierId?: number | null;
   status?: string | null;
@@ -49,15 +49,6 @@ export interface ImportDetail {
   totalPrice?: number | null;
 }
 
-
-
-export interface ImportReciept {
-  id?: number;
-  createdDate?: string | null;
-  supplierId?: number | null;
-  accountId?: number | null;
-  cost?: number | null;
-}
 
 export interface OrderDetail {
   orderId: number;

@@ -7,8 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPeopleCarryBox } from "@fortawesome/free-solid-svg-icons";
 
 export default function SuppliersPage() {
-  const [suppliers, setSuppliers] = useState<Supplier[]>([
-  ]);
+  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
 
   const loadSuppliers = async () => {
     const res = await fetch("/api/suppliers");

@@ -83,8 +83,11 @@ CREATE TABLE ProductSizes (
 -- ========================
 CREATE TABLE Suppliers (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name TEXT
+    name TEXT,
+    address VARCHAR(255),
+    phone VARCHAR(20)
 );
+
 
 -- ========================
 -- 9. ImportReceipts
@@ -94,7 +97,8 @@ CREATE TABLE ImportReceipts (
     createdDate DATE,
     supplierId INT,
     accountId INT,
-    cost FLOAT,
+    total FLOAT,
+    status ENUM('Đang xử lý','Đã xác nhận') DEFAULT 'Đang xử lý',
     FOREIGN KEY (supplierId) REFERENCES Suppliers(id),
     FOREIGN KEY (accountId) REFERENCES Accounts(id)
 );
@@ -269,13 +273,13 @@ INSERT INTO ProductSizes (productId, sizeId, quantity) VALUES
 (4, 2, 18),
 (4, 3, 12);
 
-INSERT INTO Suppliers (name) VALUES
-('Công ty Dệt May ABC'),
-('Nhà phân phối Quần Áo XYZ');
+INSERT INTO Suppliers (name, address, phone) VALUES
+('Công ty Dệt May ABC', '123 Đường May, Quận 1, TP.HCM', '0901111222'),
+('Nhà phân phối Quần Áo XYZ', '456 Đường Thời Trang, Quận 5, TP.HCM', '0903333444');
 
-INSERT INTO ImportReceipts (createdDate, supplierId, accountId, cost) VALUES
-('2025-01-10', 1, 1, 5000000),
-('2025-01-15', 2, 2, 7000000);
+INSERT INTO ImportReceipts (createdDate, supplierId, accountId, total, status) VALUES
+('2025-01-10', 1, 1, 5000000, 'Đã xác nhận'),
+('2025-01-15', 2, 2, 7000000, 'Đang xử lý');
 
 INSERT INTO ImportDetails (importReceiptId, productId, quantity, price) VALUES
 (1, 1, 50, 90000),

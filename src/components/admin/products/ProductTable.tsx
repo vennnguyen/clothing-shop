@@ -41,7 +41,7 @@ export default function ProductTable({
                         <th className="p-2 border">Tên</th>
                         <th className="p-2 border">Giá</th>
                         <th className="p-2 border">Danh mục</th>
-                        <th className="p-2 border">Size</th>
+                        <th className="p-2 border">Size & Số lượng</th>
                         <th className="p-2 border">Hành động</th>
                     </tr>
                 </thead>

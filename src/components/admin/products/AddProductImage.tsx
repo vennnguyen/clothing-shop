@@ -83,7 +83,7 @@ const AddProductImage: React.FC<AddProductImageProps> = ({ images, setImages }) 
             <div className="mt-6">
                 <button
                     type="button"
-                    className="text-sm bg-sky-100 text-sky-700 hover:bg-sky-200 font-medium py-2 px-4 rounded-full transition-colors"
+                    className="text-sm bg-sky-100 text-sky-700 hover:bg-sky-200 font-medium py-2 px-4 rounded-full transition-colors cursor-pointer"
                     onClick={addInputImage}
                 >
                     + Thêm ảnh

@@ -88,8 +88,14 @@ export interface Product {
   description?: string;
   quantity?: number | null;
   imageUrl: string | null;
+  categoryId: number;
+  sizeId: number;
 }
-
+export interface ProductSizes {
+  sizeId: number;
+  sizeName: string | number;
+  quantity: string | number;
+}
 export interface Role {
   id: number;
   name?: string | null;

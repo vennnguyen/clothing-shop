@@ -15,13 +15,16 @@ export async function GET() {
           p.price,
           p.description,
           cat.name AS category,
+          pi.imageUrl,
           GROUP_CONCAT(CONCAT(s.sizeName, '(', ps.quantity, ')') ORDER BY s.sizeName SEPARATOR ', ') AS sizes
-        FROM products p
-        JOIN categories cat ON cat.id = p.categoryId
-        JOIN productsizes ps ON ps.productId = p.id
-        JOIN sizes s ON s.id = ps.sizeId
-        GROUP BY p.id
-        ORDER BY p.id DESC;
+          FROM products p
+          JOIN categories cat ON cat.id = p.categoryId
+          JOIN productsizes ps ON ps.productId = p.id
+          JOIN sizes s ON s.id = ps.sizeId
+          JOIN productimages pi ON p.id = pi.productId
+          WHERE pi.isMain = true
+          GROUP BY p.id
+          ORDER BY p.id DESC;;
       `);
     return NextResponse.json(rows);
   } catch (error) {
@@ -31,45 +34,45 @@ export async function GET() {
 }
 
 // thêm sản phẩm
-// export async function POST(request: NextRequest) {
-//   try {
-//     const data: Product = await request.json();
+export async function POST(request: NextRequest) {
+  try {
+    const data: Product = await request.json();
 
-//     const { name, material, categoryId } = data;
+    const { name, material, categoryId } = data;
 
-//     const [result] = await pool.query(
-//       'INSERT INTO products (name, material, categoryId) VALUES (?, ?, ?)',
-//       [name, material || null, categoryId || null]
-//     );
+    const [result] = await pool.query(
+      'INSERT INTO products (name, material, categoryId) VALUES (?, ?, ?)',
+      [name, material || null, categoryId || null]
+    );
 
-//     return NextResponse.json({ message: 'Thêm thành công', id: (result as any).insertId });
-//   } catch (error) {
-//     console.error('POST error:', error);
-//     return NextResponse.json({ error: 'Lỗi khi thêm sản phẩm' }, { status: 500 });
-//   }
-// }
+    return NextResponse.json({ message: 'Thêm thành công', id: (result as any).insertId });
+  } catch (error) {
+    console.error('POST error:', error);
+    return NextResponse.json({ error: 'Lỗi khi thêm sản phẩm' }, { status: 500 });
+  }
+}
 
 //cập nhật sản phẩm
-// export async function PUT(request: NextRequest) {
-//   try {
-//     const data: Product = await request.json();
-//     const { id, name, material, categoryId } = data;
+export async function PUT(request: NextRequest) {
+  try {
+    const data: Product = await request.json();
+    const { id, name, material, categoryId } = data;
 
-//     if (!id) {
-//       return NextResponse.json({ error: 'Thiếu ID sản phẩm' }, { status: 400 });
-//     }
+    if (!id) {
+      return NextResponse.json({ error: 'Thiếu ID sản phẩm' }, { status: 400 });
+    }
 
-//     await pool.query(
-//       'UPDATE products SET name = ?, material = ?, categoryId = ? WHERE id = ?',
-//       [name, material || null, categoryId || null, id]
-//     );
+    await pool.query(
+      'UPDATE products SET name = ?, material = ?, categoryId = ? WHERE id = ?',
+      [name, material || null, categoryId || null, id]
+    );
 
-//     return NextResponse.json({ message: 'Cập nhật thành công' });
-//   } catch (error) {
-//     console.error('PUT error:', error);
-//     return NextResponse.json({ error: 'Lỗi khi cập nhật' }, { status: 500 });
-//   }
-// }
+    return NextResponse.json({ message: 'Cập nhật thành công' });
+  } catch (error) {
+    console.error('PUT error:', error);
+    return NextResponse.json({ error: 'Lỗi khi cập nhật' }, { status: 500 });
+  }
+}
 
 // xóa sản phẩm 
 export async function DELETE(request: NextRequest) {

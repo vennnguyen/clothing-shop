@@ -85,6 +85,9 @@ export interface Product {
   price: number;
   category: number | null;
   sizes: string | null;
+  description?: string;
+  quantity?: number | null;
+  imageUrl: string | null;
 }
 
 export interface Role {

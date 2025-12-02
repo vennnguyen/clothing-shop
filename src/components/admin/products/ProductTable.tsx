@@ -37,6 +37,7 @@ export default function ProductTable({
                 <thead className="bg-gray-100 text-center">
                     <tr>
                         <th className="p-2 border">ID</th>
+                        <th className="p-2 border">Ảnh</th>
                         <th className="p-2 border">Tên</th>
                         <th className="p-2 border">Giá</th>
                         <th className="p-2 border">Danh mục</th>
@@ -48,6 +49,9 @@ export default function ProductTable({
                     {products.map((p) => (
                         <tr key={p.id} className="border-t  text-center">
                             <td className="p-2 border">{p.id}</td>
+                            <td className="p-2 border">
+                                <img src={p.imageUrl} alt="Noimg" style={{ width: "50px", height: "50px", justifySelf: "center" }} />
+                            </td>
                             <td className="p-2 border">{p.name}</td>
                             <td className="p-2 border">{p.price}</td>
                             <td className="p-2 border">{p.category}</td>

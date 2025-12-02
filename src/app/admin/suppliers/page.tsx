@@ -8,7 +8,6 @@ import { faPeopleCarryBox } from "@fortawesome/free-solid-svg-icons";
 
 export default function SuppliersPage() {
   const [suppliers, setSuppliers] = useState<Supplier[]>([
-    { id: 1, name: "Nice", address: "So 5 PVH", phone: "0353221672" }
   ]);
 
   const loadSuppliers = async () => {
@@ -19,6 +18,10 @@ export default function SuppliersPage() {
   useEffect(() => {
     loadSuppliers();
   }, []);
+
+  // useEffect(()=>{
+  //   console.log("suppliers: ",suppliers)
+  // },[suppliers])
 
   return (
     <div>

@@ -24,7 +24,6 @@ export default function SupplierModal({
     phone: "",
   });
 
-  // Reset hoặc set dữ liệu khi mở modal
   useEffect(() => {
     if (mode === "form" && supplier) {
       setForm({
@@ -43,22 +42,19 @@ export default function SupplierModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!supplier && mode === "delete") return;
-
     try {
       if (mode === "form") {
-        const payload = { ...form };
         if (supplier?.id) {
           await fetch(`/api/suppliers/${supplier.id}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
+            body: JSON.stringify(form),
           });
         } else {
           await fetch(`/api/suppliers`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
+            body: JSON.stringify(form),
           });
         }
       } else if (mode === "delete" && supplier?.id) {
@@ -66,13 +62,19 @@ export default function SupplierModal({
       }
       refresh();
       setOpen(false);
-      setForm({ name: "", address: "", phone: "" }); // reset form
+      setForm({ name: "", address: "", phone: "" });
     } catch (err) {
       console.error("Error:", err);
     }
   };
 
   if (!open) return null;
+
+  const fields = [
+    { key: "name", label: "Tên nhà cung cấp", placeholder: "Nhập tên nhà cung cấp..." },
+    { key: "address", label: "Địa chỉ", placeholder: "Nhập địa chỉ..." },
+    { key: "phone", label: "Số điện thoại", placeholder: "Nhập số điện thoại..." },
+  ];
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
@@ -83,20 +85,19 @@ export default function SupplierModal({
               {supplier ? "✏️ Sửa nhà cung cấp" : "➕ Thêm nhà cung cấp"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {["name", "address", "phone"].map((field) => (
-                <div key={field}>
-                  <label className="block mb-1 capitalize">{field}</label>
+              {fields.map((field) => (
+                <div key={field.key}>
+                  <label className="block mb-1">{field.label}</label>
                   <input
-                    name={field}
-                    value={(form as any)[field]}
+                    name={field.key}
+                    value={(form as any)[field.key]}
                     onChange={handleChange}
                     className="w-full p-2 border rounded"
-                    placeholder={`Nhập ${field}...`}
+                    placeholder={field.placeholder}
                     required
                   />
                 </div>
               ))}
-
               <div className="flex justify-end gap-3 mt-4">
                 <button
                   type="button"

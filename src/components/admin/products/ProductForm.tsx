@@ -27,7 +27,7 @@ export default function ProductForm({
             setForm({
                 name: product.name,
                 price: String(product.price),
-                category: String(product.categoryId),
+                category: String(product.category),
             });
         } else {
             setForm({ name: "", price: "", category: "" });

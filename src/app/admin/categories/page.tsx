@@ -4,19 +4,20 @@
 import { useEffect, useState } from "react";
 import { Product } from "../../types/interfaces";
 import ProductTable from "../../../components/admin/products/ProductTable";
+import CategoryTable from "../../../components/admin/categories/CategoryTable";
 
 export default function ProductsPage() {
-    const [products, setProducts] = useState<Product[]>([]);
+    const [categories, setCategories] = useState<Product[]>([]);
 
     const [isLoading, setIsLoading] = useState(true); // Thêm trạng thái loading
 
-    const loadProducts = async () => {
+    const loadCategories = async () => {
         try {
             setIsLoading(true);
-            const res = await fetch("/api/products", { cache: 'no-store' }); // Đảm bảo luôn lấy dữ liệu mới nhất
+            const res = await fetch("/api/categories", { cache: 'no-store' }); // Đảm bảo luôn lấy dữ liệu mới nhất
             if (!res.ok) throw new Error("Failed to fetch");
             const data = await res.json();
-            setProducts(data);
+            setCategories(data);
             // console.log(data);
         } catch (error) {
             console.error("Lỗi khi tải sản phẩm:", error);
@@ -26,18 +27,18 @@ export default function ProductsPage() {
     };
 
     useEffect(() => {
-        loadProducts();
+        loadCategories();
     }, []);
 
     return (
         <div className="p-6">
-            <h1 className="text-2xl font-bold mb-5">QUẢN LÝ SẢN PHẨM</h1>
+            <h1 className="text-2xl font-bold mb-5">QUẢN LÝ DANH MỤC</h1>
 
             {/* Hiển thị Loading hoặc Bảng dữ liệu */}
             {isLoading ? (
                 <div className="text-center py-10">Đang tải dữ liệu...</div>
             ) : (
-                <ProductTable products={products} refresh={loadProducts} />
+                <CategoryTable categories={categories} refresh={loadCategories} />
             )}
         </div>
     );

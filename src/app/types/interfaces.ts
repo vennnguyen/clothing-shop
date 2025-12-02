@@ -81,10 +81,10 @@ export interface Order {
 
 export interface Product {
   id: number;
-  name?: string | null;
-  material?: string | null;
-  categoryId?: number | null;
+  name: string | null;
   price: number;
+  category: number | null;
+  sizes: string | null;
 }
 
 export interface Role {

@@ -1,6 +1,4 @@
 "use client";
-
-
 import { useEffect, useState } from "react";
 import { Product } from "../../types/interfaces";
 import ProductTable from "../../../components/admin/products/ProductTable";

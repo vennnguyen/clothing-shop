@@ -1,21 +1,29 @@
-// src/app/page.tsx
-import Link from 'next/link';
+// "use client";
 
-export default function HomePage() {
+import Link from "next/link";
+import Banner from "../components/ui/Banner";
+import ProductCard from "../components/ui/ProductCard";
+
+// app/page.tsx
+export default async function HomePage() {
+    const res = await fetch("http://localhost:3000/api/products", {
+        cache: "no-store", // luôn lấy mới
+    });
+
+    const products = await res.json();
+    console.log(products);
     return (
-        <div className="p-10">
-            <h1 className="text-2xl font-bold mb-4">Chào mừng đến với Website Bán Quần Áo</h1>
-            <p>Trang chủ đang được xây dựng...</p>
+        <div>
+            {/* Banner */}
+            <Banner />
 
-            <div className="mt-5 p-4 border rounded bg-gray-100">
-                <h2 className="font-semibold">Menu nhanh:</h2>
-                <ul className="list-disc ml-5 mt-2">
-                    <li>
-                        <Link href="/admin" className="text-blue-600 hover:underline">
-                            Đi tới trang Quản lý sản phẩm (Admin)
-                        </Link>
-                    </li>
-                </ul>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-7 px-20">
+
+                {products.map((item) => (
+                    <ProductCard key={item.id} product={item} />
+                ))}
+
             </div>
         </div>
     );

@@ -4,6 +4,7 @@ import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { Category, Product } from "../../../app/types/interfaces";
 import AddProductImage, { ImageInput } from "./AddProductImage"; // Import component ảnh
 import { XIcon } from "lucide-react";
+import { useToastMessage } from "../../../../hooks/useToastMessage";
 interface ProductFormProps {
     open: boolean;
     setOpen: (value: boolean) => void;
@@ -28,6 +29,7 @@ interface FormErrors {
     images?: string; // Thêm lỗi cho phần ảnh
 }
 export default function ProductForm({ open, setOpen, product, refresh }: ProductFormProps) {
+    const { showSuccess, showError, showLoading, updateLoading } = useToastMessage();
     const [isLoading, setIsLoading] = useState(false);
     const [categories, setCategories] = useState<Category[]>([]);
     // State cho thông tin text
@@ -189,8 +191,12 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                 method: method,
                 body: formData,
             });
-
-            if (!res.ok) throw new Error("Có lỗi xảy ra khi lưu sản phẩm");
+            const data = await res.json();
+            if (!res.ok) {
+                throw new Error("Có lỗi xảy ra khi lưu sản phẩm");
+            } else {
+                showSuccess(data.message);
+            }
 
             refresh();
             setOpen(false);

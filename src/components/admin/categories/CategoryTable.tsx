@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Category } from "../../../app/types/interfaces";
 import { Trash2, FilePenIcon, Plus } from "lucide-react";
+import CategoryForm from "./CategoryForm";
 export default function CategoryTable({
     categories,
     refresh,
@@ -39,15 +40,15 @@ export default function CategoryTable({
                     </tr>
                 </thead>
                 <tbody>
-                    {categories.map((p) => (
-                        <tr key={p.id} className="border-t text-center">
-                            <td className="p-2 border">{p.id}</td>
-                            <td className="p-2 border">{p.name}</td>
+                    {categories.map((cat) => (
+                        <tr key={cat.id} className="border-t text-center">
+                            <td className="p-2 border">{cat.id}</td>
+                            <td className="p-2 border">{cat.name}</td>
                             <td className="p-2 border space-x-2">
                                 <button
                                     className="px-2 py-1 bg-white text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-200"
                                     onClick={() => {
-                                        setSelected(p);
+                                        setSelected(cat);
                                         setIsFormOpen(true);
                                     }}
                                 >
@@ -56,7 +57,7 @@ export default function CategoryTable({
                                 <button
                                     className="px-2 py-1 bg-white text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-200"
                                     onClick={() => {
-                                        setSelected(p);
+                                        setSelected(cat);
                                         setIsDeleteOpen(true);
                                     }}
                                 >
@@ -68,12 +69,12 @@ export default function CategoryTable({
                 </tbody>
             </table>
 
-            {/* <ProductForm
+            <CategoryForm
                 open={isFormOpen}
                 setOpen={setIsFormOpen}
-                product={selected}
+                category={selected}
                 refresh={refresh}
-            /> */}
+            />
 
             {/* <DeleteConfirm
                 open={isDeleteOpen}

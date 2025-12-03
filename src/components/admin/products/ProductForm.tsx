@@ -40,7 +40,6 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
         sizeId: 0,
     });
     const [errors, setErrors] = useState<FormErrors>({});
-    // State cho danh sách ảnh (được quản lý tại đây để gửi đi)
     const [images, setImages] = useState<ImageInput[]>([{ id: 1 }, { id: 2 }, { id: 3 }]);
     const getAllCategories = async () => {
         try {
@@ -60,7 +59,25 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
         if (open) {
             setErrors({});
             if (product) {
-                // Mode: EDIT (Sửa)
+                if (product.allImagesString) {
+                    // Chuỗi dạng: "1::url1, 2::url2"
+                    const rawImages = product.allImagesString.split(', ');
+
+                    const formattedImages: ImageInput[] = rawImages.map((str: string) => {
+                        const [idStr, url] = str.split('::'); // Tách ID và URL
+                        return {
+                            id: Number(idStr),
+                            preview: url,
+                            file: undefined
+                        };
+                    });
+
+                    setImages(formattedImages);
+                } else {
+                    // Trường hợp không có ảnh nào
+                    setImages([{ id: Date.now() }, { id: Date.now() + 1 }, { id: Date.now() + 2 }]);
+                }
+                // Mode: EDIT (Sửa)                
                 setForm({
                     name: product.name,
                     price: product.price,
@@ -81,7 +98,8 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
-
+        console.log("CategoryId", form.categoryId)
+        console.log("SizeId", form.sizeId);
         if (errors[name as keyof FormErrors]) {
             setErrors((prev) => ({ ...prev, [name]: undefined }));
         }
@@ -103,7 +121,7 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
         }
 
         // Validate Số lượng
-        if (form.quantity === "" || Number(form.quantity) < 0) {
+        if (Number(form.quantity) < 0) {
             newErrors.quantity = "Số lượng không hợp lệ";
             isValid = false;
         }
@@ -115,7 +133,7 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
         }
 
         // Validate Size
-        if (!form.sizeId) {
+        if (!product && !form.sizeId) {
             newErrors.size = "Vui lòng chọn size";
             isValid = false;
         }
@@ -147,6 +165,14 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
             formData.append("category", String(form.categoryId));
             formData.append("description", form.description);
             formData.append("size", String(form.sizeId));
+
+            const keptImageIds = images
+                .filter((img) => img.file === undefined && img.id)
+                .map((img) => img.id);
+            console.log(keptImageIds);
+
+            // Gửi mảng ID này dạng JSON string để Backend dễ parse
+            formData.append("keptImageIds", JSON.stringify(keptImageIds));
 
             // Duyệt qua mảng images và append file thực tế vào formData
             images.forEach((img) => {
@@ -269,7 +295,7 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">Danh mục</label>
                                     <select
-                                        name="category"
+                                        name="categoryId"
                                         value={form.categoryId}
                                         onChange={handleChange}
                                         className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 outline-none bg-white cursor-pointer"
@@ -284,23 +310,25 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                                     </select>
                                     {errors.category && <p className="text-red-500 text-xs mt-1 italic">{errors.category}</p>}
                                 </div>
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">Size</label>
-                                    <select
-                                        name="size"
-                                        value={form.sizeId}
-                                        onChange={handleChange}
-                                        disabled={product ? true : false}
-                                        className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 outline-none bg-white"
-                                    >
-                                        <option value="">-- Chọn kích thước--</option>
-                                        <option value="1">S</option>
-                                        <option value="2">M</option>
-                                        <option value="3">L</option>
-                                        <option value="4">XL</option>
-                                    </select>
-                                    {errors.category && <p className="text-red-500 text-xs mt-1 italic">{errors.size}</p>}
-                                </div>
+                                {!product && (
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-1">Size</label>
+                                        <select
+                                            name="sizeId"
+                                            value={form.sizeId}
+                                            onChange={handleChange}
+                                            disabled={product ? true : false}
+                                            className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 outline-none bg-white"
+                                        >
+                                            <option value="">-- Chọn kích thước--</option>
+                                            <option value="1">S</option>
+                                            <option value="2">M</option>
+                                            <option value="3">L</option>
+                                            <option value="4">XL</option>
+                                        </select>
+                                        {errors.size && <p className="text-red-500 text-xs mt-1 italic">{errors.size}</p>}
+                                    </div>
+                                )}
                             </div>
 
                             {/* Mô tả */}

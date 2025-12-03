@@ -67,7 +67,7 @@ const AddProductImage: React.FC<AddProductImageProps> = ({ images, setImages }) 
                         </label>
 
                         {/* Nút xóa */}
-                        {images.length > 1 && (
+                        {images.length > 3 && (
                             <button
                                 type="button"
                                 className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-10"

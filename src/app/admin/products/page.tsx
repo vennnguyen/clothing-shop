@@ -17,7 +17,7 @@ export default function ProductsPage() {
             if (!res.ok) throw new Error("Failed to fetch");
             const data = await res.json();
             setProducts(data);
-            // console.log(data);
+            console.log(data);
         } catch (error) {
             console.error("Lỗi khi tải sản phẩm:", error);
         } finally {

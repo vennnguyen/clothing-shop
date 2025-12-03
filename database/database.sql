@@ -340,8 +340,16 @@ INSERT INTO CustomerAddress (addressId, customerId, isDefault) VALUES
 
 INSERT INTO ProductImages (productId, imageUrl, isMain) VALUES
 (1, '/uploads/product1_main.jpg', TRUE),
-(1, '/uploads/product1_1.jpg', FALSE),
-(2, '/uploads/product2_main.jpg', TRUE),
-(3, '/uploads/product3_main.jpg', TRUE),
-(4, '/uploads/product4_main.jpg', TRUE);
+(1, '/uploads/product1_1.jpg', 0),
+(2, '/uploads/product2_main.jpg', 1),
+(3, '/uploads/product3_main.jpg', 1),
+(4, '/uploads/product4_main.jpg', 1),
+(5, '/uploads/1764693514844-swelb0635_dbc196b9427143dabde76567453a4a9f_master.jpg', 1),
+(5, '/uploads/1764693514846-1_010469a27497440ea1dd174f4a255229_master.jpg', 0),
+(5, '/uploads/1764693514849-pro1.jpg', 0),
+( 7, '/uploads/1764694489894-product6_main.jpg', 1),
+( 7, '/uploads/1764694489909-product6_1.jpg', 0),
+( 7, '/uploads/1764694489919-product6_2.jpg', 0),
+( 1, '/uploads/product1_2.jpg', 0),
+( 1, '/uploads/1764738927390-product1_2.jpg', 0);
 

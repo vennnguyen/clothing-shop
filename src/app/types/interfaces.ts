@@ -78,7 +78,11 @@ export interface Order {
   cost: number;
   items: OrderItem[];
 }
-
+export interface ProductImages {
+  id: number;
+  imageUrl: string;
+  isMain: boolean;
+}
 export interface Product {
   id: number;
   name: string | null;
@@ -90,6 +94,7 @@ export interface Product {
   imageUrl: string | null;
   categoryId: number;
   sizeId: number;
+  allImagesString: string;
 }
 export interface ProductSizes {
   sizeId: number;

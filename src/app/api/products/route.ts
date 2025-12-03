@@ -17,17 +17,23 @@ export async function GET() {
           p.description,
           cat.id AS categoryId,
           cat.name AS category,
-          s.id AS sizeId,
-          pi.imageUrl,
-          GROUP_CONCAT(CONCAT(s.sizeName, '(', ps.quantity, ')') ORDER BY s.sizeName SEPARATOR ', ') AS sizes
-          FROM products p
-          JOIN categories cat ON cat.id = p.categoryId
-          JOIN productsizes ps ON ps.productId = p.id
-          JOIN sizes s ON s.id = ps.sizeId
-          JOIN productimages pi ON p.id = pi.productId
-          WHERE pi.isMain = true
-          GROUP BY p.id
-          ORDER BY p.id DESC;
+          -- Lấy ảnh chính để hiển thị ngoài bảng (Table)
+          (SELECT imageUrl FROM productimages WHERE productId = p.id AND isMain = true LIMIT 1) AS imageUrl,
+          
+          -- Lấy TOÀN BỘ ảnh gộp thành chuỗi để dùng cho Form Sửa
+          -- Format: id::url, id::url
+          GROUP_CONCAT(DISTINCT CONCAT(pi.id, '::', pi.imageUrl) SEPARATOR ', ') AS allImagesString,
+
+          -- Size (Giữ nguyên của bạn)
+          GROUP_CONCAT(DISTINCT CONCAT(s.sizeName, '(', ps.quantity, ')') ORDER BY s.sizeName SEPARATOR ', ') AS sizes
+
+        FROM products p
+        JOIN categories cat ON cat.id = p.categoryId
+        JOIN productsizes ps ON ps.productId = p.id
+        JOIN sizes s ON s.id = ps.sizeId
+        LEFT JOIN productimages pi ON p.id = pi.productId -- Dùng LEFT JOIN an toàn hơn
+        GROUP BY p.id
+        ORDER BY p.id DESC;
       `);
     return NextResponse.json(rows);
   } catch (error) {

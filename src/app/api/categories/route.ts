@@ -14,10 +14,28 @@ export async function GET() {
 //thêm danh mục
 export async function POST(req: NextRequest) {
   try {
-    const category:Category = await req.json();
-    const [result] = await pool.query("INSERT INTO categories (name) VALUES (?)", [category.name]);
-    return NextResponse.json({ message: "Tạo danh mục thành công", id: (result as any).insertId });
+    const body = await req.json();
+    const { name } = body;
+
+    await pool.query("INSERT INTO categories (name) VALUES (?)", [name]);
+    return NextResponse.json({ message: "Thêm danh mục thành công" });
   } catch {
+    return NextResponse.json({ error: "Lỗi server" }, { status: 500 });
+  }
+}
+
+export async function PUT(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { id, name } = body;
+    await pool.query(
+      "UPDATE categories SET name = ? WHERE id = ?",
+      [name, id]
+    );
+
+    return NextResponse.json({ message: "Cập nhật danh mục thành công" });
+
+  } catch (error) {
     return NextResponse.json({ error: "Lỗi server" }, { status: 500 });
   }
 }

@@ -11,7 +11,7 @@ export default function HomePage() {
                 <h2 className="font-semibold">Menu nhanh:</h2>
                 <ul className="list-disc ml-5 mt-2">
                     <li>
-                        <Link href="/admin/products" className="text-blue-600 hover:underline">
+                        <Link href="/admin" className="text-blue-600 hover:underline">
                             Đi tới trang Quản lý sản phẩm (Admin)
                         </Link>
                     </li>

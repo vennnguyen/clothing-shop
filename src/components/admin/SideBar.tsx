@@ -8,11 +8,11 @@ export default function Sidebar() {
             <nav className="space-y-3">
                 <Link href="/admin" className="block hover:text-blue-400">Dashboard</Link>
                 <Link href="/admin/products" className="block hover:text-blue-400">Sản phẩm</Link>
+                <Link href="/admin/categories" className="block hover:text-blue-400">Danh mục</Link>
                 <Link href="/admin/suppliers" className="block hover:text-blue-400">Nhà cung cấp</Link>
                 <Link href="/admin/imports" className="block hover:text-blue-400">Phiếu nhập</Link>
                 {/* <Link href="/admin/orders" className="block hover:text-blue-400">Đơn hàng</Link>
                 <Link href="/admin/customers" className="block hover:text-blue-400">Khách hàng</Link>
-                <Link href="/admin/categories" className="block hover:text-blue-400">Danh mục</Link>
                 <Link href="/admin/users" className="block hover:text-blue-400">Tài khoản</Link> */}
             </nav>
         </aside>

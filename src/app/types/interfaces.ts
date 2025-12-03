@@ -69,15 +69,29 @@ export interface Order {
   cost: number;
   items: OrderItem[];
 }
-
+export interface ProductImages {
+  id: number;
+  imageUrl: string;
+  isMain: boolean;
+}
 export interface Product {
   id: number;
-  name?: string | null;
-  material?: string | null;
-  categoryId?: number | null;
+  name: string | null;
   price: number;
+  category: number | null;
+  sizes: string | null;
+  description?: string;
+  quantity?: number | null;
+  imageUrl: string | null;
+  categoryId: number;
+  sizeId: number;
+  allImagesString: string;
 }
-
+export interface ProductSizes {
+  sizeId: number;
+  sizeName: string | number;
+  quantity: string | number;
+}
 export interface Role {
   id: number;
   name?: string | null;

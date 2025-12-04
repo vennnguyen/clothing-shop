@@ -2,7 +2,7 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
-import { Category, Product } from "../types/interfaces";
+import { Category, Product } from "../../types/interfaces";
 
 
 export default function ProductsPage() {

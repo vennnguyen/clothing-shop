@@ -15,7 +15,7 @@ interface ProductFormProps {
 interface FormDataState {
     name: string;
     price: number | string;
-    quantity: number | string;
+    // quantity: number | string;
     categoryId: number;
     description: string;
     sizeId: number;
@@ -23,7 +23,7 @@ interface FormDataState {
 interface FormErrors {
     name?: string;
     price?: string;
-    quantity?: string;
+    // quantity?: string;
     category?: string;
     size?: string;
     images?: string; // Thêm lỗi cho phần ảnh
@@ -36,7 +36,7 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
     const [form, setForm] = useState<FormDataState>({
         name: "",
         price: "",
-        quantity: "",
+        // quantity: "",
         categoryId: 0,
         description: "",
         sizeId: 0,
@@ -83,7 +83,7 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                 setForm({
                     name: product.name,
                     price: product.price,
-                    quantity: product.quantity || 0,
+                    // quantity: product.quantity || 0,
                     categoryId: product.categoryId,
                     description: product.description || "",
                     sizeId: product.sizeId || 0,
@@ -91,7 +91,8 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                 // TODO: Nếu edit, bạn cần logic để load ảnh cũ từ server vào state 'images' ở đây
             } else {
                 // Mode: ADD (Thêm mới)
-                setForm({ name: "", price: "", quantity: "", categoryId: 0, description: "", sizeId: 0 });
+                // setForm({ name: "", price: "", quantity: "", categoryId: 0, description: "", sizeId: 0 });
+                setForm({ name: "", price: "", categoryId: 0, description: "", sizeId: 0 });
                 setImages([{ id: 1 }, { id: 2 }, { id: 3 }]); // Reset ảnh về rỗng
             }
         }
@@ -119,12 +120,6 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
         // Validate Giá
         if (!form.price || Number(form.price) <= 0) {
             newErrors.price = "Giá phải lớn hơn 0";
-            isValid = false;
-        }
-
-        // Validate Số lượng
-        if (Number(form.quantity) < 0) {
-            newErrors.quantity = "Số lượng không hợp lệ";
             isValid = false;
         }
 
@@ -163,7 +158,7 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
             const formData = new FormData();
             formData.append("name", form.name);
             formData.append("price", String(form.price));
-            formData.append("quantity", String(form.quantity));
+            // formData.append("quantity", String(form.quantity));
             formData.append("category", String(form.categoryId));
             formData.append("description", form.description);
             formData.append("size", String(form.sizeId));
@@ -275,12 +270,13 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                                     <input
                                         type="number"
                                         name="quantity"
-                                        value={form.quantity}
+                                        value={0}
                                         onChange={handleChange}
-                                        className={`w-full p-2.5 border rounded-lg outline-none ${errors.quantity ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-sky-400"}`}
-                                        disabled={product ? true : false}
+                                        // className={`w-full p-2.5 border rounded-lg outline-none ${errors.quantity ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-sky-400"}`}
+                                        className={`w-full p-2.5 border rounded-lg outline-none border-gray-300 focus:ring-sky-400`}
+                                        disabled
                                     />
-                                    {errors.quantity && <p className="text-red-500 text-xs mt-1 italic">{errors.quantity}</p>}
+                                    {/* {errors.quantity && <p className="text-red-500 text-xs mt-1 italic">{errors.quantity}</p>} */}
                                 </div>
 
                                 <div>

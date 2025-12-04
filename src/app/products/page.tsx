@@ -8,7 +8,7 @@ import { Category, Product } from "../types/interfaces";
 export default function ProductsPage() {
     const [products, setProducts] = useState<Product[]>([]);
     const [categories, setCategories] = useState<Category[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+    const [selectedCategory,setSelectedCategory] = useState<number | null>(null);
     const [isLoading, setIsLoading] = useState(true)
     // Fake API – bạn đổi sang fetch("/api/products") khi dùng DB thật
     const getAllCategories = async () => {
@@ -35,6 +35,18 @@ export default function ProductsPage() {
             setIsLoading(false);
         }
     };
+    const loadProductsByCategory = async (categoryId: number) =>{
+        try {
+            const res = await fetch(`/api/categories/${categoryId}`, { cache: 'no-store' });
+            if (!res.ok) throw new Error("Failed to fetch");
+            const data = await res.json();
+            setProducts([data]);
+        }
+        catch (error) {
+            console.error("Lỗi khi tải sản phẩm theo danh mục:", error);
+        }
+    }
+
     useEffect(() => {
         getAllCategories()
         loadProducts();
@@ -48,7 +60,10 @@ export default function ProductsPage() {
             {/* Bộ lọc danh mục */}
             <div className="flex gap-4 mb-8 overflow-x-auto pb-2">
                 <button
-                    onClick={() => setSelectedCategory(null)}
+                    onClick={() => {
+                        setSelectedCategory(null)
+                        loadProducts()
+                    }}
                     className={`px-4 py-2 rounded-lg text-sm font-medium border ${selectedCategory === null
                         ? "bg-pink-500 text-white"
                         : "bg-white hover:bg-gray-100"
@@ -60,7 +75,10 @@ export default function ProductsPage() {
                 {categories.map((cat) => (
                     <button
                         key={cat.id}
-                        onClick={() => setSelectedCategory(cat.id)}
+                        onClick={() => {
+                            setSelectedCategory(cat.id)
+                            loadProductsByCategory(cat.id)
+                        }}
                         className={`px-4 py-2 rounded-lg text-sm font-medium border ${selectedCategory === cat.id
                             ? "bg-pink-500 text-white"
                             : "bg-white hover:bg-gray-100"

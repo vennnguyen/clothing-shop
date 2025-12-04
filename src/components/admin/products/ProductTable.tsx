@@ -18,19 +18,26 @@ export default function ProductTable({
 
     return (
         <div className="bg-white p-4 shadow rounded">
-            <div className="text-right">
-                <button
-                    className="mb-4 p-2 bg-green-600 text-white rounded cursor-pointer"
-                    onClick={() => {
-                        setSelected(null);
-                        setIsFormOpen(true);
-                    }}
-                >
-                    <span className="flex items-center gap-2">
-                        <Plus size={20} />
-                        Thêm sản phẩm
-                    </span>
-                </button>
+            <div className="flex justify-between items-center">
+                <input
+                    type="text"
+                    placeholder="Nhập tên sản phẩm..."
+                    className="w-100 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                />
+                <div>
+                    <button
+                        className="mb-4 p-2 bg-green-600 text-white rounded cursor-pointer"
+                        onClick={() => {
+                            setSelected(null);
+                            setIsFormOpen(true);
+                        }}
+                    >
+                        <span className="flex items-center gap-2">
+                            <Plus size={20} />
+                            Thêm sản phẩm
+                        </span>
+                    </button>
+                </div>
             </div>
 
             <table className="w-full border">

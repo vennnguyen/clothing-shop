@@ -67,7 +67,7 @@ export async function POST(request: NextRequest) {
 
     const name = formData.get('name') as string;
     const price = Number(formData.get('price'));
-    const quantity = Number(formData.get('quantity'));
+    const quantity = 0;
     const categoryId = Number(formData.get('category'));
     const description = formData.get('description') as string;
     const size = Number(formData.get('size'));
@@ -134,27 +134,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-//cập nhật sản phẩm
-// export async function PUT(request: NextRequest) {
-//   try {
-//     const data: Product = await request.json();
-//     const { id, name, material, categoryId } = data;
-
-//     if (!id) {
-//       return NextResponse.json({ error: 'Thiếu ID sản phẩm' }, { status: 400 });
-//     }
-
-//     await pool.query(
-//       'UPDATE products SET name = ?, material = ?, categoryId = ? WHERE id = ?',
-//       [name, material || null, categoryId || null, id]
-//     );
-
-//     return NextResponse.json({ message: 'Cập nhật thành công' });
-//   } catch (error) {
-//     console.error('PUT error:', error);
-//     return NextResponse.json({ error: 'Lỗi khi cập nhật' }, { status: 500 });
-//   }
-// }
 
 // xóa sản phẩm 
 export async function DELETE(request: NextRequest) {

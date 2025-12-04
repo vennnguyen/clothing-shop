@@ -33,11 +33,15 @@ export async function GET(request: NextRequest, { params }: { params: { id: stri
 
         // (Tùy chọn) 4. Truy vấn Sizes nếu bạn đã làm bảng ProductSizes
 
-        // const [sizeRows]: any = await pool.query(
-        //     'SELECT sizeId, quantity FROM ProductSizes WHERE productId = ?',
-        //     [id]
-        // );
-        // product.sizes = sizeRows;
+        const [sizeRows]: any = await pool.query(
+            `
+                SELECT ps.sizeId, ps.quantity, s.sizeName FROM ProductSizes ps
+                JOIN sizes s ON s.id = ps.sizeId
+                WHERE productId = ?
+            `,
+            [id]
+        );
+        product.sizes = sizeRows;
 
         return NextResponse.json(product);
 

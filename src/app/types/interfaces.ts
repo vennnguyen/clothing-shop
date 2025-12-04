@@ -87,9 +87,19 @@ export interface Product {
   sizeId: number;
   allImagesString: string;
 }
+export interface ProductDetail {
+  id: number;
+  name: string | null;
+  price: number;
+  // category: number | null;
+  sizes: ProductSizes[];
+  description?: string;
+  // categoryId: number;
+  images: ProductImages[];
+}
 export interface ProductSizes {
   sizeId: number;
-  sizeName: string | number;
+  sizeName: string;
   quantity: string | number;
 }
 export interface Role {

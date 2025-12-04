@@ -253,10 +253,14 @@ INSERT INTO Categories (name) VALUES
 ('Đầm nữ');
 
 INSERT INTO Products (name, price, description, categoryId) VALUES
-('Áo thun nam cổ tròn', 150000, 'Áo thun cotton thoáng mát', 1),
-('Áo khoác gió nam', 350000, 'Áo khoác chống nước', 3),
-('Quần jeans nữ form ôm', 280000, 'Chất liệu co giãn', 2),
-('Áo khoác nữ', 320000, 'Áo khoác thoải mái', 4);
+('Áo thun nam cổ tròn', 150000, 'Áo thun nam cổ tròn được làm từ vải cotton cao cấp, mềm mại, thoáng khí và thấm hút mồ hôi tốt. Thiết kế tối giản phù hợp mặc hàng ngày, đi chơi hoặc tập luyện. Giặt giữ form lâu, không bai nhão và không gây kích ứng da.', 1),
+
+('Áo khoác gió nam', 350000, 'Áo khoác gió nam với chất liệu chống nước và chống bám bụi, mang lại sự thoải mái và bảo vệ hiệu quả trước thời tiết xấu. Thiết kế hiện đại, nhẹ, dễ gấp gọn mang theo. Phù hợp đi làm, du lịch hay hoạt động ngoài trời.', 3),
+
+('Quần jeans nữ form ôm', 280000, 'Quần jeans nữ form ôm với chất liệu denim co giãn 4 chiều giúp tôn dáng và tạo cảm giác thoải mái suốt cả ngày. Thiết kế thời trang, dễ phối với áo thun, áo sơ mi hoặc áo kiểu. Phù hợp đi học, đi làm và đi chơi.', 2),
+
+('Áo khoác nữ', 320000, 'Áo khoác nữ thời trang với chất liệu mềm mại, giữ ấm tốt và tạo cảm giác thoải mái khi mặc. Thiết kế thanh lịch phù hợp nhiều phong cách từ năng động đến sang trọng. Thích hợp sử dụng khi thời tiết lạnh hoặc khi đi làm, đi chơi.', 4);
+
 
 INSERT INTO Sizes (sizeName) VALUES
 ('S'),
@@ -353,4 +357,6 @@ INSERT INTO ProductImages (productId, imageUrl, isMain) VALUES
 (3, '/uploads/1764694489919-product6_2.jpg', 0),
 (4, '/uploads/1764693514844-swelb0635_dbc196b9427143dabde76567453a4a9f_master.jpg', 1),
 (4, '/uploads/1764693514846-1_010469a27497440ea1dd174f4a255229_master.jpg', 0),
-(4, '/uploads/1764693514849-pro1.jpg', 0);
+(4, '/uploads/1764693514849-pro1.jpg', 0),
+(4, '/uploads/1764693514859-pro2.jpg', 0),
+(4, '/uploads/1764693514869-pro3.jpg', 0);

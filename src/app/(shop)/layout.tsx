@@ -1,4 +1,5 @@
 // app/layout.tsx
+import Link from "next/link";
 import "../globals.css";
 import { Inter } from "next/font/google";
 
@@ -17,9 +18,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 {/* HEADER */}
                 <header className="bg-white shadow sticky top-0 z-50">
                     <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-                        <h1 className="text-xl font-bold text-orange-600">
-                            Clothing Shop
-                        </h1>
+                        <Link href="/">
+                            <h1 className="text-xl font-bold text-orange-600">
+                                Clothing Shop
+                            </h1>
+                        </Link>
 
                         <nav className="flex gap-6 text-gray-700">
                             <a href="/" className="hover:text-orange-500">Trang chủ</a>

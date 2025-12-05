@@ -90,6 +90,7 @@ export default function CategoryForm({
                             //     }`}
                             className="w-full p-2.5 border rounded-lg outline-none transition-all border-gray-300 focus:ring-2 focus:ring-sky-400"
                             placeholder="Ví dụ: Áo thun ..."
+                            required
                         />
                         {/* Dòng text báo lỗi */}
                         {/* {errors.name && <p className="text-red-500 text-xs mt-1 italic">{errors.name}</p>} */}

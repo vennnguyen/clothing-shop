@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Product } from "../../../app/types/interfaces";
 import ProductForm from "./ProductForm";
 // import ProductForm from "./ProductForm";
@@ -8,21 +8,39 @@ import { Trash2, FilePenIcon, Plus } from "lucide-react";
 export default function ProductTable({
     products,
     refresh,
+    onSearch,
 }: {
     products: Product[];
     refresh: () => void;
+    onSearch: (keyword: string) => void;
 }) {
     const [selected, setSelected] = useState<Product | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
+
+    // ...
+    // [MỚI] Kỹ thuật Debounce
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            onSearch(searchTerm);
+        }, 500);
+
+        return () => clearTimeout(delayDebounceFn);
+
+        // Nếu bạn cài ESLint chuẩn, nó sẽ bắt buộc thêm onSearch vào đây.
+        // Nhờ có useCallback ở cha, việc thêm onSearch vào đây sẽ KHÔNG gây lặp nữa.
+    }, [searchTerm, onSearch]);
+    // ...
 
     return (
         <div className="bg-white p-4 shadow rounded">
             <div className="flex justify-between items-center">
                 <input
                     type="text"
-                    placeholder="Nhập tên sản phẩm..."
+                    placeholder="Nhập mã, tên hoặc danh mục sản phẩm..."
                     className="w-100 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <div>
                     <button

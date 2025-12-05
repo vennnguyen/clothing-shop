@@ -16,6 +16,7 @@ export default function ImportsPage() {
    const loadImports = async () => {
     const res = await fetch("/api/importreceipts");
     const data = await res.json();
+    console.log("data: ",data);
 
     // Map productId thành id để đồng bộ với interface Product
     const mappedData = data.map((imp: any) => ({
@@ -31,9 +32,9 @@ export default function ImportsPage() {
     setImports(mappedData);
   };
 
-  // useEffect(()=>{
-  //   console.log("imports: ",imports)
-  // },[imports])
+  useEffect(()=>{
+    console.log("imports: ",imports)
+  },[imports])
 
   useEffect(() => {
     loadImports();

@@ -78,10 +78,22 @@ export default function ImportModal({
 
     if ((mode === "form" || mode === "detail") && importData) {
       const prods = (importData.products || []).map((p) => ({
-        id: p.id,
-        name: p.name || "",
-        quantity: p.quantity || 1,
-        price: p.price || 0,
+        // id: p.id, 
+        // name: p.name || "",
+        // quantity: p.quantity || 1,
+        // price: p.price || 0,
+
+         id: p.id,
+  name: p.name || null,
+  price: p.price || 0,
+  quantity: p.quantity ?? 1,        // dùng ?? để giữ giá trị 0 hợp lệ
+  category: p.category ?? null,
+  sizes: p.sizes ?? null,
+  imageUrl: p.imageUrl ?? null,
+  categoryId: p.categoryId ?? 0,
+  sizeId: p.sizeId ?? 0,
+  allImagesString: p.allImagesString ?? "",
+  description: p.description ?? "",
       }));
       setImportProducts(prods);
 
@@ -152,106 +164,6 @@ export default function ImportModal({
   };
 
   const total = importProducts.reduce((sum, p) => sum + p.price * p.quantity, 0);
-
-  // Handle submit
-  // const handleSubmit = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-  //   if (mode === "detail") return;
-
-  //   const payload = {
-  //     createdDate: form.date,
-  //     supplierId: form.supplierId,
-  //     accountId: 1,
-  //     total: total,
-  //     status: form.status,
-  //     products: importProducts.map((p) => ({
-  //       productId: p.id,
-  //       quantity: p.quantity,
-  //       price: p.price,
-  //     })),
-  //   };
-  //   try {
-
-  //     if (mode === "delete" && importData?.id) {
-  //       await fetch(`/api/importreceipts/${importData.id}`, { method: "DELETE" });
-
-  //     }
-  //     else
-  //     if (importData && mode !== 'delete' ) {
-  //       const res =  await fetch(`/api/importreceipts/${importData.id}`, {
-  //         method: "PUT",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify(payload),
-  //       });
-  //        const data = await res.json();
-         
-
-  //       await Promise.all(
-  //       importProducts.map((p) =>
-  //         payload.products.forEach((op)=>{
-  //           if(op.productId === p.id){
-  //                fetch("/api/importdetails", {
-  //                 method: "PUT",
-  //                 headers: { "Content-Type": "application/json" },
-  //                 body: JSON.stringify({
-  //                   importReceiptId: data.id,
-  //                   productId: p.id,
-  //                   quantity: p.quantity,
-  //                   price: p.price,
-  //                 }),
-  //               })
-  //           }else{
-  //             fetch("/api/importdetails", {
-  //               method: "POST",
-  //               headers: { "Content-Type": "application/json" },
-  //               body: JSON.stringify({
-  //                 importReceiptId: data.id,
-  //                 productId: p.id,
-  //                 quantity: p.quantity,
-  //                 price: p.price,
-  //               }),
-  //             })
-  //           }
-  //         })
-          
-  //       )
-  //     );
-  //     } else {
-  //      const res = await fetch("/api/importreceipts", {
-  //       method: "POST",
-  //       headers: { "Content-Type": "application/json" },
-  //       body: JSON.stringify(payload),
-  //     });
-
-  //     const data = await res.json();
-
-  //     // Gửi từng product sang importdetails
-  //     await Promise.all(
-  //       importProducts.map((p) =>
-  //         fetch("/api/importdetails", {
-  //           method: "POST",
-  //           headers: { "Content-Type": "application/json" },
-  //           body: JSON.stringify({
-  //             importReceiptId: data.id,
-  //             productId: p.id,
-  //             quantity: p.quantity,
-  //             price: p.price,
-  //           }),
-  //         })
-  //       )
-  //     );
-
-       
-  //     } 
-      
-
-  //     setOpen(false);
-  //     refresh();
-  //   } catch (err) {
-  //     console.error(err);
-  //     alert("Có lỗi xảy ra!");
-  //   }
-  // };
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();

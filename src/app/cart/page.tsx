@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FloatingInput from "./../../components/ui/FloatingInput";
 import AddressSelect from "./../../components/ui/AddressSelect";
 import DeliveryMethod from "./../../components/ui/DeliveryMethod";
@@ -22,36 +22,139 @@ type Product = {
   img: string;
   quantity: number;
 };
+type Province = { code: number; name: string };
+type Ward = { code: number; name: string };
+
 
 export default function PayContent() {
   const [products, setProducts] = useState<Product[]>([
-    {
-      id: 1,
-      name: "SWE DREAMER FLATTOP CAP - BEIGE",
-      size: "S",
-      price: 100000,
-      img: "https://cdn.hstatic.net/products/1000344185/1_8c1c7a7c142b4cc69f1c68916327a031_large.jpg",
-      quantity: 1,
-    },
-    {
-      id: 2,
-      name: "ANOTHER PRODUCT",
-      size: "M",
-      price: 150000,
-      img: "https://cdn.hstatic.net/products/1000344185/1_8c1c7a7c142b4cc69f1c68916327a031_large.jpg",
-      quantity: 2,
-    },
-    
+    // {
+    //   id: 1,
+    //   name: "SWE DREAMER FLATTOP CAP - BEIGE",
+    //   size: "S",
+    //   price: 100000,
+    //   img: "https://cdn.hstatic.net/products/1000344185/1_8c1c7a7c142b4cc69f1c68916327a031_large.jpg",
+    //   quantity: 1,
+    // },
+    // {
+    //   id: 2,
+    //   name: "ANOTHER PRODUCT",
+    //   size: "M",
+    //   price: 150000,
+    //   img: "https://cdn.hstatic.net/products/1000344185/1_8c1c7a7c142b4cc69f1c68916327a031_large.jpg",
+    //   quantity: 2,
+    // },
   ]);
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [sdt, setSdt] = useState("");
-  const [address, setAddress] = useState("");
-  const [discount, setDiscount] = useState("");
-  const [fullAddress, setFullAddress] = useState("");
-
+  const [houseNumber, setHouseNumber] = useState("");
+  const [selectedProvince, setSelectedProvince] = useState<Province | null>(null);
+  const [selectedWard, setSelectedWard] = useState<Ward | null>(null);
   const [forceValidate, setForceValidate] = useState(false);
+  const [customer, setCustomer] = useState<{
+  fullName: string;
+  email: string;
+  phone: string;
+  dateOfBirth?: string;
+  gender?: string;
+} | null>(null);
+
+
+  useEffect(()=>{
+    console.log("selectedProvince: ",selectedProvince);
+  },[selectedProvince])
+
+  useEffect(()=>{
+    console.log("selectedWard: ",selectedWard);
+  },[selectedWard])
+
+ 
+
+useEffect(() => {
+  const customerId = 1;
+
+  const fetchCustomer = async () => {
+    const customerData = await loadCustomerById(customerId);
+    if (customerData) {
+      setCustomer(customerData); // lưu customer toàn bộ
+      setName(customerData.fullName || "");
+      setEmail(customerData.email || "");
+      setSdt(customerData.phone || "");
+    }
+  };
+
+  fetchCustomer();
+  loadOrderByCustomerId(customerId);
+}, []);
+
+
+    const loadCustomerById = async (id: number) => {
+      try {
+        const res = await fetch(`/api/customers/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch customer");
+
+        const customer = await res.json();
+        console.log("Customer info:", customer);
+        return customer;
+      } catch (error) {
+        console.error(error);
+        return null;
+      }
+    };
+
+    const loadProductById = async (productId: number) => {
+    try {
+      const res = await fetch(`/api/products/${productId}`);
+      if (!res.ok) throw new Error('Không lấy được sản phẩm');
+
+      const productData = await res.json();
+
+      // Map dữ liệu về Product type cho UI
+      const mappedProduct: Product = {
+        id: productData.id,
+        name: productData.name,
+        size: productData.sizes?.[0]?.sizeName || 'M', // lấy size đầu tiên
+        price: productData.price,
+        img: productData.images?.[0]?.imageUrl || 'https://via.placeholder.com/60',
+        quantity: 1,
+      };
+
+      return mappedProduct;
+    } catch (error) {
+      console.error('Load product error:', error);
+      return null;
+    }
+  };
+
+  const loadOrderByCustomerId = async (customerId: number) => {
+  try {
+    const res = await fetch(`/api/orders/${customerId}`);
+    if (!res.ok) throw new Error("Failed to fetch orders");
+
+    const orders = await res.json();
+
+    if (orders.length === 0) return;
+
+    const firstOrder = orders[0];
+    
+    // Lấy chi tiết từng product từ API products/[id]
+    const productsFromOrder: Product[] = await Promise.all(
+      firstOrder.details.map(async (d: any) => {
+        const product = await loadProductById(d.productId);
+        if (product) product.quantity = d.quantity; // set quantity từ order
+        return product;
+      })
+    );
+
+    setProducts(productsFromOrder.filter(p => p !== null) as Product[]);
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+
 
   const handleSubmit = () => {
     setForceValidate((prev) => !prev);
@@ -61,9 +164,7 @@ export default function PayContent() {
   const handleQuantityChange = (id: number, delta: number) => {
     setProducts((prev) =>
       prev.map((p) =>
-        p.id === id
-          ? { ...p, quantity: Math.max(p.quantity + delta, 1) }
-          : p
+        p.id === id ? { ...p, quantity: Math.max(p.quantity + delta, 1) } : p
       )
     );
   };
@@ -75,22 +176,23 @@ export default function PayContent() {
 
   // Tính tổng tạm tính
   const subtotal = products.reduce((sum, p) => sum + p.price * p.quantity, 0);
-  const shippingFee = 3000; // ví dụ
+  const shippingFee = 3000;
   const total = subtotal + shippingFee;
 
   return (
     <div className="flex justify-center items-stretch">
       {/* LEFT SIDE */}
       <div className="w-[55%] flex justify-end pr-[100px]">
-        <div className="w-[75%] h-full pt-[60px]">
+        <div className="w-[75%] pt-[60px]">
           <h3 className="font-medium leading-none">Thông tin giao hàng</h3>
           <div className="pt-3">
-            <p>
-              Bạn đã có tài khoản ?{" "}
+            {!customer && <p>
+              Bạn đã có tài khoản ?
               <a href="/login" className="text-blue-500">
                 Đăng nhập
               </a>
-            </p>
+            </p> }
+            
             <div className="w-full mt-3">
               <FloatingInput
                 label="Họ và tên"
@@ -125,16 +227,18 @@ export default function PayContent() {
               <h3 className="pb-5 text-lg font-medium">Thêm địa chỉ giao hàng</h3>
               <FloatingInput
                 label="Địa chỉ"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
+                value={houseNumber}
+                onChange={(e) => setHouseNumber(e.target.value)}
                 placeholder="Địa chỉ"
                 field="địa chỉ"
                 forceValidate={forceValidate}
               />
-              <AddressSelect
-                forceValidate={forceValidate}
-                onChange={(add) => setFullAddress(add)}
-              />
+              
+            <AddressSelect
+              forceValidate={forceValidate}
+              onChangeProvince={setSelectedProvince}
+              onChangeWard={setSelectedWard}
+            />
             </div>
 
             {/* Delivery Method */}
@@ -185,9 +289,25 @@ export default function PayContent() {
                     </button>
                     <input
                       type="text"
-                      value={p.quantity}
+                      value={p.quantity === 0 ? "" : p.quantity}
                       className="w-12 h-6 text-center border border-gray-300"
-                      readOnly
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        if (!isNaN(val) && val >= 1) {
+                          setProducts((prev) =>
+                            prev.map((prod) =>
+                              prod.id === p.id ? { ...prod, quantity: val } : prod
+                            )
+                          );
+                        } else if (e.target.value === "") {
+                          // tạm thời cho phép xóa input để nhập lại
+                          setProducts((prev) =>
+                            prev.map((prod) =>
+                              prod.id === p.id ? { ...prod, quantity: 0 } : prod
+                            )
+                          );
+                        }
+                      }}
                     />
                     <button
                       className="w-6 h-6 bg-gray-200 text-black rounded text-center cursor-pointer"
@@ -231,7 +351,7 @@ export default function PayContent() {
             </span>
           </div>
 
-          <AddressSelectBox />
+          <AddressSelectBox customerId={1} />
 
           {/* NOTE */}
           <div className="bg-[#f3f4f4] p-5 mt-4 flex flex-col">

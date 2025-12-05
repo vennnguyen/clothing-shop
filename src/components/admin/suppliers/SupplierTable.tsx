@@ -14,12 +14,26 @@ export default function SupplierTable({
   const [selected, setSelected] = useState<Supplier | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<"form" | "delete">("form");
+  const [search, setSearch] = useState("");
+
+  // Lọc suppliers dựa theo tên
+  const filteredSuppliers = suppliers.filter((s) =>
+    s.name?.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="bg-white p-4 shadow rounded">
-      <div className="text-right">
+      <div className="flex justify-between items-center mb-4">
+        <input
+          type="text"
+          placeholder="Nhập tên nhà cung cấp..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+        />
+
         <button
-          className="mb-4 px-4 py-2 bg-blue-600 text-white rounded cursor-pointer"
+          className="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer"
           onClick={() => {
             setSelected(null);
             setModalMode("form");
@@ -41,7 +55,7 @@ export default function SupplierTable({
           </tr>
         </thead>
         <tbody>
-          {suppliers.map((s) => (
+          {filteredSuppliers.map((s) => (
             <tr key={s.id} className="border-t text-center">
               <td className="p-2 border">{s.id}</td>
               <td className="p-2 border">{s.name}</td>
@@ -71,10 +85,16 @@ export default function SupplierTable({
               </td>
             </tr>
           ))}
+          {filteredSuppliers.length === 0 && (
+            <tr>
+              <td colSpan={5} className="p-4 text-center text-gray-500">
+                Không tìm thấy nhà cung cấp
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
 
-      {/* Modal chung cho Thêm/Sửa/Xóa */}
       <SupplierModal
         open={modalOpen}
         mode={modalMode}

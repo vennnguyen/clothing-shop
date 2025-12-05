@@ -3,111 +3,89 @@
 import { useState, useEffect } from "react";
 
 type Province = { code: number; name: string };
-type District = { code: number; name: string };
 type Ward = { code: number; name: string };
 
 type Props = {
-  onChange?: (value: string) => void;
+  onChangeProvince?: (province: Province | null) => void;
+  onChangeWard?: (ward: Ward | null) => void;
   forceValidate?: boolean;
 };
 
-export default function AddressSelect({ onChange, forceValidate }: Props) {
+export default function AddressSelect({ onChangeProvince, onChangeWard, forceValidate }: Props) {
   const [provinces, setProvinces] = useState<Province[]>([]);
-  const [districts, setDistricts] = useState<District[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);
 
-  const [selectedProvinces, setSelectedProvinces] = useState("");
-  const [selectedDistricts, setSelectedDistricts] = useState("");
-  const [selectedWards, setSelectedWards] = useState("");
+  const [selectedProvinceCode, setSelectedProvinceCode] = useState("");
+  const [selectedWardCode, setSelectedWardCode] = useState("");
 
-  const [provincesError, setProvincesError] = useState<string | null>(null);
-  const [districtsError, setDistrictsError] = useState<string | null>(null);
-  const [wardsError, setWardsError] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [provinceError, setProvinceError] = useState<string | null>(null);
+  const [wardError, setWardError] = useState<string | null>(null);
 
   const validate = () => {
-    if (!selectedProvinces) {
-      setProvincesError("Vui lòng chọn Tỉnh/Thành");
-      return false;
-    }
-    if (!selectedDistricts) {
-      setDistrictsError("Vui lòng chọn Quận/Huyện");
-      return false;
-    }
-    if (!selectedWards) {
-      setWardsError("Vui lòng chọn Phường/Xã");
-      return false;
-    }
-    setError("");
-    return true;
+    let valid = true;
+    if (!selectedProvinceCode) {
+      setProvinceError("Vui lòng chọn Tỉnh/Thành");
+      valid = false;
+    } else setProvinceError(null);
+
+    if (!selectedWardCode) {
+      setWardError("Vui lòng chọn Phường/Xã");
+      valid = false;
+    } else setWardError(null);
+
+    return valid;
   };
 
   useEffect(() => {
     if (forceValidate) validate();
   }, [forceValidate]);
 
-  // Load provinces
   useEffect(() => {
-    fetch("https://provinces.open-api.vn/api/v1/p")
+    fetch("https://provinces.open-api.vn/api/v2/p")
       .then((res) => res.json())
       .then((data) => setProvinces(data))
-      .catch(() => setError("Error"));
+      .catch(() => setProvinceError("Lỗi tải danh sách tỉnh/thành"));
   }, []);
 
-  const handleProvincesChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setProvincesError(null);
+  const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const code = e.target.value;
-
-    setSelectedProvinces(code);
-    setSelectedDistricts("");
-    setSelectedWards("");
-    setDistricts([]);
+    setSelectedProvinceCode(code);
+    setSelectedWardCode("");
     setWards([]);
 
-    fetch(`https://provinces.open-api.vn/api/v1/p/${code}?depth=2`)
-      .then((res) => res.json())
-      .then((data) => setDistricts(data.districts))
-      .catch(() => setError("Error"));
-  };
+    const province = provinces.find((p) => p.code === +code) || null;
+    onChangeProvince?.(province); // gửi lên component cha
 
-  const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setDistrictsError(null);
-    const code = e.target.value;
-
-    setSelectedDistricts(code);
-    setSelectedWards("");
-    setWards([]);
-
-    fetch(`https://provinces.open-api.vn/api/v1/d/${code}?depth=2`)
-      .then((res) => res.json())
-      .then((data) => setWards(data.wards))
-      .catch(() => setError("Error"));
+    if (province) {
+      fetch(`https://provinces.open-api.vn/api/v2/p/${code}?depth=2`)
+        .then((res) => res.json())
+        .then((data) => setWards(data.wards))
+        .catch(() => setWardError("Lỗi tải danh sách phường/xã"));
+    } else {
+      setWards([]);
+    }
   };
 
   const handleWardChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const code = e.target.value;
-    setSelectedWards(code);
-    setWardsError(null);
+    setSelectedWardCode(code);
 
-    const provinceName = provinces.find((p) => p.code === +selectedProvinces)?.name || "";
-    const districtName = districts.find((d) => d.code === +selectedDistricts)?.name || "";
-    const wardName = wards.find((w) => w.code === +code)?.name || "";
-
-    onChange?.(`${wardName}, ${districtName}, ${provinceName}`);
+    const ward = wards.find((w) => w.code === +code) || null;
+    onChangeWard?.(ward); // gửi lên component cha
   };
 
   return (
     <>
     
-    <div className="grid grid-cols-3 gap-3 text-[13px]">
-      {/* Tỉnh / Thành */}
-      <div className="relative ">
+    <div className="grid grid-cols-2 gap-2 text-[13px]">
+      {/* Province */}
+      <div className="relative">
         <select
-          className={`w-full mt-2 rounded-md bg-white text-gray-700  px-3 py-3 shadow-[0_0_0_1px_#d9d9d9] appearance-none focus:shadow-[0_0_0_1px_#919191] ${
-            provincesError ? "shadow-[0_0_0_1px_#e61616cd]" : ""
+          className={`w-full mt-2 rounded-md bg-white text-gray-700 px-3 py-3 shadow-[0_0_0_1px_#d9d9d9] appearance-none focus:shadow-[0_0_0_1px_#919191] ${
+            provinceError ? "shadow-[0_0_0_1px_#e61616cd]" : ""
           }`}
-          value={selectedProvinces}
-          onChange={handleProvincesChange}
+          value={selectedProvinceCode}
+          onChange={handleProvinceChange}
         >
           <option value="">Chọn tỉnh / thành</option>
           {provinces.map((p) => (
@@ -116,54 +94,16 @@ export default function AddressSelect({ onChange, forceValidate }: Props) {
             </option>
           ))}
         </select>
-
-        {/* Arrow icon */}
-        <span className="absolute right-3 top-[60%] -translate-y-1/2 pointer-events-none text-xs text-gray-600">
-          ▼
-        </span>
-
-        {provincesError && (
-          <span className="absolute left-1 bottom-[-18px] text-red-600 text-xs">
-            {provincesError}
-          </span>
-        )}
+        {provinceError && <span className="absolute left-1 bottom-[-18px] text-red-600 text-xs">{provinceError}</span>}
       </div>
 
-      {/* Quận / Huyện */}
+      {/* Ward */}
       <div className="relative">
         <select
           className={`w-full mt-2 rounded-md bg-white text-gray-700 px-3 py-3 shadow-[0_0_0_1px_#d9d9d9] appearance-none focus:shadow-[0_0_0_1px_#919191] ${
-            districtsError ? "shadow-[0_0_0_1px_#e61616cd]" : ""
+            wardError ? "shadow-[0_0_0_1px_#e61616cd]" : ""
           }`}
-          value={selectedDistricts}
-          onChange={handleDistrictChange}
-        >
-          <option value="">Chọn quận / huyện</option>
-          {districts.map((d) => (
-            <option key={d.code} value={d.code}>
-              {d.name}
-            </option>
-          ))}
-        </select>
-
-        <span className="absolute right-3 top-[60%] -translate-y-1/2 pointer-events-none text-xs text-gray-600">
-          ▼
-        </span>
-
-        {districtsError && (
-          <span className="absolute left-1 bottom-[-18px] text-red-600 text-xs">
-            {districtsError}
-          </span>
-        )}
-      </div>
-
-      {/* Phường / Xã */}
-      <div className="relative">
-        <select
-          className={`w-full mt-2 rounded-md bg-white text-gray-700 px-3 py-3 shadow-[0_0_0_1px_#d9d9d9] appearance-none focus:shadow-[0_0_0_1px_#919191] ${
-            wardsError ? "shadow-[0_0_0_1px_#e61616cd]" : ""
-          }`}
-          value={selectedWards}
+          value={selectedWardCode}
           onChange={handleWardChange}
         >
           <option value="">Chọn phường / xã</option>
@@ -173,23 +113,14 @@ export default function AddressSelect({ onChange, forceValidate }: Props) {
             </option>
           ))}
         </select>
-
-        <span className="absolute right-3 top-[60%] -translate-y-1/2 pointer-events-none text-xs text-gray-600">
-          ▼
-        </span>
-
-        {wardsError && (
-          <span className="absolute left-1 bottom-[-18px] text-red-600 text-xs">
-            {wardsError}
-          </span>
-        )}
+        {wardError && <span className="absolute left-1 bottom-[-18px] text-red-600 text-xs">{wardError}</span>}
       </div>
+      
     </div>
     <div className="flex justify-center mt-4">
-        <button className=" w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer">
-            Thêm địa chỉ
+        <button className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer">
+          Thêm địa chỉ
         </button>
-    </div>
-    </>
+      </div></>
   );
 }

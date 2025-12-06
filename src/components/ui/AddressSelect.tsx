@@ -9,9 +9,10 @@ type Props = {
   onChangeProvince?: (province: Province | null) => void;
   onChangeWard?: (ward: Ward | null) => void;
   forceValidate?: boolean;
+  resetKey?: number; // mới
 };
 
-export default function AddressSelect({ onChangeProvince, onChangeWard, forceValidate }: Props) {
+export default function AddressSelect({ onChangeProvince, onChangeWard, forceValidate,resetKey }: Props) {
   const [provinces, setProvinces] = useState<Province[]>([]);
   const [wards, setWards] = useState<Ward[]>([]);
 
@@ -39,6 +40,12 @@ export default function AddressSelect({ onChangeProvince, onChangeWard, forceVal
   useEffect(() => {
     if (forceValidate) validate();
   }, [forceValidate]);
+
+  useEffect(() => {
+    setSelectedProvinceCode("");
+    setSelectedWardCode("");
+    setWards([]);
+  }, [resetKey]);
 
   useEffect(() => {
     fetch("https://provinces.open-api.vn/api/v2/p")
@@ -117,10 +124,6 @@ export default function AddressSelect({ onChangeProvince, onChangeWard, forceVal
       </div>
       
     </div>
-    <div className="flex justify-center mt-4">
-        <button className="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer">
-          Thêm địa chỉ
-        </button>
-      </div></>
+    </>
   );
 }

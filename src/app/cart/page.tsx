@@ -53,7 +53,10 @@ export default function PayContent() {
   const [selectedProvince, setSelectedProvince] = useState<Province | null>(null);
   const [selectedWard, setSelectedWard] = useState<Ward | null>(null);
   const [forceValidate, setForceValidate] = useState(false);
+  const [refreshAddress, setRefreshAddress] = useState(false);
+  const [addressResetKey, setAddressResetKey] = useState(0);
   const [customer, setCustomer] = useState<{
+  id: number;
   fullName: string;
   email: string;
   phone: string;
@@ -174,6 +177,56 @@ useEffect(() => {
     setProducts((prev) => prev.filter((p) => p.id !== id));
   };
 
+// PayContent.tsx
+
+const handleAddCustomerAddress = async () => {
+  if (!houseNumber || !selectedProvince || !selectedWard) {
+    alert("Vui lòng điền đầy đủ thông tin địa chỉ");
+    setForceValidate(true);
+    return;
+  }
+
+  if (!customer?.id) {
+    alert("Không tìm thấy khách hàng");
+    return;
+  }
+
+  try {
+    const payload = { 
+      customerId: customer.id || 1,
+      houseNumber,
+      ward: selectedWard.name,
+      city: selectedProvince.name,
+      isDefault: true,
+    };
+
+    const res = await fetch(`/api/customeraddress/${payload.customerId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) throw new Error("Thêm địa chỉ thất bại");
+
+    // Reload AddressSelectBox
+    setRefreshAddress((prev) => !prev);
+
+    // Reset form
+    setHouseNumber("");
+    setSelectedProvince(null);
+    setSelectedWard(null);
+    setForceValidate(false);
+    setAddressResetKey(prev => prev + 1);
+
+    alert("Thêm địa chỉ thành công!");
+  } catch (err) {
+    console.error(err);
+    alert("Thêm địa chỉ thất bại!");
+  }
+};
+
+
+
   // Tính tổng tạm tính
   const subtotal = products.reduce((sum, p) => sum + p.price * p.quantity, 0);
   const shippingFee = 3000;
@@ -234,11 +287,18 @@ useEffect(() => {
                 forceValidate={forceValidate}
               />
               
-            <AddressSelect
-              forceValidate={forceValidate}
-              onChangeProvince={setSelectedProvince}
-              onChangeWard={setSelectedWard}
-            />
+              <AddressSelect
+                forceValidate={forceValidate}
+                onChangeProvince={setSelectedProvince}
+                onChangeWard={setSelectedWard}
+                resetKey={addressResetKey} // ← thêm dòng này
+              />
+
+              <button 
+              onClick={handleAddCustomerAddress}
+              className=" mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer">
+                Thêm địa chỉ
+              </button>
             </div>
 
             {/* Delivery Method */}
@@ -351,7 +411,7 @@ useEffect(() => {
             </span>
           </div>
 
-          <AddressSelectBox customerId={1} />
+          <AddressSelectBox customerId={customer?.id || 1} refresh={refreshAddress} />
 
           {/* NOTE */}
           <div className="bg-[#f3f4f4] p-5 mt-4 flex flex-col">

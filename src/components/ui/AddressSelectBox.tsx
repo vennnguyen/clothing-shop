@@ -1,3 +1,4 @@
+// AddressSelectBox.tsx
 "use client";
 
 import { faX } from "@fortawesome/free-solid-svg-icons";
@@ -9,40 +10,69 @@ type AddressOption = {
   value: string;
 };
 
-export default function AddressSelectBox({ customerId }: { customerId: number }) {
+type Props = {
+  customerId: number;
+  refresh?: boolean; // thêm prop để trigger reload
+};
+
+export default function AddressSelectBox({ customerId, refresh }: Props) {
   const [addresses, setAddresses] = useState<AddressOption[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
 
-  // Load default address từ API
-  const loadDefaultAddress = async () => {
+  const loadAddresses = async () => {
     try {
       const res = await fetch(`/api/customeraddress/${customerId}`);
-      // const res = await fetch(`/api/customer-address/${customerId}`);
       if (!res.ok) throw new Error("Failed to fetch address");
 
-      const addr = await res.json();
-      const formattedAddress = `${addr.houseNumber}, ${addr.ward}, ${addr.city}`;
+      const addrs = await res.json(); // đây là mảng
+      const formattedAddresses = addrs.map((addr: any) => ({
+        id: addr.id,
+        value: `${addr.houseNumber}, ${addr.ward}, ${addr.city}`,
+        isDefault: addr.isDefault,
+      }));
 
-      setAddresses([{ id: addr.id, value: formattedAddress }]);
-      setSelected(addr.id);
+      setAddresses(formattedAddresses);
+
+      // chọn mặc định: tìm địa chỉ có isDefault
+      const defaultAddr = addrs.find((addr: any) => addr.isDefault) || addrs[0];
+      setSelected(defaultAddr?.id || null);
     } catch (error) {
       console.error(error);
     }
   };
 
   useEffect(() => {
-    loadDefaultAddress();
-  }, []);
+    loadAddresses();
+  }, [customerId, refresh]); // reload khi refresh thay đổi
 
-  // Xóa địa chỉ
-  const handleDelete = (id: number) => {
-    if (addresses.length === 1) return; // không xóa nếu chỉ còn 1 địa chỉ
+  const handleDelete = async (addressId: number) => {
+    if (addresses.length === 1) {
+      alert("Phải có ít nhất 1 địa chỉ");
+      return;
+    }
 
-    const newAddresses = addresses.filter((addr) => addr.id !== id);
-    setAddresses(newAddresses);
+    if (!confirm("Bạn có chắc muốn xóa địa chỉ này?")) return;
 
-    if (selected === id) {
-      setSelected(newAddresses[0].id);
+    try {
+      const res = await fetch(`/api/customeraddress/addressId/${addressId}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Xóa địa chỉ thất bại");
+
+      // Xóa khỏi state
+      const newAddresses = addresses.filter((addr) => addr.id !== addressId);
+      setAddresses(newAddresses);
+
+      // Nếu địa chỉ đang chọn bị xóa, chọn địa chỉ còn lại đầu tiên
+      if (selected === addressId) {
+        setSelected(newAddresses[0]?.id || null);
+      }
+
+      alert("Xóa địa chỉ thành công");
+    } catch (error) {
+      console.error(error);
+      alert("Xóa địa chỉ thất bại");
     }
   };
 

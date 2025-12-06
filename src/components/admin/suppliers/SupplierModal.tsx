@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Supplier } from "../../../app/types/interfaces";
+import { useToastMessage } from "../../../../hooks/useToastMessage";
 
 type Mode = "form" | "delete";
 
@@ -18,6 +19,8 @@ export default function SupplierModal({
   setOpen: (value: boolean) => void;
   refresh: () => void;
 }) {
+  const { showSuccess, showError } = useToastMessage();
+
   const [form, setForm] = useState({
     name: "",
     address: "",
@@ -41,32 +44,38 @@ export default function SupplierModal({
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      if (mode === "form") {
-        if (supplier?.id) {
-          await fetch(`/api/suppliers/${supplier.id}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(form),
-          });
-        } else {
-          await fetch(`/api/suppliers`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(form),
-          });
-        }
-      } else if (mode === "delete" && supplier?.id) {
-        await fetch(`/api/suppliers/${supplier.id}`, { method: "DELETE" });
+  e.preventDefault();
+  try {
+    if (mode === "form") {
+      if (supplier?.id) {
+        await fetch(`/api/suppliers/${supplier.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+        showSuccess("Cập nhật nhà cung cấp thành công!");
+      } else {
+        await fetch(`/api/suppliers`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(form),
+        });
+        showSuccess("Thêm nhà cung cấp thành công!");
       }
-      refresh();
-      setOpen(false);
-      setForm({ name: "", address: "", phone: "" });
-    } catch (err) {
-      console.error("Error:", err);
+    } else if (mode === "delete" && supplier?.id) {
+      await fetch(`/api/suppliers/${supplier.id}`, { method: "DELETE" });
+      showSuccess("Xóa nhà cung cấp thành công!");
     }
-  };
+
+    refresh();
+    setOpen(false);
+    setForm({ name: "", address: "", phone: "" });
+  } catch (err) {
+    console.error("Error:", err);
+    showError("Có lỗi xảy ra. Vui lòng thử lại!");
+  }
+};
+
 
   if (!open) return null;
 

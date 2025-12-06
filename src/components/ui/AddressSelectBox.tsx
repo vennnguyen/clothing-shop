@@ -4,6 +4,7 @@
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
+import { useToastMessage } from "../../../hooks/useToastMessage";
 
 type AddressOption = {
   id: number;
@@ -18,6 +19,8 @@ type Props = {
 export default function AddressSelectBox({ customerId, refresh }: Props) {
   const [addresses, setAddresses] = useState<AddressOption[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
+    const {showSuccess,showError} = useToastMessage();
+  
 
   const loadAddresses = async () => {
     try {
@@ -47,11 +50,12 @@ export default function AddressSelectBox({ customerId, refresh }: Props) {
 
   const handleDelete = async (addressId: number) => {
     if (addresses.length === 1) {
-      alert("Phải có ít nhất 1 địa chỉ");
+      // alert("Phải có ít nhất 1 địa chỉ");
+      showError("Phải có ít nhất 1 địa chỉ")
       return;
     }
 
-    if (!confirm("Bạn có chắc muốn xóa địa chỉ này?")) return;
+    // if (!confirm("Bạn có chắc muốn xóa địa chỉ này?")) return;
 
     try {
       const res = await fetch(`/api/customeraddress/addressId/${addressId}`, {
@@ -69,10 +73,12 @@ export default function AddressSelectBox({ customerId, refresh }: Props) {
         setSelected(newAddresses[0]?.id || null);
       }
 
-      alert("Xóa địa chỉ thành công");
+      // alert("Xóa địa chỉ thành công");
+      showSuccess("Xóa địa chỉ thành công");
     } catch (error) {
       console.error(error);
-      alert("Xóa địa chỉ thất bại");
+      // alert("Xóa địa chỉ thất bại");
+      showError("Xóa địa chỉ thất bại");
     }
   };
 
@@ -106,7 +112,7 @@ export default function AddressSelectBox({ customerId, refresh }: Props) {
                 e.stopPropagation();
                 handleDelete(addr.id);
               }}
-              className="text-red-500 font-bold ml-3 hover:text-red-700"
+              className="text-red-500 font-bold ml-3 hover:text-red-700 cursor-pointer"
             >
               <FontAwesomeIcon icon={faX} />
             </button>

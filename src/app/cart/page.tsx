@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import FloatingInput from "./../../components/ui/FloatingInput";
 import AddressSelect from "./../../components/ui/AddressSelect";
 import DeliveryMethod from "./../../components/ui/DeliveryMethod";
@@ -8,6 +9,7 @@ import PayMethod from "./../../components/ui/PayMethod";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import AddressSelectBox from "../../components/ui/AddressSelectBox";
+import { useToastMessage } from "../../../hooks/useToastMessage";
 
 function formatPrice(priceNumber: number, locale: string = "vi-VN") {
   if (priceNumber == null) return "";
@@ -27,6 +29,7 @@ type Ward = { code: number; name: string };
 
 
 export default function PayContent() {
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([
     // {
     //   id: 1,
@@ -63,6 +66,7 @@ export default function PayContent() {
   dateOfBirth?: string;
   gender?: string;
 } | null>(null);
+  const {showSuccess,showError} = useToastMessage();
 
 
   useEffect(()=>{
@@ -159,9 +163,40 @@ useEffect(() => {
 
 
 
-  const handleSubmit = () => {
-    setForceValidate((prev) => !prev);
+  
+ const handleSubmit = () => {
+    // Kiểm tra các thông tin bắt buộc
+    if (!name || !email || !sdt || !houseNumber || !selectedProvince || !selectedWard) {
+      showError("Vui lòng điền đầy đủ thông tin giao hàng!");
+      setForceValidate(true); // bật validate cho input
+      return; // dừng xử lý
+    }
+
+    if (!customer?.id) {
+      showError("Không tìm thấy khách hàng!");
+      return;
+    }
+
+    // Nếu đầy đủ → show toast success
+    showSuccess("Đơn hàng của bạn đã được xác nhận");
+
+    // Chuyển hướng về Home sau 1 giây
+    setTimeout(() => {
+      router.push("/");
+    }, 1000);
   };
+
+  //   const handleSubmit = () => {
+  //   // Hiển thị toast thông báo thành công
+  //   setForceValidate((prev) => !prev);
+
+  //   showSuccess("Đơn hàng của bạn đã được xác nhận");
+
+  //   // Chuyển hướng về Home sau 1 giây
+  //   setTimeout(() => {
+  //     router.push("/");
+  //   }, 1000);
+  // };
 
   // Tăng/Giảm số lượng
   const handleQuantityChange = (id: number, delta: number) => {
@@ -181,7 +216,8 @@ useEffect(() => {
 
 const handleAddCustomerAddress = async () => {
   if (!houseNumber || !selectedProvince || !selectedWard) {
-    alert("Vui lòng điền đầy đủ thông tin địa chỉ");
+    // alert("Vui lòng điền đầy đủ thông tin địa chỉ");
+    showError("Vui lòng điền đầy đủ thông tin địa chỉ")
     setForceValidate(true);
     return;
   }
@@ -218,10 +254,13 @@ const handleAddCustomerAddress = async () => {
     setForceValidate(false);
     setAddressResetKey(prev => prev + 1);
 
-    alert("Thêm địa chỉ thành công!");
+    // alert("Thêm địa chỉ thành công!");
+    showSuccess("Thêm địa chỉ thành công")
+
   } catch (err) {
     console.error(err);
-    alert("Thêm địa chỉ thất bại!");
+    // alert("Thêm địa chỉ thất bại!");
+    showError("Thêm địa chỉ thất bại");
   }
 };
 

@@ -55,31 +55,40 @@ export default function AddressSelect({ onChangeProvince, onChangeWard, forceVal
   }, []);
 
   const handleProvinceChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const code = e.target.value;
-    setSelectedProvinceCode(code);
-    setSelectedWardCode("");
+  const code = e.target.value;
+  setSelectedProvinceCode(code);
+  setSelectedWardCode("");
+  setWards([]);
+
+  const province = provinces.find((p) => p.code === +code) || null;
+  onChangeProvince?.(province);
+
+  // validate lại khi chọn province
+  if (province) setProvinceError(null);
+  else if (forceValidate) setProvinceError("Vui lòng chọn Tỉnh/Thành");
+
+  if (province) {
+    fetch(`https://provinces.open-api.vn/api/v2/p/${code}?depth=2`)
+      .then((res) => res.json())
+      .then((data) => setWards(data.wards))
+      .catch(() => setWardError("Lỗi tải danh sách phường/xã"));
+  } else {
     setWards([]);
+  }
+};
 
-    const province = provinces.find((p) => p.code === +code) || null;
-    onChangeProvince?.(province); // gửi lên component cha
+const handleWardChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  const code = e.target.value;
+  setSelectedWardCode(code);
 
-    if (province) {
-      fetch(`https://provinces.open-api.vn/api/v2/p/${code}?depth=2`)
-        .then((res) => res.json())
-        .then((data) => setWards(data.wards))
-        .catch(() => setWardError("Lỗi tải danh sách phường/xã"));
-    } else {
-      setWards([]);
-    }
-  };
+  const ward = wards.find((w) => w.code === +code) || null;
+  onChangeWard?.(ward);
 
-  const handleWardChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const code = e.target.value;
-    setSelectedWardCode(code);
+  // validate lại khi chọn ward
+  if (ward) setWardError(null);
+  else if (forceValidate) setWardError("Vui lòng chọn Phường/Xã");
+};
 
-    const ward = wards.find((w) => w.code === +code) || null;
-    onChangeWard?.(ward); // gửi lên component cha
-  };
 
   return (
     <>

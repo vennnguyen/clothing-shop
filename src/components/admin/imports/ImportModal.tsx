@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { Import, Product as ProductType, Supplier as SupplierType } from "../../../app/types/interfaces";
+import { useToastMessage } from "../../../../hooks/useToastMessage";
 
 type Mode = "form" | "delete" | "detail";
 
@@ -34,6 +35,8 @@ export default function ImportModal({
   setOpen: (value: boolean) => void;
   refresh: () => void;
 }) {
+  const { showSuccess, showError } = useToastMessage();
+
   const [products, setProducts] = useState<ProductType[]>([]);
   const [suppliers, setSuppliers] = useState<SupplierType[]>([]);
   const [importProducts, setImportProducts] = useState<Product[]>([]);
@@ -186,6 +189,7 @@ export default function ImportModal({
     if (mode === "delete" && importData?.id) {
       // Xóa phiếu nhập
       await fetch(`/api/importreceipts/${importData.id}`, { method: "DELETE" });
+       showSuccess("Xóa phiếu nhập thành công!");
     } else if (importData && mode !== "delete") {
       // Cập nhật phiếu nhập
       const res = await fetch(`/api/importreceipts/${importData.id}`, {
@@ -193,6 +197,7 @@ export default function ImportModal({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
+      
       const data = await res.json();
 
       const oldProducts = importData.products || [];
@@ -243,6 +248,7 @@ export default function ImportModal({
           })
         ),
       ]);
+      showSuccess("Cập nhật phiếu nhập thành công!");
     } else {
       // Thêm phiếu nhập mới
       const res = await fetch("/api/importreceipts", {
@@ -267,6 +273,7 @@ export default function ImportModal({
           })
         )
       );
+      showSuccess("Thêm phiếu nhập thành công!");
     }
 
     setOpen(false);
@@ -276,6 +283,8 @@ export default function ImportModal({
     alert("Có lỗi xảy ra!");
   }
 };
+
+
   
 
 

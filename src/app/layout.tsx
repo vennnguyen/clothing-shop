@@ -1,3 +1,4 @@
+import { ToastContainer } from "react-toastify";
 import "./globals.css";
 import { Inter } from "next/font/google";
 
@@ -13,6 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <html lang="vi">
             <body className={inter.className}>
                 {children}
+                <ToastContainer/>
             </body>
         </html>
     );

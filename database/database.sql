@@ -7,7 +7,7 @@ USE quanao;
 -- ========================
 CREATE TABLE Roles (
     id INT PRIMARY KEY,
-    name TEXT
+    name VARCHAR(100)
 );
 
 
@@ -16,8 +16,8 @@ CREATE TABLE Roles (
 -- ========================
 CREATE TABLE Accounts (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    email TEXT,
-    password TEXT,
+    email VARCHAR(100),
+    password VARCHAR(255),
     roleId INT,
     birthday DATE,
     status INT,
@@ -32,8 +32,8 @@ CREATE TABLE Customers (
     id INT PRIMARY KEY AUTO_INCREMENT,
     fullName VARCHAR(100),
     email VARCHAR(100) UNIQUE,
-    phone VARCHAR(15) UNIQUE,
-    password TEXT,
+    phone VARCHAR(10) UNIQUE,
+    password VARCHAR(255),
     gender ENUM('Nam','Nu'),
     dateOfBirth DATE,
     createdDate DATE
@@ -44,7 +44,7 @@ CREATE TABLE Customers (
 -- ========================
 CREATE TABLE Categories (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name TEXT
+    name VARCHAR(255)
 );
 
 -- ========================
@@ -52,10 +52,11 @@ CREATE TABLE Categories (
 -- ========================
 CREATE TABLE Products (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name TEXT,
+    name VARCHAR(255),
     price FLOAT,
     description TEXT,
     categoryId INT,
+    status INT,
     FOREIGN KEY (categoryId) REFERENCES Categories(id)
 );
 
@@ -84,7 +85,7 @@ CREATE TABLE ProductSizes (
 -- ========================
 CREATE TABLE Suppliers (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name TEXT,
+    name VARCHAR(255),
     address VARCHAR(255),
     phone VARCHAR(20)
 );
@@ -122,7 +123,7 @@ CREATE TABLE ImportDetails (
 -- ========================
 CREATE TABLE Status (
     id INT PRIMARY KEY,
-    name TEXT,
+    name VARCHAR(50),
     description TEXT
 );
 
@@ -131,9 +132,9 @@ CREATE TABLE Status (
 -- ========================
 CREATE TABLE Address (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    ward TEXT,
-    city TEXT,
-    houseNumber TEXT
+    ward VARCHAR(255),
+    city VARCHAR(255),
+    houseNumber VARCHAR(255)
 );
 
 -- ========================
@@ -191,7 +192,7 @@ CREATE TABLE CartDetails (
 -- ========================
 CREATE TABLE FunctionalCategories (
     functionId INT PRIMARY KEY AUTO_INCREMENT,
-    functionName TEXT,
+    functionName VARCHAR(100),
     status INT
 );
 
@@ -201,7 +202,7 @@ CREATE TABLE FunctionalCategories (
 CREATE TABLE RoleDetails (
     roleId INT,
     functionId INT,
-    action TEXT,
+    action VARCHAR(100),
     PRIMARY KEY (roleId, functionId),
     FOREIGN KEY (roleId) REFERENCES Roles(id),
     FOREIGN KEY (functionId) REFERENCES FunctionalCategories(functionId)
@@ -225,7 +226,7 @@ CREATE TABLE CustomerAddress (
 CREATE TABLE ProductImages (
     id INT PRIMARY KEY AUTO_INCREMENT,
     productId INT,
-    imageUrl TEXT,
+    imageUrl VARCHAR(100),
     isMain BOOLEAN,
     FOREIGN KEY (productId) REFERENCES Products(id)
 );
@@ -251,14 +252,14 @@ INSERT INTO Categories (name) VALUES
 ('Áo khoác'),
 ('Đầm nữ');
 
-INSERT INTO Products (name, price, description, categoryId) VALUES
-('Áo thun nam cổ tròn', 150000, 'Áo thun nam cổ tròn được làm từ vải cotton cao cấp, mềm mại, thoáng khí và thấm hút mồ hôi tốt. Thiết kế tối giản phù hợp mặc hàng ngày, đi chơi hoặc tập luyện. Giặt giữ form lâu, không bai nhão và không gây kích ứng da.', 1),
+INSERT INTO Products (name, price, description, categoryId,status) VALUES
+('Áo thun nam cổ tròn', 150000, 'Áo thun nam cổ tròn được làm từ vải cotton cao cấp, mềm mại, thoáng khí và thấm hút mồ hôi tốt. Thiết kế tối giản phù hợp mặc hàng ngày, đi chơi hoặc tập luyện. Giặt giữ form lâu, không bai nhão và không gây kích ứng da.', 1,1),
 
-('Áo khoác gió nam', 350000, 'Áo khoác gió nam với chất liệu chống nước và chống bám bụi, mang lại sự thoải mái và bảo vệ hiệu quả trước thời tiết xấu. Thiết kế hiện đại, nhẹ, dễ gấp gọn mang theo. Phù hợp đi làm, du lịch hay hoạt động ngoài trời.', 3),
+('Áo khoác gió nam', 350000, 'Áo khoác gió nam với chất liệu chống nước và chống bám bụi, mang lại sự thoải mái và bảo vệ hiệu quả trước thời tiết xấu. Thiết kế hiện đại, nhẹ, dễ gấp gọn mang theo. Phù hợp đi làm, du lịch hay hoạt động ngoài trời.', 3,1),
 
-('Quần jeans nữ form ôm', 280000, 'Quần jeans nữ form ôm với chất liệu denim co giãn 4 chiều giúp tôn dáng và tạo cảm giác thoải mái suốt cả ngày. Thiết kế thời trang, dễ phối với áo thun, áo sơ mi hoặc áo kiểu. Phù hợp đi học, đi làm và đi chơi.', 2),
+('Quần jeans nữ form ôm', 280000, 'Quần jeans nữ form ôm với chất liệu denim co giãn 4 chiều giúp tôn dáng và tạo cảm giác thoải mái suốt cả ngày. Thiết kế thời trang, dễ phối với áo thun, áo sơ mi hoặc áo kiểu. Phù hợp đi học, đi làm và đi chơi.', 2,1),
 
-('Áo khoác nữ', 320000, 'Áo khoác nữ thời trang với chất liệu mềm mại, giữ ấm tốt và tạo cảm giác thoải mái khi mặc. Thiết kế thanh lịch phù hợp nhiều phong cách từ năng động đến sang trọng. Thích hợp sử dụng khi thời tiết lạnh hoặc khi đi làm, đi chơi.', 4);
+('Áo khoác nữ', 320000, 'Áo khoác nữ thời trang với chất liệu mềm mại, giữ ấm tốt và tạo cảm giác thoải mái khi mặc. Thiết kế thanh lịch phù hợp nhiều phong cách từ năng động đến sang trọng. Thích hợp sử dụng khi thời tiết lạnh hoặc khi đi làm, đi chơi.', 4,1);
 
 
 INSERT INTO Sizes (sizeName) VALUES

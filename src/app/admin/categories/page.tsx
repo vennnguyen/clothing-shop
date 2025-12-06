@@ -1,7 +1,7 @@
 "use client";
 
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Product } from "../../types/interfaces";
 import ProductTable from "../../../components/admin/products/ProductTable";
 import CategoryTable from "../../../components/admin/categories/CategoryTable";
@@ -11,10 +11,15 @@ export default function ProductsPage() {
 
     const [isLoading, setIsLoading] = useState(true); // Thêm trạng thái loading
 
-    const loadCategories = async () => {
+    const loadCategories = useCallback(async (searchKeyword = "") => {
         try {
-            setIsLoading(true);
-            const res = await fetch("/api/categories", { cache: 'no-store' }); // Đảm bảo luôn lấy dữ liệu mới nhất
+            // setIsLoading(true);
+
+            const url = searchKeyword
+                ? `/api/categories?search=${encodeURIComponent(searchKeyword)}`
+                : "/api/categories";
+
+            const res = await fetch(url, { cache: 'no-store' }); // Đảm bảo luôn lấy dữ liệu mới nhất
             if (!res.ok) throw new Error("Failed to fetch");
             const data = await res.json();
             setCategories(data);
@@ -24,11 +29,11 @@ export default function ProductsPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, []);
 
     useEffect(() => {
         loadCategories();
-    }, []);
+    }, [loadCategories]);
 
     return (
         <div className="p-6">
@@ -38,7 +43,7 @@ export default function ProductsPage() {
             {isLoading ? (
                 <div className="text-center py-10">Đang tải dữ liệu...</div>
             ) : (
-                <CategoryTable categories={categories} refresh={loadCategories} />
+                <CategoryTable categories={categories} refresh={() => loadCategories()} onSearch={loadCategories} />
             )}
         </div>
     );

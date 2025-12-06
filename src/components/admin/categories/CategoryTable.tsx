@@ -1,26 +1,37 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Category } from "../../../app/types/interfaces";
 import { Trash2, FilePenIcon, Plus } from "lucide-react";
 import CategoryForm from "./CategoryForm";
 export default function CategoryTable({
     categories,
     refresh,
+    onSearch,
 }: {
     categories: Category[];
     refresh: () => void;
+    onSearch: (keyword: string) => void;
 }) {
     const [selected, setSelected] = useState<Category | null>(null);
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState("");
 
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            onSearch(searchTerm);
+        }, 500);
+
+        return () => clearTimeout(delayDebounceFn);
+    }, [searchTerm, onSearch]);
     return (
         <div className="bg-white p-4 shadow rounded">
             <div className="flex justify-between items-center">
                 <input
                     type="text"
-                    placeholder="Nhập tên sản phẩm..."
+                    placeholder="Nhập mã hoặc tên danh mục ..."
                     className="w-100 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <div>
                     <button

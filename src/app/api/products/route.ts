@@ -4,12 +4,17 @@ import pool from '../../../lib/db';
 import { Product } from '../../types/interfaces';
 import { writeFile } from 'fs/promises';
 import path from 'path';
+import { request } from 'http';
+import { SearchParamsContext } from 'next/dist/shared/lib/hooks-client-context.shared-runtime';
 
 
 //danh sách sản phẩm
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const [rows] = await pool.query(`
+    const { searchParams } = new URL(req.url);
+    const search = searchParams.get('search');
+    const categoryId = searchParams.get('categoryId');
+    let sql = `
         SELECT 
           p.id,
           p.name,
@@ -17,24 +22,44 @@ export async function GET() {
           p.description,
           cat.id AS categoryId,
           cat.name AS category,
-          -- Lấy ảnh chính để hiển thị ngoài bảng (Table)
+          
+          -- Lấy ảnh chính
           (SELECT imageUrl FROM productimages WHERE productId = p.id AND isMain = true LIMIT 1) AS imageUrl,
           
-          -- Lấy TOÀN BỘ ảnh gộp thành chuỗi để dùng cho Form Sửa
-          -- Format: id::url, id::url
+          -- Lấy tất cả ảnh (để sửa)
           GROUP_CONCAT(DISTINCT CONCAT(pi.id, '::', pi.imageUrl) SEPARATOR ', ') AS allImagesString,
 
-          -- Size (Giữ nguyên của bạn)
+          -- Lấy size
           GROUP_CONCAT(DISTINCT CONCAT(s.sizeName, '(', ps.quantity, ')') ORDER BY s.sizeName SEPARATOR ', ') AS sizes
 
         FROM products p
         JOIN categories cat ON cat.id = p.categoryId
         JOIN productsizes ps ON ps.productId = p.id
         JOIN sizes s ON s.id = ps.sizeId
-        LEFT JOIN productimages pi ON p.id = pi.productId -- Dùng LEFT JOIN an toàn hơn
-        GROUP BY p.id
-        ORDER BY p.id DESC;
-      `);
+        LEFT JOIN productimages pi ON p.id = pi.productId
+    `;
+
+    const values: any[] = [];
+    const conditions: string[] = [];
+    if (search) {
+      if (!isNaN(Number(search))) {
+        conditions.push(`p.id = ?`)
+        values.push(Number(search));
+      } else {
+        conditions.push(`(p.name LIKE ? OR cat.name LIKE ?)`);
+        values.push(`%${search}%`, `%${search}%`);
+      }
+    }
+    if (categoryId) {
+      conditions.push(`p.categoryId = ?`);
+      values.push(categoryId);
+    }
+    if (conditions.length > 0) {
+      sql += ` WHERE ` + conditions.join(' AND ');
+    }
+    sql += ` GROUP BY p.id ORDER BY p.id DESC`;
+
+    const [rows] = await pool.query(sql, values);
     return NextResponse.json(rows);
   } catch (error) {
     console.error('GET error:', error);

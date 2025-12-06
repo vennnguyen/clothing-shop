@@ -38,7 +38,7 @@ export default function LoginPage() {
             showSuccess(data.message || "Đăng nhập thành công!");
             // router.refresh();
             // router.push("/admin");
-            window.location.href = "/admin"
+            window.location.href = "/admin";
         } else {
             showError(data.message || "Đăng nhập thất bại!");
         }

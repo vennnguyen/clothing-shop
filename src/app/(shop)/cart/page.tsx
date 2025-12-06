@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import FloatingInput from "./../../components/ui/FloatingInput";
-import AddressSelect from "./../../components/ui/AddressSelect";
-import DeliveryMethod from "./../../components/ui/DeliveryMethod";
-import PayMethod from "./../../components/ui/PayMethod";
+import FloatingInput from "../../../components/ui/FloatingInput";
+import AddressSelect from "../../../components/ui/AddressSelect";
+import DeliveryMethod from "../../../components/ui/DeliveryMethod";
+import PayMethod from "../../../components/ui/PayMethod";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX } from "@fortawesome/free-solid-svg-icons";
-import AddressSelectBox from "../../components/ui/AddressSelectBox";
-import { useToastMessage } from "../../../hooks/useToastMessage";
+import AddressSelectBox from "../../../components/ui/AddressSelectBox";
+import { useToastMessage } from "../../../../hooks/useToastMessage";
 
 function formatPrice(priceNumber: number, locale: string = "vi-VN") {
   if (priceNumber == null) return "";
@@ -59,59 +59,59 @@ export default function PayContent() {
   const [refreshAddress, setRefreshAddress] = useState(false);
   const [addressResetKey, setAddressResetKey] = useState(0);
   const [customer, setCustomer] = useState<{
-  id: number;
-  fullName: string;
-  email: string;
-  phone: string;
-  dateOfBirth?: string;
-  gender?: string;
-} | null>(null);
-  const {showSuccess,showError} = useToastMessage();
+    id: number;
+    fullName: string;
+    email: string;
+    phone: string;
+    dateOfBirth?: string;
+    gender?: string;
+  } | null>(null);
+  const { showSuccess, showError } = useToastMessage();
 
 
-  useEffect(()=>{
-    console.log("selectedProvince: ",selectedProvince);
-  },[selectedProvince])
+  useEffect(() => {
+    console.log("selectedProvince: ", selectedProvince);
+  }, [selectedProvince])
 
-  useEffect(()=>{
-    console.log("selectedWard: ",selectedWard);
-  },[selectedWard])
-
- 
-
-useEffect(() => {
-  const customerId = 1;
-
-  const fetchCustomer = async () => {
-    const customerData = await loadCustomerById(customerId);
-    if (customerData) {
-      setCustomer(customerData); // lưu customer toàn bộ
-      setName(customerData.fullName || "");
-      setEmail(customerData.email || "");
-      setSdt(customerData.phone || "");
-    }
-  };
-
-  fetchCustomer();
-  loadOrderByCustomerId(customerId);
-}, []);
+  useEffect(() => {
+    console.log("selectedWard: ", selectedWard);
+  }, [selectedWard])
 
 
-    const loadCustomerById = async (id: number) => {
-      try {
-        const res = await fetch(`/api/customers/${id}`);
-        if (!res.ok) throw new Error("Failed to fetch customer");
 
-        const customer = await res.json();
-        console.log("Customer info:", customer);
-        return customer;
-      } catch (error) {
-        console.error(error);
-        return null;
+  useEffect(() => {
+    const customerId = 1;
+
+    const fetchCustomer = async () => {
+      const customerData = await loadCustomerById(customerId);
+      if (customerData) {
+        setCustomer(customerData); // lưu customer toàn bộ
+        setName(customerData.fullName || "");
+        setEmail(customerData.email || "");
+        setSdt(customerData.phone || "");
       }
     };
 
-    const loadProductById = async (productId: number) => {
+    fetchCustomer();
+    loadOrderByCustomerId(customerId);
+  }, []);
+
+
+  const loadCustomerById = async (id: number) => {
+    try {
+      const res = await fetch(`/api/customers/${id}`);
+      if (!res.ok) throw new Error("Failed to fetch customer");
+
+      const customer = await res.json();
+      console.log("Customer info:", customer);
+      return customer;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
+  };
+
+  const loadProductById = async (productId: number) => {
     try {
       const res = await fetch(`/api/products/${productId}`);
       if (!res.ok) throw new Error('Không lấy được sản phẩm');
@@ -136,35 +136,35 @@ useEffect(() => {
   };
 
   const loadOrderByCustomerId = async (customerId: number) => {
-  try {
-    const res = await fetch(`/api/orders/${customerId}`);
-    if (!res.ok) throw new Error("Failed to fetch orders");
+    try {
+      const res = await fetch(`/api/orders/${customerId}`);
+      if (!res.ok) throw new Error("Failed to fetch orders");
 
-    const orders = await res.json();
+      const orders = await res.json();
 
-    if (orders.length === 0) return;
+      if (orders.length === 0) return;
 
-    const firstOrder = orders[0];
-    
-    // Lấy chi tiết từng product từ API products/[id]
-    const productsFromOrder: Product[] = await Promise.all(
-      firstOrder.details.map(async (d: any) => {
-        const product = await loadProductById(d.productId);
-        if (product) product.quantity = d.quantity; // set quantity từ order
-        return product;
-      })
-    );
+      const firstOrder = orders[0];
 
-    setProducts(productsFromOrder.filter(p => p !== null) as Product[]);
-  } catch (err) {
-    console.error(err);
-  }
-};
+      // Lấy chi tiết từng product từ API products/[id]
+      const productsFromOrder: Product[] = await Promise.all(
+        firstOrder.details.map(async (d: any) => {
+          const product = await loadProductById(d.productId);
+          if (product) product.quantity = d.quantity; // set quantity từ order
+          return product;
+        })
+      );
+
+      setProducts(productsFromOrder.filter(p => p !== null) as Product[]);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
 
 
-  
- const handleSubmit = () => {
+
+  const handleSubmit = () => {
     // Kiểm tra các thông tin bắt buộc
     if (!name || !email || !sdt || !houseNumber || !selectedProvince || !selectedWard) {
       showError("Vui lòng điền đầy đủ thông tin giao hàng!");
@@ -212,57 +212,57 @@ useEffect(() => {
     setProducts((prev) => prev.filter((p) => p.id !== id));
   };
 
-// PayContent.tsx
+  // PayContent.tsx
 
-const handleAddCustomerAddress = async () => {
-  if (!houseNumber || !selectedProvince || !selectedWard) {
-    // alert("Vui lòng điền đầy đủ thông tin địa chỉ");
-    showError("Vui lòng điền đầy đủ thông tin địa chỉ")
-    setForceValidate(true);
-    return;
-  }
+  const handleAddCustomerAddress = async () => {
+    if (!houseNumber || !selectedProvince || !selectedWard) {
+      // alert("Vui lòng điền đầy đủ thông tin địa chỉ");
+      showError("Vui lòng điền đầy đủ thông tin địa chỉ")
+      setForceValidate(true);
+      return;
+    }
 
-  if (!customer?.id) {
-    alert("Không tìm thấy khách hàng");
-    return;
-  }
+    if (!customer?.id) {
+      alert("Không tìm thấy khách hàng");
+      return;
+    }
 
-  try {
-    const payload = { 
-      customerId: customer.id || 1,
-      houseNumber,
-      ward: selectedWard.name,
-      city: selectedProvince.name,
-      isDefault: true,
-    };
+    try {
+      const payload = {
+        customerId: customer.id || 1,
+        houseNumber,
+        ward: selectedWard.name,
+        city: selectedProvince.name,
+        isDefault: true,
+      };
 
-    const res = await fetch(`/api/customeraddress/${payload.customerId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+      const res = await fetch(`/api/customeraddress/${payload.customerId}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    if (!res.ok) throw new Error("Thêm địa chỉ thất bại");
+      if (!res.ok) throw new Error("Thêm địa chỉ thất bại");
 
-    // Reload AddressSelectBox
-    setRefreshAddress((prev) => !prev);
+      // Reload AddressSelectBox
+      setRefreshAddress((prev) => !prev);
 
-    // Reset form
-    setHouseNumber("");
-    setSelectedProvince(null);
-    setSelectedWard(null);
-    setForceValidate(false);
-    setAddressResetKey(prev => prev + 1);
+      // Reset form
+      setHouseNumber("");
+      setSelectedProvince(null);
+      setSelectedWard(null);
+      setForceValidate(false);
+      setAddressResetKey(prev => prev + 1);
 
-    // alert("Thêm địa chỉ thành công!");
-    showSuccess("Thêm địa chỉ thành công")
+      // alert("Thêm địa chỉ thành công!");
+      showSuccess("Thêm địa chỉ thành công")
 
-  } catch (err) {
-    console.error(err);
-    // alert("Thêm địa chỉ thất bại!");
-    showError("Thêm địa chỉ thất bại");
-  }
-};
+    } catch (err) {
+      console.error(err);
+      // alert("Thêm địa chỉ thất bại!");
+      showError("Thêm địa chỉ thất bại");
+    }
+  };
 
 
 
@@ -283,8 +283,8 @@ const handleAddCustomerAddress = async () => {
               <a href="/login" className="text-blue-500">
                 Đăng nhập
               </a>
-            </p> }
-            
+            </p>}
+
             <div className="w-full mt-3">
               <FloatingInput
                 label="Họ và tên"
@@ -325,7 +325,7 @@ const handleAddCustomerAddress = async () => {
                 field="địa chỉ"
                 forceValidate={forceValidate}
               />
-              
+
               <AddressSelect
                 forceValidate={forceValidate}
                 onChangeProvince={setSelectedProvince}
@@ -333,9 +333,9 @@ const handleAddCustomerAddress = async () => {
                 resetKey={addressResetKey} // ← thêm dòng này
               />
 
-              <button 
-              onClick={handleAddCustomerAddress}
-              className=" mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer">
+              <button
+                onClick={handleAddCustomerAddress}
+                className=" mt-4 w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 cursor-pointer">
                 Thêm địa chỉ
               </button>
             </div>

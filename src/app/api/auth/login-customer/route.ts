@@ -26,8 +26,8 @@ export async function POST(req: NextRequest) {
         const token = await new SignJWT({
             id: user.id,
             name: user.fullName,
-            role: "customer",      // 👈 Cứng role
-            userType: "customer",  // 👈 Cứng type
+            role: "customer",      // Cứng role
+            userType: "customer",  //  Cứng type
         })
             .setProtectedHeader({ alg: "HS256" })
             .setExpirationTime("7d")
@@ -38,7 +38,8 @@ export async function POST(req: NextRequest) {
         const res = NextResponse.json({ message: "Đăng nhập thành công", role: "customer" });
         res.cookies.set("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            // secure: process.env.NODE_ENV === "production",
+            secure: false,
             maxAge: 7 * 24 * 60 * 60,
             path: "/",
             sameSite: "lax",

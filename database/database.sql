@@ -234,10 +234,9 @@ CREATE TABLE ProductImages (
 INSERT INTO Roles (id, name) VALUES
 (1, 'Admin'),
 (2, 'Staff'),
-(3, 'Customer');
 
 INSERT INTO Accounts (email, password, roleId, birthday, status, createdDate) VALUES
-('admin@example.com', '123456', 1, '1990-01-01', 1, CURDATE()),
+('admin@gmail.com', '$2b$10$6zJRsJ/RGFxf2LcyUyCGauls/HunfZPUpuRO0SKWJIL9ZK7eBxaJi', 1, '1990-01-01', 1, CURDATE()),
 ('staff1@example.com', '123456', 2, '1995-05-10', 1, CURDATE()),
 ('staff2@example.com', '123456', 2, '1998-12-20', 1, CURDATE());
 

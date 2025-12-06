@@ -28,7 +28,7 @@ export default function LogoutButton({
             // // 3. Refresh để xóa cache dữ liệu cũ (quan trọng với Next.js)
             // router.refresh();
 
-            window.location.href = "/";
+            window.location.href = redirectTo;
         } catch (error) {
             console.error("Lỗi đăng xuất:", error);
         }

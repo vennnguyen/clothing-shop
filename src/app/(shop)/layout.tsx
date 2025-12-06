@@ -3,6 +3,9 @@ import Link from "next/link";
 import "../globals.css";
 import { Inter } from "next/font/google";
 import { ToastContainer } from "react-toastify";
+import { getUserFromCookie } from "../../lib/auth";
+import HeaderUserArea from "../../components/ui/HeaderUserArea";
+import MainNavigation from "../../components/ui/MainNavigation";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -11,7 +14,8 @@ export const metadata = {
     description: "Website bán hàng mỹ phẩm",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+    const user = await getUserFromCookie();
     return (
         <html lang="vi">
             <body className={inter.className}>
@@ -25,12 +29,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                             </h1>
                         </Link>
 
-                        <nav className="flex gap-6 text-gray-700">
-                            <a href="/" className="hover:text-orange-500">Trang chủ</a>
-                            <a href="/products" className="hover:text-orange-500">Sản phẩm</a>
-                            <a href="/cart" className="hover:text-orange-500">Giỏ hàng</a>
-                            <a href="/login" className="hover:text-orange-500">Đăng nhập</a>
-                        </nav>
+                        <MainNavigation user={user} />
                     </div>
                 </header>
 

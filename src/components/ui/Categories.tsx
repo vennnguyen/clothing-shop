@@ -10,8 +10,8 @@ const Categories = ({ categories }: CategoriesProps) => {
     const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
 
     // Style chung cho tất cả các nút để đồng bộ
-    const buttonBaseClass = "whitespace-nowrap w-full text-left px-4 py-3 rounded-lg text-sm font-medium border transition-all";
-    const activeClass = "bg-pink-500 text-white border-pink-500 shadow-md";
+    const buttonBaseClass = "cursor-pointer whitespace-nowrap w-full text-left px-4 py-3 rounded-lg text-sm font-medium border transition-all";
+    const activeClass = "cursor-pointer bg-orange-500 text-white border-orange-500 shadow-md";
     const inactiveClass = "bg-white text-gray-600 hover:bg-gray-50 border-gray-100 hover:border-gray-300";
 
     return (

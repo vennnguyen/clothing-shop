@@ -8,10 +8,11 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const router = useRouter();
     const { showSuccess, showError } = useToastMessage();
+    const [loading, setLoading] = useState(false)
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
-
+        setLoading(true)
         const res = await fetch("/api/auth/login-customer", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -23,8 +24,10 @@ export default function LoginPage() {
         if (res.ok) {
             showSuccess(data.message || "Đăng nhập thành công!");
             router.push("/");
+            router.refresh();
         } else {
             showError(data.message);
+            setLoading(false);
         }
     };
 

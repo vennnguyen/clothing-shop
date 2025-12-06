@@ -34,6 +34,7 @@ export default function HeaderUserArea({ user }: HeaderUserAreaProps) {
 
     return (
         <Link
+            suppressHydrationWarning
             href="/login"
             className={
                 isActive

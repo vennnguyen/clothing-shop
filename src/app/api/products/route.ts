@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get('search');
+    const categoryId = searchParams.get('categoryId');
     let sql = `
         SELECT 
           p.id,
@@ -39,16 +40,23 @@ export async function GET(req: NextRequest) {
     `;
 
     const values: any[] = [];
+    const conditions: string[] = [];
     if (search) {
       if (!isNaN(Number(search))) {
-        sql += ` WHERE p.id = ?`;
+        conditions.push(`p.id = ?`)
         values.push(Number(search));
       } else {
-        sql += ` WHERE p.name LIKE ? OR cat.name LIKE ? `;
+        conditions.push(`(p.name LIKE ? OR cat.name LIKE ?)`);
         values.push(`%${search}%`, `%${search}%`);
       }
     }
-
+    if (categoryId) {
+      conditions.push(`p.categoryId = ?`);
+      values.push(categoryId);
+    }
+    if (conditions.length > 0) {
+      sql += ` WHERE ` + conditions.join(' AND ');
+    }
     sql += ` GROUP BY p.id ORDER BY p.id DESC`;
 
     const [rows] = await pool.query(sql, values);

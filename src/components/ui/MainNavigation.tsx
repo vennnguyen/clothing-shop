@@ -27,9 +27,9 @@ export default function MainNavigation({ user }: NavProps) {
                 Trang chủ
             </Link>
 
-            <Link href="/products" className={isActive("/products")}>
+            {/* <Link href="/products" className={isActive("/products")}>
                 Sản phẩm
-            </Link>
+            </Link> */}
 
             <Link href="/cart" className={isActive("/cart")}>
                 Giỏ hàng

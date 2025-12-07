@@ -84,12 +84,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Chuyển category về dạng số (vì DB lưu INT)
         const categoryId = Number(formData.get('category'));
         const description = formData.get('description') as string;
-
+        const status = Number(formData.get('status'));
         // 4. Cập nhật bảng Products
         // Chỉ update: name, categoryId, description
         await pool.query(
-            'UPDATE Products SET name = ?, categoryId = ?, description = ? WHERE id = ?',
-            [name, categoryId, description || null, id]
+            'UPDATE products SET name = ?, categoryId = ?, description = ?, status = ? WHERE id = ?',
+            [name, categoryId, description || null, status, id]
         );
 
         const keptImageIdsString = formData.get('keptImageIds') as string;
@@ -172,6 +172,30 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         const id = params.id;
         if (!id) return NextResponse.json({ error: 'Thiếu ID' }, { status: 400 });
 
+        const [soldProduct]: any = await pool.query(`
+                SELECT orderId FROM orderdetails WHERE productId = ? LIMIT 1
+            `, [id]);
+
+        if (soldProduct.length > 0) {
+            if (soldProduct.length > 0) {
+                return NextResponse.json({
+                    type: "HAS_ORDER",
+                    message: "Sản phẩm đã có trong đơn hàng. Bạn có muốn ẩn sản phẩm thay vì xóa?",
+                }, { status: 409 }); // 409 = conflict (xung đột hành động)
+            }
+        }
+
+        const [existsInImport]: any = await pool.query(`
+                SELECT * FROM importdetails WHERE productId = ?
+            `, [id]);
+        if (existsInImport.length > 0) {
+            if (existsInImport.length > 0) {
+                return NextResponse.json({
+                    type: "HAS_IMPORT",
+                    message: "Sản phẩm đã có trong đơn hàng. Bạn có muốn ẩn sản phẩm thay vì xóa?",
+                }, { status: 409 }); // 409 = conflict (xung đột hành động)
+            }
+        }
         // Xóa sản phẩm (Các bảng con như ProductImages, ProductSizes sẽ tự xóa nếu bạn đã cài ON DELETE CASCADE trong MySQL)
         await pool.query('DELETE FROM Products WHERE id = ?', [id]);
 
@@ -179,5 +203,17 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     } catch (error: any) {
         console.error('DELETE Error:', error);
         return NextResponse.json({ error: 'Lỗi server khi xóa' }, { status: 500 });
+    }
+}
+
+export async function PATCH(request: NextRequest, { params }: any) {
+    const { id } = params;
+    if (!id) return NextResponse.json({ error: "Thiếu ID" }, { status: 400 });
+
+    try {
+        await pool.query(`UPDATE products SET status = 0 WHERE id = ?`, [id]);
+        return NextResponse.json({ message: "Đã ẩn sản phẩm" });
+    } catch (error) {
+        return NextResponse.json({ error: "Lỗi khi cập nhật trạng thái trong lúc xóa!" }, { status: 500 });
     }
 }

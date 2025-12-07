@@ -19,6 +19,7 @@ interface FormDataState {
     categoryId: number;
     description: string;
     sizeId: number;
+    status: number;
 }
 interface FormErrors {
     name?: string;
@@ -40,6 +41,7 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
         categoryId: 0,
         description: "",
         sizeId: 0,
+        status: 1,
     });
     const [errors, setErrors] = useState<FormErrors>({});
     const [images, setImages] = useState<ImageInput[]>([{ id: 1 }, { id: 2 }, { id: 3 }]);
@@ -87,12 +89,13 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                     categoryId: product.categoryId,
                     description: product.description || "",
                     sizeId: product.sizeId || 0,
+                    status: product.status,
                 });
                 // TODO: Nếu edit, bạn cần logic để load ảnh cũ từ server vào state 'images' ở đây
             } else {
                 // Mode: ADD (Thêm mới)
                 // setForm({ name: "", price: "", quantity: "", categoryId: 0, description: "", sizeId: 0 });
-                setForm({ name: "", price: "", categoryId: 0, description: "", sizeId: 0 });
+                setForm({ name: "", price: "", categoryId: 0, description: "", sizeId: 0, status: 1 });
                 setImages([{ id: 1 }, { id: 2 }, { id: 3 }]); // Reset ảnh về rỗng
             }
         }
@@ -101,8 +104,8 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
         setForm((prev) => ({ ...prev, [name]: value }));
-        console.log("CategoryId", form.categoryId)
-        console.log("SizeId", form.sizeId);
+        // console.log("CategoryId", form.categoryId)
+        // console.log("SizeId", form.sizeId);
         if (errors[name as keyof FormErrors]) {
             setErrors((prev) => ({ ...prev, [name]: undefined }));
         }
@@ -162,7 +165,7 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
             formData.append("category", String(form.categoryId));
             formData.append("description", form.description);
             formData.append("size", String(form.sizeId));
-
+            formData.append("status", String(form.status));
             const keptImageIds = images
                 .filter((img) => img.file === undefined && img.id)
                 .map((img) => img.id);
@@ -247,24 +250,25 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                         <div className="lg:col-span-7 space-y-5 lg:border-l lg:border-gray-200 lg:pl-8">
 
                             {/* Tên sản phẩm */}
-                            <div>
-                                <label className="block text-sm font-bold text-gray-700 mb-1">Tên sản phẩm</label>
-                                <input
-                                    name="name"
-                                    value={form.name}
-                                    onChange={handleChange}
-                                    className={`w-full p-2.5 border rounded-lg outline-none transition-all ${errors.name
-                                        ? "border-red-500 focus:ring-red-200 bg-red-50"
-                                        : "border-gray-300 focus:ring-2 focus:ring-sky-400"
-                                        }`}
-                                    placeholder="Ví dụ: Áo thun Cotton..."
-                                />
-                                {/* Dòng text báo lỗi */}
-                                {errors.name && <p className="text-red-500 text-xs mt-1 italic">{errors.name}</p>}
-                            </div>
-                            {/* Hàng 2 cột: Số lượng & Giá */}
-                            {/* Số lượng & Giá */}
                             <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Tên sản phẩm</label>
+                                    <input
+                                        name="name"
+                                        value={form.name}
+                                        onChange={handleChange}
+                                        className={`w-full p-2.5 border rounded-lg outline-none transition-all ${errors.name
+                                            ? "border-red-500 focus:ring-red-200 bg-red-50"
+                                            : "border-gray-300 focus:ring-2 focus:ring-sky-400"
+                                            }`}
+                                        placeholder="Ví dụ: Áo thun Cotton..."
+                                    />
+                                    {/* Dòng text báo lỗi */}
+                                    {errors.name && <p className="text-red-500 text-xs mt-1 italic">{errors.name}</p>}
+
+
+                                </div>
+
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">Số lượng</label>
                                     <input
@@ -278,7 +282,10 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                                     />
                                     {/* {errors.quantity && <p className="text-red-500 text-xs mt-1 italic">{errors.quantity}</p>} */}
                                 </div>
-
+                            </div>
+                            {/* Hàng 2 cột: Số lượng & Giá */}
+                            {/* Số lượng & Giá */}
+                            <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">Giá bán</label>
                                     <input
@@ -290,6 +297,29 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                                         disabled={product ? true : false}
                                     />
                                     {errors.price && <p className="text-red-500 text-xs mt-1 italic">{errors.price}</p>}
+                                </div>
+                                <div className="flex flex-col justify-center">
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Trạng thái</label>
+                                    <label className="inline-flex items-center cursor-pointer w-fit">
+                                        <input
+                                            type="checkbox"
+                                            name="status"
+                                            // Kiểm tra: nếu status là 1 thì checked (bật), 0 là tắt
+                                            checked={form.status === 1}
+                                            onChange={(e) => {
+                                                // Cập nhật form: Nếu checked -> set thành 1, ngược lại -> 0
+                                                setForm(prev => ({ ...prev, status: e.target.checked ? 1 : 0 }));
+                                            }}
+                                            className="sr-only peer"
+                                        />
+                                        {/* Thanh trượt (Background) */}
+                                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+
+                                        {/* Chữ hiển thị bên cạnh */}
+                                        <span className="ms-3 text-sm font-medium text-gray-900 select-none">
+                                            {form.status === 1 ? "Đang hoạt động" : "Đang ẩn"}
+                                        </span>
+                                    </label>
                                 </div>
                             </div>
 
@@ -331,6 +361,7 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                                         {errors.size && <p className="text-red-500 text-xs mt-1 italic">{errors.size}</p>}
                                     </div>
                                 )}
+
                             </div>
 
                             {/* Mô tả */}

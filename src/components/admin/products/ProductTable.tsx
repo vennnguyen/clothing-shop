@@ -5,6 +5,7 @@ import ProductForm from "./ProductForm";
 // import ProductForm from "./ProductForm";
 // import DeleteConfirm from "./DeleteConfirm";
 import { Trash2, FilePenIcon, Plus } from "lucide-react";
+import DeleteConfirm from "./DeleteConfirm";
 export default function ProductTable({
     products,
     refresh,
@@ -67,6 +68,7 @@ export default function ProductTable({
                         <th className="p-2 border">Giá</th>
                         <th className="p-2 border">Danh mục</th>
                         <th className="p-2 border">Size & Số lượng</th>
+                        <th className="p-2 border">Trạng thái</th>
                         <th className="p-2 border">Hành động</th>
                     </tr>
                 </thead>
@@ -81,6 +83,14 @@ export default function ProductTable({
                             <td className="p-2 border">{p.price}</td>
                             <td className="p-2 border">{p.category}</td>
                             <td className="p-2 border">{p.sizes}</td>
+                            <td className="p-2 border">
+                                <span className={`px-2 py-1 rounded-full text-xs font-bold ${p.status === 1
+                                    ? "bg-green-100 text-green-700 border border-green-200" // Style cho Hoạt động
+                                    : "bg-gray-100 text-gray-600 border border-gray-200"     // Style cho Ẩn
+                                    }`}>
+                                    {p.status === 1 ? "Hoạt động" : "Ẩn"}
+                                </span>
+                            </td>
                             <td className="p-2 border space-x-2">
                                 <button
                                     className="px-2 py-1 bg-white text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-200"
@@ -113,12 +123,12 @@ export default function ProductTable({
                 refresh={refresh}
             />
 
-            {/* <DeleteConfirm
+            <DeleteConfirm
                 open={isDeleteOpen}
                 setOpen={setIsDeleteOpen}
                 product={selected}
                 refresh={refresh}
-            /> */}
+            />
         </div>
     );
 }

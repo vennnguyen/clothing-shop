@@ -17,10 +17,14 @@ export default function DeleteConfirm({ open, setOpen, product, refresh }: Delet
     // state 'step' để quản lý luồng: 'confirm-delete' hoặc 'suggest-hide'
     const [step, setStep] = useState<'confirm-delete' | 'suggest-hide'>('confirm-delete');
     const { showError, showSuccess } = useToastMessage();
+    const [conflictMessage, setConflictMessage] = useState("");
 
     // Reset step mỗi khi mở modal mới
     useEffect(() => {
-        if (open) setStep('confirm-delete');
+        if (open) {
+            setStep('confirm-delete');
+            setConflictMessage("");
+        }
     }, [open]);
 
     if (!open || !product) return null;
@@ -36,6 +40,7 @@ export default function DeleteConfirm({ open, setOpen, product, refresh }: Delet
             let data;
             try {
                 data = await res.json();
+                console.log(data);
             } catch (e) {
                 // Nếu parse lỗi (do server trả về HTML hoặc rỗng), gán data mặc định
                 data = { message: "Lỗi không xác định từ server" };
@@ -48,6 +53,7 @@ export default function DeleteConfirm({ open, setOpen, product, refresh }: Delet
             } else if (res.status === 409) {
                 // LỖI 409: Sản phẩm đã bán -> Chuyển sang bước gợi ý ẩn
                 setStep('suggest-hide');
+                setConflictMessage(data.message);
             } else {
                 showError(data.message || "Lỗi khi xóa sản phẩm!");
             }
@@ -138,24 +144,27 @@ export default function DeleteConfirm({ open, setOpen, product, refresh }: Delet
                             <AlertTriangle className="h-6 w-6 text-yellow-600" />
                         </div>
                         <h3 className="text-lg font-semibold text-gray-900">Không thể xóa!</h3>
-                        <p className="mt-2 text-sm text-gray-500">
-                            Sản phẩm <b>"{product.name}"</b> đã có đơn hàng (đã bán).
-                            Để bảo toàn dữ liệu lịch sử, bạn không thể xóa nó.
-                            <br /><br />
-                            <span className="font-medium text-gray-800">Bạn có muốn chuyển trạng thái sang "Ẩn" không?</span>
+                        {/* Vẫn nên hiện tên sản phẩm để user đỡ nhầm lẫn */}
+                        <p className="mb-2">
+                            Sản phẩm: <span className="font-bold text-gray-800">"{product.name}"</span>
+                        </p>
+
+                        {/* Hiển thị thông báo động từ Backend tại đây */}
+                        <p className="bg-yellow-50 p-3 rounded border border-yellow-200 text-yellow-800">
+                            {conflictMessage || "Sản phẩm này đang bị ràng buộc dữ liệu."}
                         </p>
 
                         <div className="mt-6 flex gap-3 justify-center">
                             <button
                                 onClick={() => setOpen(false)}
-                                className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium"
+                                className="cursor-pointer px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium"
                                 disabled={isLoading}
                             >
                                 Đóng
                             </button>
                             <button
                                 onClick={handleHide}
-                                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium flex items-center gap-2"
+                                className="cursor-pointer px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 font-medium flex items-center gap-2"
                                 disabled={isLoading}
                             >
                                 <EyeOff size={18} />

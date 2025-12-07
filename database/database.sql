@@ -76,7 +76,7 @@ CREATE TABLE ProductSizes (
     sizeId INT,
     quantity INT NOT NULL,
     PRIMARY KEY (productId, sizeId),
-    FOREIGN KEY (productId) REFERENCES Products(id),
+    FOREIGN KEY (productId) REFERENCES Products(id) ON DELETE CASCADE,
     FOREIGN KEY (sizeId) REFERENCES Sizes(id)
 );
 

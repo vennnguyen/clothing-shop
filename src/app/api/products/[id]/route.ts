@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, unlink } from 'fs/promises';
 import path from 'path';
 import pool from '../../../../lib/db';
+import { checkDependencies } from '../../../../lib/db-utils';
+import { BaseNextResponse } from 'next/dist/server/base-http';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
     try {
@@ -172,29 +174,34 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         const id = params.id;
         if (!id) return NextResponse.json({ error: 'Thiếu ID' }, { status: 400 });
 
-        const [soldProduct]: any = await pool.query(`
-                SELECT orderId FROM orderdetails WHERE productId = ? LIMIT 1
-            `, [id]);
+        const dependencyChecks = [
+            {
+                table: "orderdetails",
+                column: "productId",
+                type: "HAS_ORDER",
+                message: "Sản phẩm đã có trong đơn hàng. Bạn có muốn ẩn sản phẩm thay vì xóa?"
+            },
+            {
+                table: "importdetails",
+                column: "productId", // Giả sử bảng này cũng liên kết qua productId
+                type: "HAS_IMPORT",
+                message: "Sản phẩm đã có trong phiếu nhập kho. Bạn có muốn ẩn sản phẩm thay vì xóa?"
+            },
+            {
+                table: "cartdetails",
+                column: "productId",
+                type: "HAS_CART",
+                message: "Sản phẩm đã có trong giỏ hàng của khách. Bạn có muốn ẩn thay vì xóa?"
+            },
+        ];
 
-        if (soldProduct.length > 0) {
-            if (soldProduct.length > 0) {
-                return NextResponse.json({
-                    type: "HAS_ORDER",
-                    message: "Sản phẩm đã có trong đơn hàng. Bạn có muốn ẩn sản phẩm thay vì xóa?",
-                }, { status: 409 }); // 409 = conflict (xung đột hành động)
-            }
-        }
+        const conflictError = await checkDependencies(pool, id, dependencyChecks);
+        if (conflictError) {
+            return NextResponse.json({
+                type: conflictError.type,
+                message: conflictError.message,
 
-        const [existsInImport]: any = await pool.query(`
-                SELECT * FROM importdetails WHERE productId = ?
-            `, [id]);
-        if (existsInImport.length > 0) {
-            if (existsInImport.length > 0) {
-                return NextResponse.json({
-                    type: "HAS_IMPORT",
-                    message: "Sản phẩm đã có trong đơn hàng. Bạn có muốn ẩn sản phẩm thay vì xóa?",
-                }, { status: 409 }); // 409 = conflict (xung đột hành động)
-            }
+            }, { status: 409 })
         }
         // Xóa sản phẩm (Các bảng con như ProductImages, ProductSizes sẽ tự xóa nếu bạn đã cài ON DELETE CASCADE trong MySQL)
         await pool.query('DELETE FROM Products WHERE id = ?', [id]);

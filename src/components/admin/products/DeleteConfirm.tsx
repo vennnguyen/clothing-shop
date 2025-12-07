@@ -121,14 +121,14 @@ export default function DeleteConfirm({ open, setOpen, product, refresh }: Delet
                         <div className="mt-6 flex gap-3 justify-center">
                             <button
                                 onClick={() => setOpen(false)}
-                                className="px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium"
+                                className="cursor-pointer px-4 py-2 bg-white text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium"
                                 disabled={isLoading}
                             >
                                 Hủy bỏ
                             </button>
                             <button
                                 onClick={handleDelete}
-                                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium flex items-center gap-2"
+                                className="cursor-pointer px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium flex items-center gap-2"
                                 disabled={isLoading}
                             >
                                 {isLoading ? "Đang xử lý..." : "Xóa ngay"}

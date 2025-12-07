@@ -72,7 +72,7 @@ async function saveFile(file: File): Promise<string> {
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         // 1. Lấy ID từ URL (Ví dụ: /api/products/123 -> id = 123)
-        const id = params.id;
+        const { id } = await params;
 
         if (!id) {
             return NextResponse.json({ error: 'Thiếu ID sản phẩm' }, { status: 400 });

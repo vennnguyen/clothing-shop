@@ -26,7 +26,11 @@ export async function POST(req: NextRequest) {
         if (!validPass) return NextResponse.json({ message: "Tài khoản hoặc mật khẩu không đúng!" }, { status: 401 });
 
         // 2. Tạo Token (Lấy role động từ DB)
+        console.log(123);
+        console.log("JWT_SECRET =", JWT_SECRET);
+
         const secret = new TextEncoder().encode(JWT_SECRET);
+        console.log(secret);
         const token = await new SignJWT({
             id: user.id,
             name: user.email,
@@ -37,6 +41,7 @@ export async function POST(req: NextRequest) {
             .setExpirationTime("1d") // Admin nên cho hết hạn sớm hơn (1 ngày) để bảo mật
             .setIssuedAt()
             .sign(secret);
+        console.log(token);
 
         // 3. Trả về
         const res = NextResponse.json({ message: "Đăng nhập thành công!", role: user.role });

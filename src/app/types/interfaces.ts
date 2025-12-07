@@ -9,6 +9,10 @@ export interface Account {
   createdDate?: string | null;   // ISO date string
 }
 
+export interface AccountWithRole extends Account {
+  roleName?: string | null;
+}
+
 export interface CardDetail {
   cardId: number;
   productId: number;

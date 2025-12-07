@@ -16,6 +16,7 @@ export default function Sidebar({ user }: { user: User | null }) {
         { name: "Danh mục", path: "/admin/categories" },
         { name: "Nhà cung cấp", path: "/admin/suppliers" },
         { name: "Phiếu nhập", path: "/admin/imports" },
+        { name: "Nhân viên", path: "/admin/accounts" }
     ];
 
     // Hàm kiểm tra mục có phải đang active không

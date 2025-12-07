@@ -52,7 +52,8 @@ export default function CategoryForm({
 
             const data = await res.json();
             if (!res.ok) {
-                throw new Error("Có lỗi xảy ra khi lưu sản phẩm");
+                throw new Error("Có lỗi xảy ra khi lưu danh mục");
+                showError(data.message);
             } else {
                 showSuccess(data.message);
             }
@@ -68,7 +69,7 @@ export default function CategoryForm({
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-white w-full max-w-md rounded shadow-lg">
                 <div className="bg-green-400 py-4 px-6 flex justify-center items-center">
                     <h2 className="text-xl md:text-2xl font-bold text-white uppercase tracking-wide ">

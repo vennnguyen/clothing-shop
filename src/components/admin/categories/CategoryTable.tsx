@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Category } from "../../../app/types/interfaces";
 import { Trash2, FilePenIcon, Plus } from "lucide-react";
 import CategoryForm from "./CategoryForm";
+import CategoryDeleteConfirm from "./CategoryDeleteConfirm";
 export default function CategoryTable({
     categories,
     refresh,
@@ -94,12 +95,12 @@ export default function CategoryTable({
                 refresh={refresh}
             />
 
-            {/* <DeleteConfirm
+            <CategoryDeleteConfirm
                 open={isDeleteOpen}
                 setOpen={setIsDeleteOpen}
-                product={selected}
+                category={selected}
                 refresh={refresh}
-            /> */}
+            />
         </div>
     );
 }

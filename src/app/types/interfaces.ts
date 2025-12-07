@@ -86,6 +86,7 @@ export interface Product {
   categoryId: number;
   sizeId: number;
   allImagesString: string;
+  status: number;
 }
 export interface ProductDetail {
   id: number;

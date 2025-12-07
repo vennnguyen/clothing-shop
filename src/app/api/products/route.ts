@@ -20,6 +20,7 @@ export async function GET(req: NextRequest) {
           p.name,
           p.price,
           p.description,
+          p.status,
           cat.id AS categoryId,
           cat.name AS category,
           
@@ -96,15 +97,16 @@ export async function POST(request: NextRequest) {
     const categoryId = Number(formData.get('category'));
     const description = formData.get('description') as string;
     const size = Number(formData.get('size'));
+    const status = Number(formData.get('status'));
     const images = formData.getAll('images') as File[];
 
     await conn.beginTransaction();
 
     // INSERT product
     const [result] = await conn.query(
-      `INSERT INTO products (name, price, description, categoryId) 
-       VALUES (?, ?, ?, ?)`,
-      [name, price, description, categoryId]
+      `INSERT INTO products (name, price, description, categoryId, status) 
+       VALUES (?, ?, ?, ?, ?)`,
+      [name, price, description, categoryId, status]
     );
 
     const newProductId = (result as any).insertId;

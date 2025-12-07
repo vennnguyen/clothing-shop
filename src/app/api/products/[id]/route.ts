@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, unlink } from 'fs/promises';
 import path from 'path';
 import pool from '../../../../lib/db';
+import { checkDependencies } from '../../../../lib/db-utils';
+import { BaseNextResponse } from 'next/dist/server/base-http';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
     try {
@@ -70,7 +72,7 @@ async function saveFile(file: File): Promise<string> {
 export async function PUT(request: NextRequest, { params }: { params: { id: string } }) {
     try {
         // 1. Lấy ID từ URL (Ví dụ: /api/products/123 -> id = 123)
-        const id = params.id;
+        const { id } = await params;
 
         if (!id) {
             return NextResponse.json({ error: 'Thiếu ID sản phẩm' }, { status: 400 });
@@ -84,12 +86,12 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         // Chuyển category về dạng số (vì DB lưu INT)
         const categoryId = Number(formData.get('category'));
         const description = formData.get('description') as string;
-
+        const status = Number(formData.get('status'));
         // 4. Cập nhật bảng Products
         // Chỉ update: name, categoryId, description
         await pool.query(
-            'UPDATE Products SET name = ?, categoryId = ?, description = ? WHERE id = ?',
-            [name, categoryId, description || null, id]
+            'UPDATE products SET name = ?, categoryId = ?, description = ?, status = ? WHERE id = ?',
+            [name, categoryId, description || null, status, id]
         );
 
         const keptImageIdsString = formData.get('keptImageIds') as string;
@@ -172,6 +174,35 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
         const id = params.id;
         if (!id) return NextResponse.json({ error: 'Thiếu ID' }, { status: 400 });
 
+        const dependencyChecks = [
+            {
+                table: "orderdetails",
+                column: "productId",
+                type: "HAS_ORDER",
+                message: "Sản phẩm đã có trong đơn hàng. Bạn có muốn ẩn sản phẩm thay vì xóa?"
+            },
+            {
+                table: "importdetails",
+                column: "productId", // Giả sử bảng này cũng liên kết qua productId
+                type: "HAS_IMPORT",
+                message: "Sản phẩm đã có trong phiếu nhập kho. Bạn có muốn ẩn sản phẩm thay vì xóa?"
+            },
+            {
+                table: "cartdetails",
+                column: "productId",
+                type: "HAS_CART",
+                message: "Sản phẩm đã có trong giỏ hàng của khách. Bạn có muốn ẩn thay vì xóa?"
+            },
+        ];
+
+        const conflictError = await checkDependencies(pool, id, dependencyChecks);
+        if (conflictError) {
+            return NextResponse.json({
+                type: conflictError.type,
+                message: conflictError.message,
+
+            }, { status: 409 })
+        }
         // Xóa sản phẩm (Các bảng con như ProductImages, ProductSizes sẽ tự xóa nếu bạn đã cài ON DELETE CASCADE trong MySQL)
         await pool.query('DELETE FROM Products WHERE id = ?', [id]);
 
@@ -179,5 +210,17 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
     } catch (error: any) {
         console.error('DELETE Error:', error);
         return NextResponse.json({ error: 'Lỗi server khi xóa' }, { status: 500 });
+    }
+}
+
+export async function PATCH(request: NextRequest, { params }: any) {
+    const { id } = params;
+    if (!id) return NextResponse.json({ error: "Thiếu ID" }, { status: 400 });
+
+    try {
+        await pool.query(`UPDATE products SET status = 0 WHERE id = ?`, [id]);
+        return NextResponse.json({ message: "Đã ẩn sản phẩm" });
+    } catch (error) {
+        return NextResponse.json({ error: "Lỗi khi cập nhật trạng thái trong lúc xóa!" }, { status: 500 });
     }
 }

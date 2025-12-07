@@ -41,11 +41,13 @@ export default async function HomePage(props: { searchParams: SearchParams }) {
                 {/* CỘT PHẢI: Sản phẩm (Chiếm 3/4 chiều rộng trên Desktop) */}
                 <main className="w-full md:w-10/12">
                     {/* Grid sản phẩm: Chỉnh lại grid-cols để hiển thị đẹp hơn trong không gian hẹp hơn */}
-                    {products.length > 0 ? (
+                    {products.filter((p: any) => p.status !== 0).length > 0 ? (
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                            {products.map((item: any) => (
-                                <ProductCard key={item.id} product={item} />
-                            ))}
+                            {products
+                                .filter((p: any) => p.status !== 0)
+                                .map((item: any) => (
+                                    <ProductCard key={item.id} product={item} />
+                                ))}
                         </div>
                     ) : (
                         <div className="flex flex-col items-center justify-center py-10 gap-3 text-gray-500">

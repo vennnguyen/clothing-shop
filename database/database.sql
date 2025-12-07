@@ -44,19 +44,19 @@ CREATE TABLE Customers (
 -- ========================
 CREATE TABLE Categories (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255)
+    name VARCHAR(255) NOT NULL
 );
 
 -- ========================
 -- 5. Products
 -- ========================
 CREATE TABLE Products (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255),
-    price FLOAT,
-    description TEXT,
+    id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    price FLOAT NOT NULL,
+    description TEXT NOT NULL,
     categoryId INT,
-    status INT,
+    status INT DEFAULT 1 NOT NULL,
     FOREIGN KEY (categoryId) REFERENCES Categories(id)
 );
 
@@ -65,7 +65,7 @@ CREATE TABLE Products (
 -- ========================
 CREATE TABLE Sizes (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    sizeName VARCHAR(10)
+    sizeName VARCHAR(10) NOT NULL
 );
 
 -- ========================
@@ -74,9 +74,9 @@ CREATE TABLE Sizes (
 CREATE TABLE ProductSizes (
     productId INT,
     sizeId INT,
-    quantity INT,
+    quantity INT NOT NULL,
     PRIMARY KEY (productId, sizeId),
-    FOREIGN KEY (productId) REFERENCES Products(id),
+    FOREIGN KEY (productId) REFERENCES Products(id) ON DELETE CASCADE,
     FOREIGN KEY (sizeId) REFERENCES Sizes(id)
 );
 
@@ -226,9 +226,9 @@ CREATE TABLE CustomerAddress (
 CREATE TABLE ProductImages (
     id INT PRIMARY KEY AUTO_INCREMENT,
     productId INT,
-    imageUrl VARCHAR(100),
-    isMain BOOLEAN,
-    FOREIGN KEY (productId) REFERENCES Products(id)
+    imageUrl VARCHAR(100) NOT NULL,
+    isMain BOOLEAN NOT NULL,
+    FOREIGN KEY (productId) REFERENCES Products(id) ON DELETE CASCADE
 );
 
 

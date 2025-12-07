@@ -155,7 +155,7 @@ export default function ImportModal({
     if (mode === "detail") return;
     setImportProducts((prev) => {
       const copy = [...prev];
-      copy[index].quantity = quantity;
+      copy[index].quantity = quantity;``
       return copy;
     });
   };

@@ -12,6 +12,7 @@ interface FloatingInputProps {
   forceValidate?: boolean;
   validate?: boolean;
   className?: string;
+  noValidate?: boolean;
 }
 
 export default function FloatingInput({
@@ -24,6 +25,7 @@ export default function FloatingInput({
   forceValidate,
   validate = false,
   className = "",
+  noValidate
 }: FloatingInputProps) {
   const [focused, setFocused] = useState(false);
   const [error, setError] = useState("");
@@ -36,30 +38,30 @@ export default function FloatingInput({
   const phoneRegex = /^(0|\+84)(\d{9})$/;
 
   const runValidate = (val: string) => {
-    if (validate === true) return;
+  if (noValidate) {
+    setError(""); // không validate → không bao giờ báo lỗi
+    return;
+  }
 
-    if (!val) {
-      setError(`Vui lòng nhập ${field}`);
-      return;
-    }
+  if (!val) {
+    setError(`Vui lòng nhập ${field}`);
+    return;
+  }
 
-    switch (field) {
-      case "họ và tên":
-        setError(val.trim().length < 2 ? "Tên quá ngắn" : "");
-        break;
-
-      case "email":
-        setError(!emailRegex.test(val.toLowerCase()) ? "Email không hợp lệ" : "");
-        break;
-
-      case "SĐT":
-        setError(!phoneRegex.test(val) ? "SĐT không hợp lệ" : "");
-        break;
-
-      default:
-        setError("");
-    }
-  };
+  switch (field) {
+    case "họ và tên":
+      setError(val.trim().length < 2 ? "Tên quá ngắn" : "");
+      break;
+    case "email":
+      setError(!emailRegex.test(val.toLowerCase()) ? "Email không hợp lệ" : "");
+      break;
+    case "SĐT":
+      setError(!phoneRegex.test(val) ? "SĐT không hợp lệ" : "");
+      break;
+    default:
+      setError("");
+  }
+};
 
   return (
     <div className={`relative pb-4 ${className}`}>

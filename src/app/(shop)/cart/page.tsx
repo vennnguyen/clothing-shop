@@ -166,11 +166,11 @@ export default function PayContent() {
 
   const handleSubmit = () => {
     // Kiểm tra các thông tin bắt buộc
-    if (!name || !email || !sdt || !houseNumber || !selectedProvince || !selectedWard) {
-      showError("Vui lòng điền đầy đủ thông tin giao hàng!");
-      setForceValidate(true); // bật validate cho input
-      return; // dừng xử lý
-    }
+    // if (!name || !email || !sdt || !houseNumber || !selectedProvince || !selectedWard) {
+    //   showError("Vui lòng điền đầy đủ thông tin giao hàng!");
+    //   setForceValidate(true); // bật validate cho input
+    //   return; // dừng xử lý
+    // }
 
     if (!customer?.id) {
       showError("Không tìm thấy khách hàng!");
@@ -323,14 +323,15 @@ export default function PayContent() {
                 onChange={(e) => setHouseNumber(e.target.value)}
                 placeholder="Địa chỉ"
                 field="địa chỉ"
-                forceValidate={forceValidate}
+                // forceValidate={forceValidate}
+                 noValidate 
               />
 
               <AddressSelect
                 forceValidate={forceValidate}
                 onChangeProvince={setSelectedProvince}
                 onChangeWard={setSelectedWard}
-                resetKey={addressResetKey} // ← thêm dòng này
+                resetKey={addressResetKey} 
               />
 
               <button
@@ -347,10 +348,10 @@ export default function PayContent() {
             <PayMethod />
 
             {/* Footer Step */}
-            <div className="grid grid-cols-2 items-center gap-3 mt-5 mb-5">
-              <a href="/" className="text-blue-500 hover:text-blue-700">
+            <div className="grid grid-cols-1 items-center gap-3 mt-5 mb-5">
+              {/* <a href="/" className="text-blue-500 hover:text-blue-700">
                 Trang chủ
-              </a>
+              </a> */}
               <button
                 onClick={handleSubmit}
                 className="h-[50px] w-full bg-blue-500 text-white rounded-md hover:bg-blue-700 cursor-pointer"

@@ -1,6 +1,4 @@
-import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { jwtVerify } from "jose";
 import pool from "../../../lib/db";
 import AccountTable from "../../../components/admin/accounts/AccountTable";
 
@@ -32,26 +30,13 @@ async function getRoles() {
 }
 
 export default async function AccountsPage() {
-  // Kiểm tra authentication
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
-
   try {
-    const secret = new TextEncoder().encode(process.env.JWT_SECRET);
-    const { payload } = await jwtVerify(token, secret);
-
-    // Chỉ admin mới được truy cập
-    if (payload.role !== "Admin") {
-      redirect("/admin");
-    }
-
     // Lấy danh sách
     const accounts = await getAccounts();
     const roles = await getRoles();
 
     return <AccountTable initialAccounts={accounts} roles={roles} />;
   } catch (error) {
-    // nếu lỗi chuyển về trang login
-    redirect("/admin/login");
+    console.error("Error in AccountsPage:", error);
   }
 }

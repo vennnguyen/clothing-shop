@@ -36,13 +36,47 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 }
 
 // DELETE /api/importreceipts/:id
+// export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+//   const id = params.id;
+
+//   // Xóa chi tiết trước (nếu muốn tránh FK constraint)
+//   await pool.query("DELETE FROM importdetails WHERE importReceiptId = ?", [id]);
+
+//   // Xóa phiếu nhập
+//   await pool.query("DELETE FROM importreceipts WHERE id = ?", [id]);
+//   return NextResponse.json({ success: true });
+// }
+
+// DELETE /api/importreceipts/:id
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
-  const id = params.id;
+  const importReceiptId = params.id;
 
-  // Xóa chi tiết trước (nếu muốn tránh FK constraint)
-  await pool.query("DELETE FROM importdetails WHERE importReceiptId = ?", [id]);
+  try {
+    // 1. Lấy tất cả chi tiết của phiếu nhập
+    const [details]: any = await pool.query(
+      "SELECT productId, sizeId, quantity FROM importdetails WHERE importReceiptId = ?",
+      [importReceiptId]
+    );
 
-  // Xóa phiếu nhập
-  await pool.query("DELETE FROM importreceipts WHERE id = ?", [id]);
-  return NextResponse.json({ success: true });
+    // 2. Trừ số lượng tương ứng trong productsizes
+    await Promise.all(
+      details.map((item: { productId: number; sizeId: number; quantity: number }) =>
+        pool.query(
+          "UPDATE productsizes SET quantity = quantity - ? WHERE productId = ? AND sizeId = ?",
+          [item.quantity, item.productId, item.sizeId]
+        )
+      )
+    );
+
+    // 3. Xóa chi tiết import
+    await pool.query("DELETE FROM importdetails WHERE importReceiptId = ?", [importReceiptId]);
+
+    // 4. Xóa phiếu nhập
+    await pool.query("DELETE FROM importreceipts WHERE id = ?", [importReceiptId]);
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ success: false, message: "Lỗi khi xóa phiếu nhập" }, { status: 500 });
+  }
 }

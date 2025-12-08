@@ -7,7 +7,7 @@ import { BaseNextResponse } from 'next/dist/server/base-http';
 
 export async function GET(request: NextRequest, { params }: { params: { id: string } }) {
     try {
-        const id = params.id;
+        const { id } = await params;
         if (!id) return NextResponse.json({ error: 'Thiếu ID' }, { status: 400 });
 
         // 1. Truy vấn thông tin sản phẩm (Bảng Products)

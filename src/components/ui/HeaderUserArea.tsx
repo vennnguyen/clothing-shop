@@ -4,6 +4,7 @@
 import Link from "next/link";
 import LogoutButton from "./LogoutButton"; // Import nút Logout bạn đã làm ở bước trước
 import { usePathname } from "next/navigation";
+import { User } from "lucide-react";
 
 interface HeaderUserAreaProps {
     user?: {
@@ -37,11 +38,13 @@ export default function HeaderUserArea({ user }: HeaderUserAreaProps) {
             suppressHydrationWarning
             href="/login"
             className={
-                isActive
-                    ? "text-orange-600 font-bold" // Style khi đang ở trang login
-                    : "text-gray-700 hover:text-orange-500 font-medium" // Style bình thường
+                `${isActive
+                    ? "text-orange-600 font-semibold" // Style khi đang ở trang login
+                    : "text-gray-700 hover:text-orange-500 font-semibold"
+                }  flex items-center gap-1 hover:text-orange-600`
             }
         >
+            <User size={18} />
             Đăng nhập
         </Link>
     );

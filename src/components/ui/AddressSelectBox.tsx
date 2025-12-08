@@ -19,10 +19,11 @@ type Props = {
 export default function AddressSelectBox({ customerId, refresh }: Props) {
   const [addresses, setAddresses] = useState<AddressOption[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
-    const {showSuccess,showError} = useToastMessage();
-  
+  const { showSuccess, showError } = useToastMessage();
+
 
   const loadAddresses = async () => {
+    if (!customerId || customerId <= 0) return;
     try {
       const res = await fetch(`/api/customeraddress/${customerId}`);
       if (!res.ok) throw new Error("Failed to fetch address");
@@ -45,8 +46,10 @@ export default function AddressSelectBox({ customerId, refresh }: Props) {
   };
 
   useEffect(() => {
-    loadAddresses();
-  }, [customerId, refresh]); // reload khi refresh thay đổi
+    if (customerId) {
+      loadAddresses();
+    }
+  }, [customerId, refresh]);// reload khi refresh thay đổi
 
   const handleDelete = async (addressId: number) => {
     if (addresses.length === 1) {
@@ -89,11 +92,10 @@ export default function AddressSelectBox({ customerId, refresh }: Props) {
         {addresses.map((addr) => (
           <div
             key={addr.id}
-            className={`flex items-center justify-between cursor-pointer p-4 border-2 rounded-md mr-3 ${
-              selected === addr.id
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-300 bg-white"
-            }`}
+            className={`flex items-center justify-between cursor-pointer p-4 border-2 rounded-md mr-3 ${selected === addr.id
+              ? "border-blue-500 bg-blue-50"
+              : "border-gray-300 bg-white"
+              }`}
             onClick={() => setSelected(addr.id)}
           >
             <div className="flex items-center">

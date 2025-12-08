@@ -7,9 +7,9 @@ export async function GET(
   { params }: { params: { customerId: string } }
 ) {
   try {
-    const customerId = parseInt(params.customerId);
+    const { customerId } = await params;
 
-    if (isNaN(customerId)) {
+    if (isNaN(Number(customerId))) {
       return NextResponse.json({ error: "CustomerId không hợp lệ" }, { status: 400 });
     }
 

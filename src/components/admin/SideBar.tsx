@@ -2,32 +2,49 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import LogoutButton from "../ui/LogoutButton";
-import {
-    LayoutDashboard,
-    Package,
-    Shapes,
-    Truck,
-    FileCheck2,
-    User,
-    RollerCoaster,
-} from "lucide-react";
+import { BarChart3, Boxes, FilePlus2, Grid3X3, LayoutDashboard, ShoppingCart, ShieldCheck, Truck, UserSquare2, Users } from "lucide-react";
 interface User {
     id?: number;
     name?: string;
     role?: string;
 }
 export default function Sidebar({ user }: { user: User | null }) {
+    // console.log('Sidebar user:', user);
     // const router = useRouter();
     const pathname = usePathname();
-    const menuItems = [
-        { name: "Dashboard", path: "/admin", icon: <LayoutDashboard size={20} /> },
-        { name: "Sản phẩm", path: "/admin/products", icon: <Package size={20} /> },
-        { name: "Danh mục", path: "/admin/categories", icon: <Shapes size={20} /> },
-        { name: "Nhà cung cấp", path: "/admin/suppliers", icon: <Truck size={20} /> },
-        { name: "Phiếu nhập", path: "/admin/imports", icon: <FileCheck2 size={20} /> },
-        { name: "Tài khoản", path: "/admin/accounts", icon: <User size={20} /> },
-        { name: "Phân quyền", path: "/admin/roles", icon: <RollerCoaster size={20} /> },
-    ];
+    const menuItems = [];
+    if (user.role === "Admin") {
+        menuItems.push(
+            { name: "Dashboard", path: "/admin", icon: <LayoutDashboard size={20} /> },
+            { name: "Sản phẩm", path: "/admin/products", icon: <Boxes size={20} /> },
+            { name: "Danh mục", path: "/admin/categories", icon: <Grid3X3 size={20} /> },
+            { name: "Nhà cung cấp", path: "/admin/suppliers", icon: <Truck size={20} /> },
+            { name: "Phiếu nhập", path: "/admin/imports", icon: <FilePlus2 size={20} /> },
+            { name: "Tài khoản", path: "/admin/accounts", icon: <Users size={20} /> },
+            { name: "Phân quyền", path: "/admin/roles", icon: <ShieldCheck size={20} /> },
+            { name: "Đơn hàng", path: "/admin/orders", icon: <ShoppingCart size={20} /> },
+            { name: "Khách hàng", path: "/admin/customers", icon: <UserSquare2 size={20} /> },
+            { name: "Thống kê", path: "/admin/statistics", icon: <BarChart3 size={20} /> },
+        );
+    } else if (user.role === "Sales") {
+        menuItems.push(
+            { name: "Dashboard", path: "/admin", icon: <LayoutDashboard size={20} /> },
+            { name: "Đơn hàng", path: "/admin/orders", icon: <ShoppingCart size={20} /> },
+            { name: "Khách hàng", path: "/admin/customers", icon: <UserSquare2 size={20} /> },
+            { name: "Thống kê", path: "/admin/statistics", icon: <BarChart3 size={20} /> },
+        );
+    } else {
+        menuItems.push(
+            { name: "Dashboard", path: "/admin", icon: <LayoutDashboard size={20} /> },
+            { name: "Sản phẩm", path: "/admin/products", icon: <Boxes size={20} /> },
+            { name: "Nhà cung cấp", path: "/admin/suppliers", icon: <Truck size={20} /> },
+            { name: "Phiếu nhập", path: "/admin/imports", icon: <FilePlus2 size={20} /> },
+            { name: "Danh mục", path: "/admin/categories", icon: <Grid3X3 size={20} /> },
+        );
+    }
+
+        
+   
 
     // Hàm kiểm tra mục có phải đang active không
     const isActive = (path: string) => pathname === path;

@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
         // 1. Tìm trong bảng accounts + roles
         const [rows]: any = await pool.query(
             `
-            SELECT a.id, a.email, a.password, r.name AS role 
+            SELECT a.id, a.email, a.password, a.fullName as name,r.name AS role 
             FROM accounts a 
             JOIN roles r ON r.id = a.roleId 
             WHERE a.email = ? LIMIT 1
@@ -29,7 +29,8 @@ export async function POST(req: NextRequest) {
         const secret = new TextEncoder().encode(JWT_SECRET);
         const token = await new SignJWT({
             id: user.id,
-            name: user.email,
+            name: user.name,
+            email: user.email,
             role: user.role,      // Role lấy từ DB (admin, staff...)
             userType: "account",  // Đánh dấu là tài khoản nội bộ
         })

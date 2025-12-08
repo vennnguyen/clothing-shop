@@ -18,6 +18,7 @@ CREATE TABLE Roles (
 -- ========================
 CREATE TABLE Accounts (
     id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'Mã tài khoản',
+    fullName VARCHAR(255) NOT NULL COMMENT 'Họ tên nhân viên',
     email VARCHAR(100) COMMENT 'Email đăng nhập (Duy nhất)',
     password VARCHAR(255) COMMENT 'Mật khẩu đã mã hóa',
     roleId INT COMMENT 'FK: Mã nhóm quyền',
@@ -236,10 +237,10 @@ INSERT INTO Roles (id, name) VALUES
 (1, 'Admin'),
 (2, 'Staff');
 
-INSERT INTO Accounts (email, password, roleId, birthday, status, createdDate) VALUES
-('admin@gmail.com', '$2b$10$6zJRsJ/RGFxf2LcyUyCGauls/HunfZPUpuRO0SKWJIL9ZK7eBxaJi', 1, '1990-01-01', 1, CURDATE()),
-('staff1@example.com', '123456', 2, '1995-05-10', 1, CURDATE()),
-('staff2@example.com', '123456', 2, '1998-12-20', 1, CURDATE());
+INSERT INTO Accounts (fullName,email, password, roleId, birthday, status, createdDate) VALUES
+('Nguyễn Văn A','admin@gmail.com', '$2b$10$6zJRsJ/RGFxf2LcyUyCGauls/HunfZPUpuRO0SKWJIL9ZK7eBxaJi', 1, '1990-01-01', 1, CURDATE()),
+('Nguyễn Văn B','staff1@example.com', '123456', 2, '1995-05-10', 1, CURDATE()),
+('Nguyễn Văn C','staff2@example.com', '123456', 2, '1998-12-20', 1, CURDATE());
 
 INSERT INTO Customers (fullName, email, phone, password, gender, dateOfBirth, createdDate) VALUES
 ('Nguyen Van A', 'a@example.com', '0900000001', '123456', 'Nam', '2000-01-01', CURDATE()),

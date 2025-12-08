@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
           GROUP_CONCAT(DISTINCT CONCAT(pi.id, '::', pi.imageUrl) SEPARATOR ', ') AS allImagesString,
 
           -- Lấy size
-          GROUP_CONCAT(DISTINCT CONCAT(s.sizeName, '(', ps.quantity, ')') ORDER BY s.sizeName SEPARATOR ', ') AS sizes,
+          GROUP_CONCAT(DISTINCT CONCAT(s.sizeName, '(', ps.quantity, ')') ORDER BY s.sizeName SEPARATOR ', ') AS sizes
 
         FROM products p
         JOIN categories cat ON cat.id = p.categoryId

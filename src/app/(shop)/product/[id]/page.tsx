@@ -109,9 +109,10 @@ const ProductPage = () => {
     // Hàm xử lý sự kiện click
     const handleAddToCartClick = () => {
         if (!product) return;
-
+        const selectedSizeObj = product.sizes.find(s => s.sizeName === selectedSize);
+        const sizeId = selectedSizeObj.sizeId;
         // Gọi hàm từ Context để cập nhật số trên menu
-        addToCart(product.id, quantity, user.id);
+        addToCart(product.id, sizeId, quantity, user.id);
 
         // (Tùy chọn) Reset số lượng về 1 sau khi thêm
         // setQuantity(1); 

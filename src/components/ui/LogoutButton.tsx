@@ -36,6 +36,7 @@ export default function LogoutButton({
 
     return (
         <button
+            suppressHydrationWarning
             onClick={handleLogout}
             className={className || "bg-white text-red-600 p-1 cursor-pointer"}
         >
@@ -43,5 +44,3 @@ export default function LogoutButton({
         </button>
     );
 }
-{/* <LogoutButton redirectTo="/" className="text-sm text-gray-700" />
-<LogoutButton redirectTo="/admin/login" className="btn-admin-logout" /> */}

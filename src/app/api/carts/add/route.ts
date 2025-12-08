@@ -5,9 +5,9 @@ import { ResultSetHeader, RowDataPacket } from "mysql2";
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { userId, productId, quantity } = body;
+        const { userId, productId, quantity, sizeId } = body;
         console.log(body);
-        if (!userId || !productId || !quantity) {
+        if (!userId || !productId || !quantity || !sizeId) {
             return NextResponse.json({ message: 'Thiếu thông tin' }, { status: 400 });
         }
 
@@ -30,10 +30,10 @@ export async function POST(req: NextRequest) {
         }
         //Thêm hoặc cập nhật sản phẩm vào cartDetails
         await pool.query(`
-                INSERT INTO cartdetails (cartId, productId, quantity) 
-                VALUES (?,?,?)
-                ON DUPLICATE KEY UPDATE quantity = quantity + ?
-            `, [cartId, productId, quantity, quantity]);
+            INSERT INTO CartDetails (cartId, productId, quantity, sizeId) 
+            VALUES (?, ?, ?, ?)
+            ON DUPLICATE KEY UPDATE quantity = quantity + ?
+        `, [cartId, productId, quantity, sizeId, quantity]);
 
         return NextResponse.json({ message: "Đã thêm vào giỏ hàng thành công!" }, { status: 200 })
     } catch (error) {

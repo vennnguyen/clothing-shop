@@ -170,10 +170,13 @@ CREATE TABLE CartDetails (
     cartId INT COMMENT 'FK: Mã giỏ hàng',
     productId INT COMMENT 'FK: Sản phẩm trong giỏ',
     quantity INT DEFAULT 1 COMMENT 'Số lượng muốn mua',
-    PRIMARY KEY (cartId, productId),
+    sizeId INT COMMENT 'Mã size sản phẩm',
+    PRIMARY KEY (cartId, productId, sizeId),
     FOREIGN KEY (cartId) REFERENCES Carts(id),
-    FOREIGN KEY (productId) REFERENCES Products(id)
-) COMMENT = 'Bảng lưu các sản phẩm khách đang chọn';
+    FOREIGN KEY (productId) REFERENCES Products(id),
+    FOREIGN KEY (sizeId) REFERENCES Sizes(id)
+) COMMENT='Bảng lưu các sản phẩm khách đang chọn';
+
 -- ========================
 -- 17. FunctionalCategories (Danh mục chức năng hệ thống)
 -- ========================
@@ -381,31 +384,24 @@ VALUES ('Phường 1', 'Hồ Chí Minh', '123 Nguyễn Trãi'),
         'Bình Dương',
         '12/3 Khu phố 2'
     );
-INSERT INTO Orders (
-        createdDate,
-        shippedDate,
-        shippingAddressId,
-        statusId,
-        cost,
-        customerId
-    )
-VALUES ('2025-02-01', '2025-02-03', 1, 3, 450000, 1),
-    ('2025-02-03', NULL, 2, 1, 680000, 2),
-    ('2025-02-05', '2025-02-07', 3, 3, 320000, 3);
-INSERT INTO OrderDetails (orderId, productId, price, quantity)
-VALUES (1, 1, 150000, 2),
+INSERT INTO Orders (createdDate, shippedDate, shippingAddressId, statusId, cost, customerId) VALUES
+('2025-02-01', '2025-02-03', 1, 3, 450000, 1),
+('2025-02-03', NULL, 2, 1, 680000, 2),
+('2025-02-05', '2025-02-07', 3, 3, 320000, 3);
+INSERT INTO OrderDetails (orderId, productId, price, quantity)VALUES 
+    (1, 1, 150000, 2),
     (1, 3, 280000, 1),
     (2, 2, 350000, 1),
     (3, 4, 320000, 1);
-INSERT INTO Carts (customerId)
-VALUES (1),
-    (2),
-    (3);
-INSERT INTO CartDetails (cartId, productId, quantity)
-VALUES (1, 1, 2),
-    (1, 3, 1),
-    (2, 2, 1),
-    (3, 4, 1);
+INSERT INTO Carts (customerId) VALUES
+(1),
+(2),
+(3);
+INSERT INTO CartDetails (cartId, productId, quantity, sizeId) VALUES
+(1, 1, 2, 1),
+(1, 3, 1, 2),
+(2, 2, 1, 3),
+(3, 3, 1, 2);
 INSERT INTO FunctionalCategories (functionName, status)
 VALUES ('Quản lý sản phẩm', 1),
     ('Quản lý đơn hàng', 1),

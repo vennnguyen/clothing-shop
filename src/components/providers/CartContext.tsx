@@ -4,7 +4,8 @@ import { useToastMessage } from "../../../hooks/useToastMessage";
 
 interface CartContextType {
     cartCount: number;
-    addToCart: (productId: number, quantity: number, userId?: number) => Promise<void>;
+    addToCart: (productId: number, sizeId: number, quantity: number, userId?: number) => Promise<void>;
+    // removeFromCart: (productId: number, quantityOfItem: number, userId?: number) => Promise<void>; // <-- Thêm dòng này
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -19,7 +20,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         }
     }, []);
 
-    const addToCart = async (productId: number, quantity: number, userId?: number) => {
+    const addToCart = async (productId: number, sizeId: number, quantity: number, userId?: number) => {
         // 1. Cập nhật giao diện ngay lập tức (Optimistic UI) cho user thấy nhanh
         setCartCount((prev) => {
             const newCount = prev + quantity;
@@ -35,7 +36,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                     body: JSON.stringify({
                         userId: userId,
                         productId: productId,
-                        quantity: quantity
+                        quantity: quantity,
+                        sizeId: sizeId,
                     })
                 });
 
@@ -53,7 +55,30 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             console.log("User chưa đăng nhập, chỉ lưu ở client.");
         }
     };
+    const removeFromCart = async (productId: number, quantityOfItem: number, userId?: number) => {
+        // 1. Cập nhật số lượng trên icon Header (trừ đi số lượng của món hàng vừa xóa)
+        setCartCount((prev) => {
+            const newCount = Math.max(0, prev - quantityOfItem); // Đảm bảo không bị âm
+            localStorage.setItem("cartCount", newCount.toString());
+            return newCount;
+        });
 
+        // 2. Gọi API xóa dưới Database nếu đã đăng nhập
+        if (userId) {
+            try {
+                await fetch('/api/cart/remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        userId: userId,
+                        productId: productId
+                    })
+                });
+            } catch (error) {
+                console.error("Lỗi khi xóa sản phẩm:", error);
+            }
+        }
+    };
     return (
         <CartContext.Provider value={{ cartCount, addToCart }}>
             {children}

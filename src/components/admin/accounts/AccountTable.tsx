@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import AccountForm from "./AccountForm";
-import { Account } from "../../../app/types/interfaces";
+import { Account, AccountWithRole, Role } from "../../../app/types/interfaces";
 
-export default function AccountTable({ initialAccounts }: { initialAccounts: Account[] }) {
-  const [accounts, setAccounts] = useState<Account[]>(initialAccounts);
+export default function AccountTable({ initialAccounts, roles }: { initialAccounts: AccountWithRole[]; roles: Role[] }) {
+  const [accounts, setAccounts] = useState<AccountWithRole[]>(initialAccounts);
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
-  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+  const [editingAccount, setEditingAccount] = useState<AccountWithRole | null>(null);
 
   // Lọc tài khoản theo từ khóa
   const filteredAccounts = accounts.filter(
@@ -55,7 +55,7 @@ export default function AccountTable({ initialAccounts }: { initialAccounts: Acc
   };
 
   // Callback khi lưu thành công
-  const handleSaveSuccess = (savedAccount: Account) => {
+  const handleSaveSuccess = (savedAccount: AccountWithRole) => {
     if (editingAccount) {
       // Cập nhật
       setAccounts(accounts.map((acc) => (acc.id === savedAccount.id ? savedAccount : acc)));
@@ -122,7 +122,7 @@ export default function AccountTable({ initialAccounts }: { initialAccounts: Acc
                       {account.roleName}
                     </span>
                   </td>
-                  <td className="p-3">{new Date(account.createdAt).toLocaleDateString("vi-VN")}</td>
+                  <td className="p-3">{new Date(account.createdDate).toLocaleDateString("vi-VN")}</td>
                   <td className="p-3">
                     <div className="flex justify-center gap-2">
                       <button
@@ -158,6 +158,7 @@ export default function AccountTable({ initialAccounts }: { initialAccounts: Acc
           account={editingAccount}
           onClose={handleCloseForm}
           onSuccess={handleSaveSuccess}
+          roles={roles}
         />
       )}
     </div>

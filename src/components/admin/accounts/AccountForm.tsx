@@ -2,35 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { Account } from "../../../app/types/interfaces";
-
-interface Role {
-  id: number;
-  name: string;
-}
+import { Account, Role } from "../../../app/types/interfaces";
 
 export default function AccountForm({
   account,
   onClose,
   onSuccess,
+  roles
 }: {
   account: Account | null;
   onClose: () => void;
   onSuccess: (account: Account) => void;
+  roles: Role[];
 }) {
   const [email, setEmail] = useState(account?.email || "");
   const [password, setPassword] = useState("");
   const [roleId, setRoleId] = useState(account?.roleId || 2);
-  const [roles, setRoles] = useState<Role[]>([]);
   const [loading, setLoading] = useState(false);
-
-  // Lấy danh sách vai trò
-  useEffect(() => {
-    fetch("/api/roles")
-      .then((res) => res.json())
-      .then((data) => setRoles(data))
-      .catch(() => toast.error("Không thể tải danh sách vai trò"));
-  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,6 +41,7 @@ export default function AccountForm({
 
       if (res.ok) {
         toast.success(account ? "Cập nhật thành công!" : "Thêm tài khoản thành công!");
+        console.log('Saved account:', data.account);
         onSuccess(data.account);
       } else {
         toast.error(data.message || "Có lỗi xảy ra!");

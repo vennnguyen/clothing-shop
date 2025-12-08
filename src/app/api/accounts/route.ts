@@ -24,12 +24,11 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const body: Account = await req.json();
+    // console.log('Received body:', body);
     // kiểm tra email
     if (!emailRegex.test(body.email)) {
       return NextResponse.json({ error: 'Email không hợp lệ' }, { status: 400 });
     }
-
-    // kiểm tra số điện thoại
 
     const createdDate = new Date().toISOString().split('T')[0];
 
@@ -38,7 +37,15 @@ export async function POST(req: NextRequest) {
       [body.email, body.password, body.roleId || null, body.birthday || null, body.status || 1, createdDate]
     );
 
-    return NextResponse.json({ message: 'Tạo tài khoản thành công', id: (result as any).insertId });
+    // lấy account vừa tạo có roleName
+    const [rows]: any = await pool.query(`
+      SELECT a.id, a.email, a.roleId, a.birthday, a.status, a.createdDate, r.name as roleName
+      FROM accounts a
+      JOIN roles r ON a.roleId = r.id
+      WHERE a.id = ?
+    `, [(result as any).insertId]);
+
+    return NextResponse.json({ message: 'Tạo tài khoản thành công', account: (rows as any)[0] });
   } catch (error) {
     console.error('POST /accounts error:', error);
     return NextResponse.json({ error: 'Lỗi server' }, { status: 500 });

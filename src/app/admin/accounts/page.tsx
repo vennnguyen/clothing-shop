@@ -20,6 +20,17 @@ async function getAccounts() {
   }
 }
 
+// Lấy danh sách vai trò
+async function getRoles() {
+  try {
+    const [rows]: any = await pool.query('SELECT id, name FROM roles ORDER BY id ASC');
+    return rows;
+  } catch (error) {
+    console.error('Error fetching roles:', error);
+    return [];
+  }
+}
+
 export default async function AccountsPage() {
   // Kiểm tra authentication
   const cookieStore = await cookies();
@@ -34,12 +45,13 @@ export default async function AccountsPage() {
       redirect("/admin");
     }
 
-    // Lấy danh sách tài khoản
+    // Lấy danh sách
     const accounts = await getAccounts();
+    const roles = await getRoles();
 
-    return <AccountTable initialAccounts={accounts} />;
+    return <AccountTable initialAccounts={accounts} roles={roles} />;
   } catch (error) {
     // nếu lỗi chuyển về trang login
-    redirect("/admin");
+    redirect("/admin/login");
   }
 }

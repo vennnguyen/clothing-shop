@@ -10,7 +10,6 @@ export default function LoginPage() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const router = useRouter();
     const { showSuccess, showError } = useToastMessage();
 
     const handleLogin = async (e: React.FormEvent) => {

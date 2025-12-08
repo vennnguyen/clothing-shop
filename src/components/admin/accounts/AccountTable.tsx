@@ -44,6 +44,7 @@ export default function AccountTable({ initialAccounts, roles }: { initialAccoun
 
   // Mở form chỉnh sửa
   const handleEdit = (account: Account) => {
+    console.log('Editing account:', account);
     setEditingAccount(account);
     setShowForm(true);
   };

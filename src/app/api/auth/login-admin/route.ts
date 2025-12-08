@@ -7,11 +7,12 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export async function POST(req: NextRequest) {
     try {
         const { email, password } = await req.json(); // Nhận email
+        console.log('Login attempt:', { email, password });
 
         // 1. Tìm trong bảng accounts + roles
         const [rows]: any = await pool.query(
             `
-            SELECT a.id, a.email, a.password, a.fullName as name,r.name AS role 
+            SELECT a.id, a.email, a.password, a.fullName as name, r.name AS role 
             FROM accounts a 
             JOIN roles r ON r.id = a.roleId 
             WHERE a.email = ? LIMIT 1
@@ -19,13 +20,16 @@ export async function POST(req: NextRequest) {
             [email]
         );
         const user = rows[0];
+        console.log('Found user:', user);
 
         if (!user) return NextResponse.json({ message: "Email không tồn tại!" }, { status: 404 });
 
         const validPass = await bcrypt.compare(password, user.password);
+        console.log('Password valid:', validPass);
         if (!validPass) return NextResponse.json({ message: "Tài khoản hoặc mật khẩu không đúng!" }, { status: 401 });
 
         // 2. Tạo Token (Lấy role động từ DB)
+        console.log('JWT_SECRET:', JWT_SECRET);
         const secret = new TextEncoder().encode(JWT_SECRET);
         const token = await new SignJWT({
             id: user.id,
@@ -53,6 +57,6 @@ export async function POST(req: NextRequest) {
         return res;
 
     } catch (error) {
-        return NextResponse.json({ message: "Lỗi Server" }, { status: 500 });
+        return NextResponse.json({ message: error.message || "Lỗi Server" }, { status: 500 });
     }
 }

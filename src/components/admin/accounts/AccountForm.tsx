@@ -16,16 +16,15 @@ export default function AccountForm({
   roles: Role[];
 }) {
   const [email, setEmail] = useState(account?.email || "");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(account ? atob(account.password) : ""); //giải mã password
   const [roleId, setRoleId] = useState(account?.roleId || 2);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
-    const body: any = { email, roleId };
-    if (password) body.password = password; // Chỉ gửi password nếu có thay đổi
+    
+    const body: any = { email, roleId, password };
 
     try {
       const url = account ? `/api/accounts/${account.id}` : "/api/accounts";
@@ -77,13 +76,28 @@ export default function AccountForm({
           {/* Password */}
           <div>
             <label className="block text-sm font-medium mb-1">
-              Mật khẩu {account && "(để trống nếu không đổi)"}
+              Mật khẩu {account ? "(Để trống nếu không đổi)" : ""}
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required={!account} // Chỉ bắt buộc khi thêm mới
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
+
+          {/* Birthday */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Ngày sinh</label>
+            <input
+              type="date" 
+              value={account?.birthday || ""}
+              onChange={(e) => {
+                if (account) {
+                  account.birthday = e.target.value;
+                }
+              }}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>

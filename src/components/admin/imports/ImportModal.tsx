@@ -104,15 +104,15 @@ export default function ImportModal({
         date: importData.createdDate
           ? formatDate(importData.createdDate)
           : new Date().toISOString().split("T")[0],
-        supplierId: importData.supplierId || suppliers[0]?.id || 0,
-        status: importData.status || "Đang xử lý",
+        supplierId: suppliers[0]?.id || 0,
+        status: "Đang xử lý",
         employee: currentUser,
       });
     } else if (mode === "form") {
       setImportProducts([]);
       setForm({
         date: new Date().toISOString().split("T")[0],
-        supplierId: suppliers[0]?.id || 0,
+        supplierId: 0,
         status: "Đang xử lý",
         employee: currentUser,
       });
@@ -170,6 +170,11 @@ export default function ImportModal({
 
   const handleSubmit = async (e: React.FormEvent) => {
   e.preventDefault();
+  if (form.supplierId === 0) {
+  showError("Vui lòng chọn nhà cung cấp!");
+  return;
+}
+
   if (mode === "detail") return;
 
   const payload = {
@@ -347,8 +352,17 @@ export default function ImportModal({
               </div>
               <div>
                 <label className="block mb-1">Nhà cung cấp</label>
-                <select name="supplierId" value={form.supplierId} onChange={handleChange} disabled={readonly} className={`w-full p-2 border rounded ${readonly ? "bg-gray-100" : ""}`}>
-                  {suppliers.map((s) => (<option key={s.id} value={s.id}>{s.name}</option>))}
+                <select
+                  name="supplierId"
+                  value={form.supplierId}
+                  onChange={handleChange}
+                  disabled={readonly}
+                  className={`w-full p-2 border rounded ${readonly ? "bg-gray-100" : ""}`}
+                >
+                  <option value={0} disabled>-- Chọn nhà cung cấp --</option>
+                  {suppliers.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name}</option>
+                  ))}
                 </select>
               </div>
             </div>

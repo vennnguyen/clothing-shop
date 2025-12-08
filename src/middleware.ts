@@ -46,7 +46,7 @@ export async function middleware(req: NextRequest) {
         // TRẢI NGHIỆM: Đã login rồi thì không cho vào trang login nữa
         if (pathname === "/login" || pathname === "/admin/login") {
             if (userType === "account") {
-                return NextResponse.redirect(new URL("/admin/dashboard", req.url));
+                return NextResponse.redirect(new URL("/admin", req.url));
             }
             if (userType === "customer") {
                 return NextResponse.redirect(new URL("/", req.url));

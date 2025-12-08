@@ -2,13 +2,12 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { jwtVerify } from "jose";
 import pool from "../../../lib/db";
-import AccountTable from "../../../components/admin/accounts/AccountTable";
+import RoleTable from "../../../components/admin/roles/RoleTable";
 
-// lấy tài khoản từ database
-async function getAccounts() { 
+async function getAccountsWithRoles() {
   try {
     const [rows]: any = await pool.query(`
-      SELECT a.id, a.email, a.roleId, a.birthday, a.status, a.createdDate, a.fullName, r.name as roleName
+      SELECT a.id, a.email, a.roleId, r.name as roleName
       FROM accounts a
       JOIN roles r ON a.roleId = r.id
       ORDER BY a.id DESC
@@ -20,7 +19,6 @@ async function getAccounts() {
   }
 }
 
-// Lấy danh sách vai trò
 async function getRoles() {
   try {
     const [rows]: any = await pool.query('SELECT id, name FROM roles ORDER BY id ASC');
@@ -31,8 +29,7 @@ async function getRoles() {
   }
 }
 
-export default async function AccountsPage() {
-  // Kiểm tra authentication
+export default async function RolesPage() {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value;
 
@@ -40,18 +37,15 @@ export default async function AccountsPage() {
     const secret = new TextEncoder().encode(process.env.JWT_SECRET);
     const { payload } = await jwtVerify(token, secret);
 
-    // Chỉ admin mới được truy cập
     if (payload.role !== "Admin") {
-      redirect("/admin");
+      redirect("/admin/dashboard");
     }
 
-    // Lấy danh sách
-    const accounts = await getAccounts();
+    const accounts = await getAccountsWithRoles();
     const roles = await getRoles();
 
-    return <AccountTable initialAccounts={accounts} roles={roles} />;
+    return <RoleTable initialAccounts={accounts} roles={roles} />;
   } catch (error) {
-    // nếu lỗi chuyển về trang login
     redirect("/admin/login");
   }
 }

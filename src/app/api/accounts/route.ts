@@ -2,12 +2,13 @@ import { NextRequest, NextResponse } from 'next/server';
 import pool from '../../../lib/db';
 import { emailRegex, phoneRegex } from '../../../lib/validator';
 import { Account } from '../../types/interfaces';
+import bcrypt from 'bcrypt';
 
  //Lấy tất cả tài khoản
 export async function GET() {
   try {
     const [rows]: any = await pool.query(`
-      SELECT a.id, a.email, a.roleId, a.birthday, a.status, a.createdDate, r.name as roleName
+      SELECT a.id, a.email, a.roleId, a.birthday, a.status, a.createdDate, a.fullName, r.name as roleName
       FROM accounts a
       JOIN roles r ON a.roleId = r.id
       ORDER BY a.id DESC
@@ -31,8 +32,8 @@ export async function POST(req: NextRequest) {
     const createdDate = new Date().toISOString().split('T')[0];
 
     // mã hóa password đơn giản (nên dùng thư viện bcrypt trong thực tế)
-    const encodedPassword = Buffer.from(body.password, "utf8").toString("base64");
-    body.password = encodedPassword;
+    const hashedPassword = await bcrypt.hash(body.password, 10);
+    body.password = hashedPassword;
 
     const [result] = await pool.query(
       'INSERT INTO accounts (email, password, roleId, birthday, status, createdDate) VALUES (?, ?, ?, ?, ?, ?)',
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     // lấy account vừa tạo có roleName
     const [rows]: any = await pool.query(`
-      SELECT a.id, a.email, a.roleId, a.birthday, a.status, a.createdDate, r.name as roleName
+      SELECT a.id, a.email, a.roleId, a.birthday, a.status, a.createdDate, a.fullName, r.name as roleName
       FROM accounts a
       JOIN roles r ON a.roleId = r.id
       WHERE a.id = ?

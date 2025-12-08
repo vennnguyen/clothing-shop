@@ -1,6 +1,7 @@
 
 export interface Account {
   id?: number;
+  fullName?: string | null;
   email?: string | null;
   password?: string | null;
   roleId?: number | null;

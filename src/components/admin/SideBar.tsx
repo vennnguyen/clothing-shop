@@ -8,6 +8,8 @@ import {
     Shapes,
     Truck,
     FileCheck2,
+    User,
+    RollerCoaster,
 } from "lucide-react";
 interface User {
     id?: number;
@@ -23,6 +25,8 @@ export default function Sidebar({ user }: { user: User | null }) {
         { name: "Danh mục", path: "/admin/categories", icon: <Shapes size={20} /> },
         { name: "Nhà cung cấp", path: "/admin/suppliers", icon: <Truck size={20} /> },
         { name: "Phiếu nhập", path: "/admin/imports", icon: <FileCheck2 size={20} /> },
+        { name: "Tài khoản", path: "/admin/accounts", icon: <User size={20} /> },
+        { name: "Phân quyền", path: "/admin/roles", icon: <RollerCoaster size={20} /> },
     ];
 
     // Hàm kiểm tra mục có phải đang active không

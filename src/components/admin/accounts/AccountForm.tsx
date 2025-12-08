@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
-import { Account, Role } from "../../../app/types/interfaces";
+import { Account, AccountWithRole, Role } from "../../../app/types/interfaces";
 
 export default function AccountForm({
   account,
@@ -12,19 +12,33 @@ export default function AccountForm({
 }: {
   account: Account | null;
   onClose: () => void;
-  onSuccess: (account: Account) => void;
+  onSuccess: (account: AccountWithRole) => void;
   roles: Role[];
 }) {
   const [email, setEmail] = useState(account?.email || "");
-  const [password, setPassword] = useState(account ? atob(account.password) : ""); //giải mã password
+  const [password, setPassword] = useState(""); //giải mã password
   const [roleId, setRoleId] = useState(account?.roleId || 2);
+  const [birthday, setBirthday] = useState(() => {
+    // Format birthday từ DB sang YYYY-MM-DD
+    if (account?.birthday) {
+      const date = new Date(account.birthday);
+      return date.toISOString().split('T')[0]; // "1998-12-20"
+    }
+    return "";
+  });
+  const [name, setName] = useState(account?.fullName || "");
+  const [status, setStatus] = useState(account?.status ?? 1);
+
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     
-    const body: any = { email, roleId, password };
+    const body: any = { email, roleId, birthday, fullName: name, status };
+    if (password) {
+      body.password = password;
+    }
 
     try {
       const url = account ? `/api/accounts/${account.id}` : "/api/accounts";
@@ -73,6 +87,18 @@ export default function AccountForm({
             />
           </div>
 
+          {/* Họ và tên */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Họ và tên</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
+
           {/* Password */}
           <div>
             <label className="block text-sm font-medium mb-1">
@@ -91,13 +117,10 @@ export default function AccountForm({
           <div>
             <label className="block text-sm font-medium mb-1">Ngày sinh</label>
             <input
-              type="date" 
-              value={account?.birthday || ""}
-              onChange={(e) => {
-                if (account) {
-                  account.birthday = e.target.value;
-                }
-              }}
+              type="date"
+              value={birthday}
+              required
+              onChange={(e) => setBirthday(e.target.value)}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
             />
           </div>
@@ -107,14 +130,28 @@ export default function AccountForm({
             <label className="block text-sm font-medium mb-1">Vai trò</label>
             <select
               value={roleId}
+              disabled
               onChange={(e) => setRoleId(Number(e.target.value))}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 cursor-not-allowed bg-gray-100"
             >
               {roles.map((role) => (
                 <option key={role.id} value={role.id}>
                   {role.name}
                 </option>
               ))}
+            </select>
+          </div>
+
+          {/* Trạng thái */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Trạng thái</label>
+            <select
+              value={status}
+              onChange={(e) => setStatus(Number(e.target.value))}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100"
+            >
+              <option value={1}>Hoạt động</option>
+              <option value={0}>Vô hiệu hóa</option>
             </select>
           </div>
 

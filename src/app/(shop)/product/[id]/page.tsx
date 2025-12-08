@@ -5,6 +5,7 @@ import { Plus, Minus, ChevronUp, ChevronDown } from 'lucide-react';
 import { ProductDetail, ProductImages } from '../../../types/interfaces';
 import ImageSlider from '../../../../components/ui/ImageSlider';
 import { useParams } from 'next/navigation';
+import { useCart } from '../../../../components/providers/CartContext';
 
 // Hàm format tiền tệ VNĐ
 const formatCurrency = (amount: number) => {
@@ -25,6 +26,7 @@ const ProductPage = () => {
     const [quantity, setQuantity] = useState(1);
     const [isLoading, setIsLoading] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
+    const { addToCart } = useCart();
     // useEffect chạy 1 lần khi mount
     useEffect(() => {
         setIsClient(true);
@@ -82,6 +84,20 @@ const ProductPage = () => {
                 setQuantity(prev => prev + 1);
             }
         }
+    };
+    // Hàm xử lý sự kiện click
+    const handleAddToCartClick = () => {
+        if (!product) return;
+
+        // Gọi hàm từ Context để cập nhật số trên menu
+        addToCart(quantity);
+
+        // (Tùy chọn) Reset số lượng về 1 sau khi thêm
+        // setQuantity(1); 
+
+        // (Tùy chọn) Thông báo cho người dùng
+        alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
+        // Hoặc dùng toast: toast.success('Đã thêm vào giỏ hàng');
     };
     // Nếu đang load hoặc không có sản phẩm, hiển thị loading
     if (!isClient || isLoading || !product) {
@@ -164,16 +180,6 @@ const ProductPage = () => {
                             </div>
                         )}
 
-                        {/* {product.description && (
-                            <div className="text-sm text-gray-600 bg-gray-50 p-3 rounded-sm border border-gray-100">
-                                <div className="font-medium mb-1 text-gray-700">
-                                    Mô tả sản phẩm
-                                </div>
-                                <div>
-                                    <p className="line-clamp-3 whitespace-pre-line">{product.description}</p>
-                                </div>
-                            </div>
-                        )} */}
                         {product.description && (
                             <div className="bg-white rounded-lg">
                                 <div className="bg-gray-50 p-3 mb-2 rounded-sm">
@@ -247,12 +253,12 @@ const ProductPage = () => {
                         </div>
 
                         <div className="flex justify-end gap-4 mt-4">
-                            <button className="cursor-pointer flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 border border-red-500 bg-red-50 text-red-500 rounded-sm hover:bg-red-100 transition-colors">
-                                <span>Thêm vào giỏ hàng</span>
+                            <button
+                                onClick={handleAddToCartClick}
+                                className="cursor-pointer flex-1 md:flex-none flex items-center justify-center gap-2 px-6 py-3 border border-red-500 bg-red-50 text-red-500 rounded-sm hover:bg-red-100 transition-colors"
+                            >
+                                <span className='cursor-pointer'>Thêm vào giỏ hàng</span>
                             </button>
-                            {/* <button className="flex-1 md:flex-none px-12 py-3 bg-red-500 text-white rounded-sm hover:bg-red-600 transition-colors font-medium shadow-sm">
-                                Mua ngay
-                            </button> */}
                         </div>
                     </div>
                 </div>

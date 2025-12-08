@@ -317,7 +317,7 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
 
                                         {/* Chữ hiển thị bên cạnh */}
                                         <span className="ms-3 text-sm font-medium text-gray-900 select-none">
-                                            {form.status === 1 ? "Đang hoạt động" : "Đang ẩn"}
+                                            {form.status === 1 ? "Đang bán" : "Ngừng kinh doanh"}
                                         </span>
                                     </label>
                                 </div>

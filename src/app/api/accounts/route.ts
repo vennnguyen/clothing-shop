@@ -7,8 +7,13 @@ import { Account } from '../../types/interfaces';
  //Lấy tất cả tài khoản
 export async function GET() {
   try {
-    const [rows] = await pool.query('SELECT * FROM accounts');
-    return NextResponse.json(rows);
+    const [rows]: any = await pool.query(`
+      SELECT a.id, a.email, a.roleId, a.birthday, a.status, a.createdDate, r.name as roleName
+      FROM accounts a
+      JOIN roles r ON a.roleId = r.id
+      ORDER BY a.id DESC
+    `);
+    return NextResponse.json(rows); // Trả về AccountWithRole[]
   } catch (error) {
     console.error('GET /accounts error:', error);
     return NextResponse.json({ error: 'Lỗi khi lấy danh sách tài khoản' }, { status: 500 });

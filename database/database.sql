@@ -184,9 +184,11 @@ CREATE TABLE CartDetails (
     cartId INT COMMENT 'FK: Mã giỏ hàng',
     productId INT COMMENT 'FK: Sản phẩm trong giỏ',
     quantity INT DEFAULT 1 COMMENT 'Số lượng muốn mua',
-    PRIMARY KEY (cartId, productId),
+    sizeId INT COMMENT 'Mã size sản phẩm',
+    PRIMARY KEY (cartId, productId, sizeId),
     FOREIGN KEY (cartId) REFERENCES Carts(id),
-    FOREIGN KEY (productId) REFERENCES Products(id)
+    FOREIGN KEY (productId) REFERENCES Products(id),
+    FOREIGN KEY (sizeId) REFERENCES Sizes(id)
 ) COMMENT='Bảng lưu các sản phẩm khách đang chọn';
 
 -- ========================
@@ -320,11 +322,11 @@ INSERT INTO Carts (customerId) VALUES
 (2),
 (3);
 
-INSERT INTO CartDetails (cartId, productId, quantity) VALUES
-(1, 1, 2),
-(1, 3, 1),
-(2, 2, 1),
-(3, 4, 1);
+INSERT INTO CartDetails (cartId, productId, quantity, sizeId) VALUES
+(1, 1, 2, 1),
+(1, 3, 1, 2),
+(2, 2, 1, 3),
+(3, 3, 1, 2);
 
 INSERT INTO FunctionalCategories (functionName, status) VALUES
 ('Quản lý sản phẩm', 1),

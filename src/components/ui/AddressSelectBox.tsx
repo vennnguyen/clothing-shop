@@ -93,7 +93,7 @@ export default function AddressSelectBox({ customerId, refresh }: Props) {
           <div
             key={addr.id}
             className={`flex items-center justify-between cursor-pointer p-4 border-2 rounded-md mr-3 ${selected === addr.id
-              ? "border-blue-500 bg-blue-50"
+              ? "border-orange-500 bg-orange-50"
               : "border-gray-300 bg-white"
               }`}
             onClick={() => setSelected(addr.id)}
@@ -104,7 +104,7 @@ export default function AddressSelectBox({ customerId, refresh }: Props) {
                 name="address"
                 checked={selected === addr.id}
                 onChange={() => setSelected(addr.id)}
-                className="w-4 h-4 accent-blue-500 mr-3"
+                className="w-4 h-4 accent-orange-500 mr-3"
               />
               <span className="text-gray-700">{addr.value}</span>
             </div>

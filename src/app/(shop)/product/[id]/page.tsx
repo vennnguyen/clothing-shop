@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { use, useEffect, useState } from 'react';
 import { Plus, Minus, ChevronUp, ChevronDown } from 'lucide-react';
 import { ProductDetail, ProductImages } from '../../../types/interfaces';
 import ImageSlider from '../../../../components/ui/ImageSlider';
 import { useParams } from 'next/navigation';
 import { useCart } from '../../../../components/providers/CartContext';
+import { getUserFromCookie } from '../../../../lib/auth';
+import { getCurrentUser } from '../../../../actions/auth';
 
 // Hàm format tiền tệ VNĐ
 const formatCurrency = (amount: number) => {
@@ -27,6 +29,25 @@ const ProductPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [isExpanded, setIsExpanded] = useState(false);
     const { addToCart } = useCart();
+
+    const [user, setUser] = useState<any>(null); // Hoặc type User nếu có
+
+    useEffect(() => {
+        const checkAuth = async () => {
+            // Gọi Server Action
+            const userData = await getCurrentUser();
+
+            if (userData) {
+                console.log("User đang đăng nhập:", userData);
+                setUser(userData);
+                // if (userData.role !== 'ADMIN') { router.push('/login') }
+            } else {
+                console.log("Chưa đăng nhập");
+            }
+        };
+
+        checkAuth();
+    }, []);
     // useEffect chạy 1 lần khi mount
     useEffect(() => {
         setIsClient(true);
@@ -90,13 +111,13 @@ const ProductPage = () => {
         if (!product) return;
 
         // Gọi hàm từ Context để cập nhật số trên menu
-        addToCart(quantity);
+        addToCart(product.id, quantity, user.id);
 
         // (Tùy chọn) Reset số lượng về 1 sau khi thêm
         // setQuantity(1); 
 
         // (Tùy chọn) Thông báo cho người dùng
-        alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
+        // alert(`Đã thêm ${quantity} sản phẩm vào giỏ hàng!`);
         // Hoặc dùng toast: toast.success('Đã thêm vào giỏ hàng');
     };
     // Nếu đang load hoặc không có sản phẩm, hiển thị loading

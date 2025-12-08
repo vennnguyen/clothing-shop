@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
         // 1. Tìm trong bảng customers
         const [rows]: any = await pool.query(
-            "SELECT id, fullName, password FROM customers WHERE phone = ? LIMIT 1",
+            "SELECT id, fullName, password, email FROM customers WHERE phone = ? LIMIT 1",
             [phone]
         );
         const user = rows[0];
@@ -26,6 +26,7 @@ export async function POST(req: NextRequest) {
         const token = await new SignJWT({
             id: user.id,
             name: user.fullName,
+            email: user.email,
             role: "customer",      // Cứng role
             userType: "customer",  //  Cứng type
         })

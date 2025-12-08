@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX } from "@fortawesome/free-solid-svg-icons";
 import AddressSelectBox from "../../../components/ui/AddressSelectBox";
 import { useToastMessage } from "../../../../hooks/useToastMessage";
+import { getCurrentUser } from "../../../actions/auth";
 
 function formatPrice(priceNumber: number, locale: string = "vi-VN") {
   if (priceNumber == null) return "";
@@ -58,6 +59,9 @@ export default function PayContent() {
   const [forceValidate, setForceValidate] = useState(false);
   const [refreshAddress, setRefreshAddress] = useState(false);
   const [addressResetKey, setAddressResetKey] = useState(0);
+  const [user, setUser] = useState<any>(null);
+
+
   const [customer, setCustomer] = useState<{
     id: number;
     fullName: string;
@@ -66,6 +70,37 @@ export default function PayContent() {
     dateOfBirth?: string;
     gender?: string;
   } | null>(null);
+  useEffect(() => {
+    const checkAuth = async () => {
+      // Gọi Server Action
+      const userData = await getCurrentUser();
+
+      if (userData) {
+        // console.log("User đang đăng nhập:", userData);
+        setUser(userData);
+        setCustomer(prev => {
+          if (prev) {
+            return { ...prev, id: Number(userData.id) };
+          }
+
+          // Nếu prev là null → tạo object mới
+          return {
+            id: Number(userData.id),
+            fullName: userData.name || "",
+            email: String(userData.email) || "",
+            phone: "",
+            dateOfBirth: "",
+            gender: "",
+          };
+        });
+
+      } else {
+        console.log("Chưa đăng nhập");
+      }
+    };
+
+    checkAuth();
+  }, []);
   const { showSuccess, showError } = useToastMessage();
 
 
@@ -79,13 +114,22 @@ export default function PayContent() {
 
 
 
+  // Sửa lại useEffect đang bị lỗi
   useEffect(() => {
-    const customerId = 1;
+    // 1. Kiểm tra ID thay vì kiểm tra object customer
+    // Dùng Optional Chaining (?.) để tránh lỗi nếu customer là null
+    const customerId = customer?.id;
+
+    if (!customerId) return;
 
     const fetchCustomer = async () => {
+      // Lúc này chắc chắn customerId đã có
       const customerData = await loadCustomerById(customerId);
+
       if (customerData) {
-        setCustomer(customerData); // lưu customer toàn bộ
+        // Logic này vẫn setCustomer, nhưng vì useEffect bên dưới 
+        // chỉ nghe 'customer.id' (vốn không đổi), nên nó sẽ KHÔNG chạy lại loop.
+        setCustomer(prev => ({ ...prev, ...customerData })); // Merge data an toàn hơn
         setName(customerData.fullName || "");
         setEmail(customerData.email || "");
         setSdt(customerData.phone || "");
@@ -94,7 +138,9 @@ export default function PayContent() {
 
     fetchCustomer();
     loadOrderByCustomerId(customerId);
-  }, []);
+
+    // 2. QUAN TRỌNG: Chỉ thêm 'customer.id' vào dependency
+  }, [customer?.id]);
 
 
   const loadCustomerById = async (id: number) => {
@@ -324,14 +370,14 @@ export default function PayContent() {
                 placeholder="Địa chỉ"
                 field="địa chỉ"
                 // forceValidate={forceValidate}
-                 noValidate 
+                noValidate
               />
 
               <AddressSelect
                 forceValidate={forceValidate}
                 onChangeProvince={setSelectedProvince}
                 onChangeWard={setSelectedWard}
-                resetKey={addressResetKey} 
+                resetKey={addressResetKey}
               />
 
               <button
@@ -451,7 +497,15 @@ export default function PayContent() {
             </span>
           </div>
 
-          <AddressSelectBox customerId={customer?.id || 1} refresh={refreshAddress} />
+          {/* Chỉ render khi customer đã có dữ liệu */}
+          {customer && customer.id ? (
+            <AddressSelectBox
+              customerId={customer.id}
+              refresh={refreshAddress}
+            />
+          ) : (
+            <p>Đang tải thông tin khách hàng...</p> // Hoặc Skeleton loading
+          )}
 
           {/* NOTE */}
           <div className="bg-[#f3f4f4] p-5 mt-4 flex flex-col">

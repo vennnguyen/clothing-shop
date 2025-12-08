@@ -17,6 +17,7 @@ export async function getUserFromCookie() {
         return {
             id: payload.id,
             name: payload.name as string,
+            email: payload.email as string,
             role: payload.role as string,
         };
     } catch (error) {

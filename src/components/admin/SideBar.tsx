@@ -2,6 +2,13 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import LogoutButton from "../ui/LogoutButton";
+import {
+    LayoutDashboard,
+    Package,
+    Shapes,
+    Truck,
+    FileCheck2,
+} from "lucide-react";
 interface User {
     id?: number;
     name?: string;
@@ -11,12 +18,11 @@ export default function Sidebar({ user }: { user: User | null }) {
     // const router = useRouter();
     const pathname = usePathname();
     const menuItems = [
-        { name: "Dashboard", path: "/admin" },
-        { name: "Sản phẩm", path: "/admin/products" },
-        { name: "Danh mục", path: "/admin/categories" },
-        { name: "Nhà cung cấp", path: "/admin/suppliers" },
-        { name: "Phiếu nhập", path: "/admin/imports" },
-        { name: "Nhân viên", path: "/admin/accounts" }
+        { name: "Dashboard", path: "/admin", icon: <LayoutDashboard size={20} /> },
+        { name: "Sản phẩm", path: "/admin/products", icon: <Package size={20} /> },
+        { name: "Danh mục", path: "/admin/categories", icon: <Shapes size={20} /> },
+        { name: "Nhà cung cấp", path: "/admin/suppliers", icon: <Truck size={20} /> },
+        { name: "Phiếu nhập", path: "/admin/imports", icon: <FileCheck2 size={20} /> },
     ];
 
     // Hàm kiểm tra mục có phải đang active không
@@ -31,11 +37,14 @@ export default function Sidebar({ user }: { user: User | null }) {
                     <Link
                         key={item.path}
                         href={item.path}
-                        className={`block px-3 py-2 rounded-md transition ${isActive(item.path)
-                            ? "bg-blue-600 text-white"
-                            : "hover:bg-gray-700 hover:text-blue-300"
-                            }`}
+                        className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 cursor-pointer
+                            ${isActive(item.path)
+                                ? "bg-blue-600 text-white shadow-md"
+                                : "hover:bg-gray-700 hover:text-blue-300"
+                            }
+                        `}
                     >
+                        {item.icon}
                         {item.name}
                     </Link>
                 ))}

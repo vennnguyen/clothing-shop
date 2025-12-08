@@ -25,7 +25,7 @@ export default function SuppliersPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-5 flex items-center gap-2">
-        <FontAwesomeIcon icon={faPeopleCarryBox} />
+        {/* <FontAwesomeIcon icon={faPeopleCarryBox} /> */}
         Quản lý nhà cung cấp
       </h1>
       <SupplierTable suppliers={suppliers} refresh={loadSuppliers} />

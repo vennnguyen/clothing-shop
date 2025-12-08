@@ -88,7 +88,7 @@ export default function ProductTable({
                                     ? "bg-green-100 text-green-700 border border-green-200" // Style cho Hoạt động
                                     : "bg-gray-100 text-gray-600 border border-gray-200"     // Style cho Ẩn
                                     }`}>
-                                    {p.status === 1 ? "Hoạt động" : "Ẩn"}
+                                    {p.status === 1 ? "Đang bán" : "Ngừng kinh doanh"}
                                 </span>
                             </td>
                             <td className="p-2 border space-x-2">

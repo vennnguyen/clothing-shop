@@ -228,31 +228,31 @@ export default function PayContent() {
       console.error("Lỗi khi tải giỏ hàng:", error);
     }
   };
-  const loadOrderByCustomerId = async (customerId: number) => {
-    try {
-      const res = await fetch(`/api/orders/${customerId}`);
-      if (!res.ok) throw new Error("Failed to fetch orders");
+  // const loadOrderByCustomerId = async (customerId: number) => {
+  //   try {
+  //     const res = await fetch(`/api/orders/${customerId}`);
+  //     if (!res.ok) throw new Error("Failed to fetch orders");
 
-      const orders = await res.json();
+  //     const orders = await res.json();
 
-      if (orders.length === 0) return;
+  //     if (orders.length === 0) return;
 
-      const firstOrder = orders[0];
+  //     const firstOrder = orders[0];
 
-      // Lấy chi tiết từng product từ API products/[id]
-      const productsFromOrder: Product[] = await Promise.all(
-        firstOrder.details.map(async (d: any) => {
-          const product = await loadProductById(d.productId);
-          if (product) product.quantity = d.quantity; // set quantity từ order
-          return product;
-        })
-      );
+  //     // Lấy chi tiết từng product từ API products/[id]
+  //     const productsFromOrder: Product[] = await Promise.all(
+  //       firstOrder.details.map(async (d: any) => {
+  //         const product = await loadProductById(d.productId);
+  //         if (product) product.quantity = d.quantity; // set quantity từ order
+  //         return product;
+  //       })
+  //     );
 
-      setProducts(productsFromOrder.filter(p => p !== null) as Product[]);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  //     setProducts(productsFromOrder.filter(p => p !== null) as Product[]);
+  //   } catch (err) {
+  //     console.error(err);
+  //   }
+  // };
 
 
 

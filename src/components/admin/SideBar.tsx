@@ -8,6 +8,7 @@ import {
     Shapes,
     Truck,
     FileCheck2,
+    ClipboardPen,
 } from "lucide-react";
 interface User {
     id?: number;
@@ -21,6 +22,7 @@ export default function Sidebar({ user }: { user: User | null }) {
         { name: "Dashboard", path: "/admin", icon: <LayoutDashboard size={20} /> },
         { name: "Sản phẩm", path: "/admin/products", icon: <Package size={20} /> },
         { name: "Danh mục", path: "/admin/categories", icon: <Shapes size={20} /> },
+        { name: "Đơn hàng", path: "/admin/orders", icon: <ClipboardPen size={20} /> },
         { name: "Nhà cung cấp", path: "/admin/suppliers", icon: <Truck size={20} /> },
         { name: "Phiếu nhập", path: "/admin/imports", icon: <FileCheck2 size={20} /> },
     ];

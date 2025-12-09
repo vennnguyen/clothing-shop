@@ -45,7 +45,7 @@ export default function ProductTable({
                 />
                 <div>
                     <button
-                        className="mb-4 p-2 bg-green-600 text-white rounded cursor-pointer"
+                        className="mb-4 p-2 bg-green-600 text-white rounded cursor-pointer hover:bg-green-700"
                         onClick={() => {
                             setSelected(null);
                             setIsFormOpen(true);
@@ -93,7 +93,7 @@ export default function ProductTable({
                             </td>
                             <td className="p-2 border space-x-2">
                                 <button
-                                    className="px-2 py-1 bg-white text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-200"
+                                    className="cursor-pointer px-2 py-1 bg-white text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-200"
                                     onClick={() => {
                                         setSelected(p);
                                         setIsFormOpen(true);
@@ -102,7 +102,7 @@ export default function ProductTable({
                                     <FilePenIcon />
                                 </button>
                                 <button
-                                    className="px-2 py-1 bg-white text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-200"
+                                    className="cursor-pointer px-2 py-1 bg-white text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-200"
                                     onClick={() => {
                                         setSelected(p);
                                         setIsDeleteOpen(true);

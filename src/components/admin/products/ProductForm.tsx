@@ -18,7 +18,7 @@ interface FormDataState {
     // quantity: number | string;
     categoryId: number;
     description: string;
-    sizeId: number;
+    sizeIds?: number[];
     status: number;
 }
 interface FormErrors {
@@ -40,11 +40,19 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
         // quantity: "",
         categoryId: 0,
         description: "",
-        sizeId: 0,
+        sizeIds: [],
         status: 1,
     });
     const [errors, setErrors] = useState<FormErrors>({});
     const [images, setImages] = useState<ImageInput[]>([{ id: 1 }, { id: 2 }, { id: 3 }]);
+    const availableSizes = [
+        { id: 1, name: "S" },
+        { id: 2, name: "M" },
+        { id: 3, name: "L" },
+        { id: 4, name: "XL" },
+    ];
+
+
     const getAllCategories = async () => {
         try {
             const res = await fetch("/api/categories", { cache: 'no-store' }); // Đảm bảo luôn lấy dữ liệu mới nhất
@@ -88,14 +96,14 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                     // quantity: product.quantity || 0,
                     categoryId: product.categoryId,
                     description: product.description || "",
-                    sizeId: product.sizeId || 0,
+                    sizeIds: [],
                     status: product.status,
                 });
                 // TODO: Nếu edit, bạn cần logic để load ảnh cũ từ server vào state 'images' ở đây
             } else {
                 // Mode: ADD (Thêm mới)
                 // setForm({ name: "", price: "", quantity: "", categoryId: 0, description: "", sizeId: 0 });
-                setForm({ name: "", price: "", categoryId: 0, description: "", sizeId: 0, status: 1 });
+                setForm({ name: "", price: "", categoryId: 0, description: "", sizeIds: [], status: 1 });
                 setImages([{ id: 1 }, { id: 2 }, { id: 3 }]); // Reset ảnh về rỗng
             }
         }
@@ -133,10 +141,10 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
         }
 
         // Validate Size
-        if (!product && !form.sizeId) {
-            newErrors.size = "Vui lòng chọn size";
-            isValid = false;
-        }
+        // if (!product && !form.sizeId) {
+        //     newErrors.size = "Vui lòng chọn size";
+        //     isValid = false;
+        // }
 
         // Validate Ảnh
         const validImageCount = images.filter((img) => img.file).length;
@@ -164,8 +172,12 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
             // formData.append("quantity", String(form.quantity));
             formData.append("category", String(form.categoryId));
             formData.append("description", form.description);
-            formData.append("size", String(form.sizeId));
+            // formData.append("size", String(form.sizeId));
             formData.append("status", String(form.status));
+
+            formData.append("sizes", JSON.stringify(form.sizeIds));
+
+
             const keptImageIds = images
                 .filter((img) => img.file === undefined && img.id)
                 .map((img) => img.id);
@@ -206,6 +218,19 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
         }
     };
 
+    const handleSizeChange = (sizeId: number, isChecked: boolean) => {
+        setForm((prev) => {
+            const currentSizes = prev.sizeIds;
+            if (isChecked) {
+                // Nếu check thì thêm vào mảng
+                return { ...prev, sizeIds: [...currentSizes, sizeId] };
+            } else {
+                // Nếu bỏ check thì lọc ra khỏi mảng
+                return { ...prev, sizeIds: currentSizes.filter((id) => id !== sizeId) };
+            }
+        });
+    };
+    // console.log(form.sizeIds);
     if (!open) return null;
 
     return (
@@ -344,21 +369,34 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                                 </div>
                                 {!product && (
                                     <div>
-                                        <label className="block text-sm font-bold text-gray-700 mb-1">Size</label>
-                                        <select
-                                            name="sizeId"
-                                            value={form.sizeId}
-                                            onChange={handleChange}
-                                            disabled={product ? true : false}
-                                            className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 outline-none bg-white"
-                                        >
-                                            <option value="">-- Chọn kích thước--</option>
-                                            <option value="1">S</option>
-                                            <option value="2">M</option>
-                                            <option value="3">L</option>
-                                            <option value="4">XL</option>
-                                        </select>
-                                        {errors.size && <p className="text-red-500 text-xs mt-1 italic">{errors.size}</p>}
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Size</label>
+
+                                        {/* Container cho các checkbox */}
+                                        <div className="flex flex-wrap gap-2">
+                                            {availableSizes.map((size) => (
+                                                <label
+                                                    key={size.id}
+                                                    className="flex items-center space-x-2 cursor-pointer bg-gray-50 border border-gray-300 px-4 py-2 rounded-lg hover:bg-sky-50 transition-colors"
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        name="sizeId"
+                                                        value={size.id}
+                                                        // Kiểm tra xem ID này có trong mảng form.sizeId chưa để đánh dấu tick
+                                                        checked={form.sizeIds.includes(size.id)}
+                                                        onChange={(e) => handleSizeChange(size.id, e.target.checked)}
+                                                        disabled={!!product} // Disable nếu đang sửa (nếu cần)
+                                                        className="w-3 h-3 text-sky-600 bg-gray-100 border-gray-300 rounded focus:ring-sky-500 focus:ring-2"
+                                                    />
+                                                    <span className="text-sm font-medium text-gray-900">{size.name}</span>
+                                                </label>
+                                            ))}
+                                        </div>
+
+                                        {/* Hiển thị lỗi nếu có */}
+                                        {errors.size && (
+                                            <p className="text-red-500 text-xs mt-1 italic">{errors.size}</p>
+                                        )}
                                     </div>
                                 )}
 

@@ -149,12 +149,15 @@ CREATE TABLE Orders (
 CREATE TABLE OrderDetails (
     orderId INT COMMENT 'FK: Mã đơn hàng',
     productId INT COMMENT 'FK: Mã sản phẩm',
+    sizeId INT COMMENT 'FK: Mã size',
     price FLOAT COMMENT 'Giá bán',
     quantity INT COMMENT 'Số lượng sản phẩm mua',
-    PRIMARY KEY (orderId, productId),
+    PRIMARY KEY (orderId, productId,sizeId),
     FOREIGN KEY (orderId) REFERENCES Orders(id),
-    FOREIGN KEY (productId) REFERENCES Products(id)
-) COMMENT = 'Bảng lưu chi tiết sản phẩm trong đơn hàng';
+    FOREIGN KEY (productId) REFERENCES Products(id),
+    FOREIGN KEY (sizeId) REFERENCES Sizes(id)
+) COMMENT='Bảng lưu chi tiết sản phẩm trong đơn hàng';
+
 -- ========================
 -- 15. Carts (Giỏ hàng)
 -- ========================
@@ -388,11 +391,13 @@ INSERT INTO Orders (createdDate, shippedDate, shippingAddressId, statusId, cost,
 ('2025-02-01', '2025-02-03', 1, 3, 450000, 1),
 ('2025-02-03', NULL, 2, 1, 680000, 2),
 ('2025-02-05', '2025-02-07', 3, 3, 320000, 3);
-INSERT INTO OrderDetails (orderId, productId, price, quantity)VALUES 
-    (1, 1, 150000, 2),
-    (1, 3, 280000, 1),
-    (2, 2, 350000, 1),
-    (3, 4, 320000, 1);
+
+INSERT INTO OrderDetails (orderId, productId, sizeId, price, quantity) VALUES
+(1, 1, 1, 150000, 2),
+(1, 3, 2,280000, 1),
+(2, 2, 3,350000, 1),
+(3, 4, 4,320000, 1);
+
 INSERT INTO Carts (customerId) VALUES
 (1),
 (2),

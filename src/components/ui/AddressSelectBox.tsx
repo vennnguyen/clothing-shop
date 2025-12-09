@@ -14,9 +14,10 @@ type AddressOption = {
 type Props = {
   customerId: number;
   refresh?: boolean; // thêm prop để trigger reload
+  onAddressSelect?: (addressId: number | null) => void;
 };
 
-export default function AddressSelectBox({ customerId, refresh }: Props) {
+export default function AddressSelectBox({ customerId, refresh, onAddressSelect }: Props) {
   const [addresses, setAddresses] = useState<AddressOption[]>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const { showSuccess, showError } = useToastMessage();
@@ -39,7 +40,12 @@ export default function AddressSelectBox({ customerId, refresh }: Props) {
 
       // chọn mặc định: tìm địa chỉ có isDefault
       const defaultAddr = addrs.find((addr: any) => addr.isDefault) || addrs[0];
-      setSelected(defaultAddr?.id || null);
+      const initialSelectedId = defaultAddr?.id || null;
+      setSelected(initialSelectedId);
+
+      if (onAddressSelect) {
+        onAddressSelect(initialSelectedId);
+      }
     } catch (error) {
       console.error(error);
     }
@@ -51,6 +57,14 @@ export default function AddressSelectBox({ customerId, refresh }: Props) {
     }
   }, [customerId, refresh]);// reload khi refresh thay đổi
 
+  const handleSelect = (id: number) => {
+    console.log("hihi");
+    setSelected(id);
+    console.log("Ddiaj chi id:", id)
+    if (onAddressSelect) {
+      onAddressSelect(id);
+    }
+  }
   const handleDelete = async (addressId: number) => {
     if (addresses.length === 1) {
       // alert("Phải có ít nhất 1 địa chỉ");
@@ -73,7 +87,9 @@ export default function AddressSelectBox({ customerId, refresh }: Props) {
 
       // Nếu địa chỉ đang chọn bị xóa, chọn địa chỉ còn lại đầu tiên
       if (selected === addressId) {
-        setSelected(newAddresses[0]?.id || null);
+        const newSelectedId = newAddresses[0]?.id || null;
+        setSelected(newSelectedId);
+        if (onAddressSelect) onAddressSelect(newSelectedId)
       }
 
       // alert("Xóa địa chỉ thành công");
@@ -96,15 +112,15 @@ export default function AddressSelectBox({ customerId, refresh }: Props) {
               ? "border-orange-500 bg-orange-50"
               : "border-gray-300 bg-white"
               }`}
-            onClick={() => setSelected(addr.id)}
+            onClick={() => handleSelect(addr.id)}
           >
             <div className="flex items-center">
               <input
                 type="radio"
                 name="address"
                 checked={selected === addr.id}
-                onChange={() => setSelected(addr.id)}
-                className="w-4 h-4 accent-orange-500 mr-3"
+                onChange={() => handleSelect(addr.id)}
+                className="w-4 h-4 accent-blue-500 mr-3"
               />
               <span className="text-gray-700">{addr.value}</span>
             </div>

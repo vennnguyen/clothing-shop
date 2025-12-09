@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import FloatingInput from "../../../components/ui/FloatingInput";
 import AddressSelect from "../../../components/ui/AddressSelect";
-import DeliveryMethod from "../../../components/ui/DeliveryMethod";
+import DeliveryMethod, { ShippingMethod } from "../../../components/ui/DeliveryMethod";
 import PayMethod from "../../../components/ui/PayMethod";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faX } from "@fortawesome/free-solid-svg-icons";
@@ -34,7 +34,6 @@ type Ward = { code: number; name: string };
 export default function PayContent() {
   const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
-
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [sdt, setSdt] = useState("");
@@ -45,7 +44,10 @@ export default function PayContent() {
   const [refreshAddress, setRefreshAddress] = useState(false);
   const [addressResetKey, setAddressResetKey] = useState(0);
   const [user, setUser] = useState<any>(null);
-
+  const [shippingFee, setShippingFee] = useState<number>(20000);
+  const [shippingMethod, setShippingMethod] = useState<ShippingMethod>("delivery")
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+  const [isOrdering, setIsOrdering] = useState(false);
 
   const [customer, setCustomer] = useState<{
     id: number;
@@ -86,7 +88,7 @@ export default function PayContent() {
 
     checkAuth();
   }, []);
-  const { showSuccess, showError } = useToastMessage();
+  const { showSuccess, showError, showInfo, showConfirm } = useToastMessage();
 
 
   useEffect(() => {
@@ -255,42 +257,55 @@ export default function PayContent() {
 
 
 
-  const handleSubmit = () => {
-    // Kiểm tra các thông tin bắt buộc
-    // if (!name || !email || !sdt || !houseNumber || !selectedProvince || !selectedWard) {
-    //   showError("Vui lòng điền đầy đủ thông tin giao hàng!");
-    //   setForceValidate(true); // bật validate cho input
-    //   return; // dừng xử lý
-    // }
-
-    if (!customer?.id) {
-      showError("Không tìm thấy khách hàng!");
+  const handleSubmit = async () => {
+    // showInfo("HAHAHH");
+    if (products.length === 0) {
+      showInfo("Giỏ hàng đang trống, vui lòng thêm sản phẩm!");
       return;
     }
 
-    // Nếu đầy đủ → show toast success
-    showSuccess("Đơn hàng của bạn đã được xác nhận");
+    if (!selectedAddressId) {
+      showInfo("Vui lòng chọn địa chỉ giao hàng");
+      return;
+    }
 
-    // Chuyển hướng về Home sau 1 giây
-    setTimeout(() => {
+    const confirm = await showConfirm("Bạn có chắc chắn muốn đặt hàng không?");
+    if (!confirm) return;
+    setIsOrdering(true);
+    try {
+      const res = await fetch(`/api/order-customer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: customer?.id,
+          addressId: selectedAddressId, // ID địa chỉ lấy từ component con
+          items: products,              // Danh sách sản phẩm
+          totalCost: total,          // Tổng tiền
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        showError(data.message || "Đặt hàng thất bại");
+        throw new Error(data.message || "Đặt hàng thất bại");
+      }
+
+      // 5. Xử lý Thành công
+      showSuccess(`Đặt hàng thành công`);
+
+      // Clear giỏ hàng ở Client
+      setProducts([]);
+
       router.push("/");
-    }, 1000);
+    } catch (error) {
+      console.error(error);
+      showError(error.message || "Có lỗi xảy ra khi đặt hàng");
+    } finally {
+      setIsOrdering(false);
+    }
+
+
   };
-
-  //   const handleSubmit = () => {
-  //   // Hiển thị toast thông báo thành công
-  //   setForceValidate((prev) => !prev);
-
-  //   showSuccess("Đơn hàng của bạn đã được xác nhận");
-
-  //   // Chuyển hướng về Home sau 1 giây
-  //   setTimeout(() => {
-  //     router.push("/");
-  //   }, 1000);
-  // };
-
-  // Tăng/Giảm số lượng
-  // Trong CartPage.tsx
 
   const handleQuantityChange = async (productId: number, sizeId: number, delta: number) => {
     // 1. Tìm sản phẩm trong danh sách hiện tại để lấy số lượng cũ
@@ -422,10 +437,12 @@ export default function PayContent() {
   };
 
 
-
+  const handleShippingChange = (method: ShippingMethod, fee: number) => {
+    setShippingFee(fee);
+    setShippingMethod(method);
+  }
   // Tính tổng tạm tính
   const subtotal = products.reduce((sum, p) => sum + p.price * p.quantity, 0);
-  const shippingFee = 3000;
   const total = subtotal + shippingFee;
 
   return (
@@ -515,32 +532,19 @@ export default function PayContent() {
           {/* DELIVERY METHOD */}
           <div className="border-t border-gray-100">
             {/* <div className="bg-gray-50 p-4 rounded-lg border border-gray-200"> */}
-            <DeliveryMethod />
+            <DeliveryMethod
+              selectedMethod={shippingMethod}
+              onMethodChange={handleShippingChange}
+            />
             {/* </div> */}
           </div>
 
           {/* PAY METHOD */}
-          <div className="border-t border-gray-100">
-            {/* <div className="bg-gray-50 p-4 rounded-lg border border-gray-200"> */}
+          {/* <div className="border-t border-gray-100">
+            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
             <PayMethod />
-            {/* </div> */}
-          </div>
-
-          {/* FOOTER ACTIONS */}
-          <div className="mt-10 mb-10 flex flex-col items-center gap-4">
-            <button
-              suppressHydrationWarning
-              onClick={handleSubmit}
-              className="w-full h-[56px] bg-orange-600 text-white text-lg font-bold rounded-md hover:bg-orange-700 shadow-md transition-all transform hover:-translate-y-0.5 cursor-pointer flex justify-center items-center"
-            >
-              Hoàn tất đơn hàng
-            </button>
-
-            <a href="/" className="text-sm text-gray-500 hover:text-orange-600 flex items-center gap-1 transition">
-              <span className="text-lg"><ArrowLeft size={17} /></span> Quay lại trang chủ
-            </a>
-          </div>
-
+            </div>
+          </div> */}
         </div>
       </div>
 
@@ -674,21 +678,27 @@ export default function PayContent() {
               <AddressSelectBox
                 customerId={customer.id}
                 refresh={refreshAddress}
+                onAddressSelect={(id) => setSelectedAddressId((id))}
               />
             ) : (
               <div className="animate-pulse h-10 bg-gray-200 rounded w-full"></div>
             )}
           </div>
 
-          {/* NOTE SECTION */}
-          <div className="mt-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Ghi chú đơn hàng</label>
-            <div className="relative">
-              <textarea
-                placeholder="Nhập ghi chú cho người bán..."
-                className="w-full border border-gray-300 rounded-md p-3 text-sm focus:ring-1 focus:ring-orange-500 focus:border-orange-500 resize-none h-[100px] bg-white transition-all shadow-sm"
-              ></textarea>
-            </div>
+          {/* FOOTER ACTIONS */}
+          <div className="cursor-pointer mt-10 mb-10 flex flex-col items-center gap-4">
+            <button
+              suppressHydrationWarning
+              onClick={handleSubmit}
+              className="cursor-pointer w-full h-[56px] bg-orange-600 text-white text-lg font-bold rounded-md hover:bg-orange-700 shadow-md transition-all transform hover:-translate-y-0.5 cursor-pointer flex justify-center items-center"
+              disabled={isOrdering}
+            >
+              {isOrdering ? "Đang xử lý..." : "Đặt hàng"}
+            </button>
+
+            <a href="/" className="text-sm text-gray-500 hover:text-orange-600 flex items-center gap-1 transition">
+              <span className="text-lg"><ArrowLeft size={17} /></span> Quay lại trang chủ
+            </a>
           </div>
 
         </div>

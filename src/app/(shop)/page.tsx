@@ -21,8 +21,21 @@ export default async function HomePage(props: { searchParams: SearchParams }) {
 
     const [productsResult, categoriesResult] = await Promise.all([productsData, categoriesData]);
     const products = await productsResult.json();
-
     const categories = await categoriesResult.json();
+
+    // Kiểm tra nếu products không phải là array (có lỗi từ API)
+    if (!Array.isArray(products)) {
+        console.error('Products API Error:', products);
+        return (
+            <div className="container mx-auto px-17 py-8">
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    <p className="font-bold">Lỗi kết nối database</p>
+                    <p>Vui lòng kiểm tra file .env.local và đảm bảo thông tin database đúng.</p>
+                    <p className="text-sm mt-2">Chi tiết: {JSON.stringify(products)}</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div>

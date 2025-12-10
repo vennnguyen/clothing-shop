@@ -258,6 +258,15 @@ VALUES (
         '1998-12-20',
         1,
         CURDATE()
+    ),
+    (
+        'Nguyễn Văn D',
+        'staff3@example.com',
+        '$2b$10$6zJRsJ/RGFxf2LcyUyCGauls/HunfZPUpuRO0SKWJIL9ZK7eBxaJi',
+        2,
+        '2000-06-15',
+        1,
+        CURDATE()
     );
 INSERT INTO Customers (
         fullName,

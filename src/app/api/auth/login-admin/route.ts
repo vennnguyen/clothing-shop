@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
         // 1. Tìm trong bảng accounts + roles
         const [rows]: any = await pool.query(
             `
-            SELECT a.id, a.email, a.password, a.fullName as name,r.name AS role 
+            SELECT a.id, a.email, a.password, a.fullName as name, r.name AS role 
             FROM accounts a 
             JOIN roles r ON r.id = a.roleId 
             WHERE a.email = ? LIMIT 1

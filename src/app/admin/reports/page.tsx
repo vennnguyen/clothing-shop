@@ -11,6 +11,7 @@ interface User {
   id?: number;
   name?: string;
   role?: string;
+  roleId?: number;  // 1=Admin, 2=Staff
 }
 
 interface ReportsProps {
@@ -22,13 +23,15 @@ export default function Reports({ user }: ReportsProps) {
   const currentUser: User = user ?? { id: 0, name: 'Local', role: 'admin' };
 
   const [selectedReport, setSelectedReport] = useState(() => (
-    currentUser.role === 'admin' ? 'revenue' : 'customer'
+    currentUser.roleId === 1 ? 'revenue' : 'customer'
   ));
   const [dateRange, setDateRange] = useState({ from: '2024-01-01', to: '2024-12-31' });
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  // Danh sách báo cáo dựa trên role
-  const reportTypes = currentUser.role === 'admin' 
+  // Danh sách báo cáo dựa trên roleId
+  // roleId = 1 (Admin): xem tất cả báo cáo
+  // roleId = 2 (Staff): chỉ xem khách hàng, sản phẩm, đơn hàng
+  const reportTypes = currentUser.roleId === 1
     ? [
         { id: 'revenue', name: 'Báo cáo doanh thu', icon: '💰' },
         { id: 'employee', name: 'Báo cáo hiệu suất nhân viên', icon: '👥' },
@@ -37,6 +40,7 @@ export default function Reports({ user }: ReportsProps) {
         { id: 'order', name: 'Báo cáo đơn hàng', icon: '📋' },
       ]
     : [
+        // Staff (roleId = 2): chỉ được xem khách hàng, sản phẩm, đơn hàng
         { id: 'customer', name: 'Báo cáo khách hàng', icon: '👤' },
         { id: 'product', name: 'Báo cáo sản phẩm', icon: '📦' },
         { id: 'order', name: 'Báo cáo đơn hàng', icon: '📋' },
@@ -44,10 +48,13 @@ export default function Reports({ user }: ReportsProps) {
 
   // If user prop later changes, ensure non-admins don't see revenue by default
   useEffect(() => {
-    if (currentUser.role !== 'admin' && selectedReport === 'revenue') {
+    if (currentUser.roleId !== 1 && selectedReport === 'revenue') {
       setSelectedReport('customer');
     }
-  }, [currentUser.role, selectedReport]);
+    if (currentUser.roleId !== 1 && selectedReport === 'employee') {
+      setSelectedReport('customer');
+    }
+  }, [currentUser.roleId, selectedReport]);
 
   const handleExportReport = (format: string) => {
     alert(`Đang xuất báo cáo dạng ${format.toUpperCase()}...`);

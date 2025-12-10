@@ -73,14 +73,14 @@ export default function CategoryForm({
             <div className="bg-white w-full max-w-md rounded shadow-lg">
                 <div className="bg-green-400 py-4 px-6 flex justify-center items-center">
                     <h2 className="text-xl md:text-2xl font-bold text-white uppercase tracking-wide ">
-                        {category ? "Cập nhật danh mục" : "Thêm sản danh mục"}
+                        {category ? "Cập nhật danh mục" : "Thêm danh mục"}
                     </h2>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-4 p-6">
                     {/* Name */}
                     <div>
-                        <label className="block text-sm font-bold text-gray-700 mb-1">Tên sản phẩm</label>
+                        <label className="block text-sm font-bold text-gray-700 mb-1">Tên danh mục</label>
                         <input
                             name="name"
                             value={form.name}

@@ -1,6 +1,7 @@
 DROP DATABASE IF EXISTS quanao;
-CREATE DATABASE IF NOT EXISTS quanao;
+CREATE DATABASE IF NOT EXISTS quanao CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE quanao;
+SET NAMES utf8mb4;
 -- ========================
 -- 1. Roles
 -- ========================
@@ -17,10 +18,13 @@ CREATE TABLE Roles (
 CREATE TABLE Accounts (
     id INT PRIMARY KEY AUTO_INCREMENT COMMENT 'Mã tài khoản',
     fullName VARCHAR(255) NOT NULL COMMENT 'Họ tên nhân viên',
-    email VARCHAR(100) COMMENT 'Email đăng nhập (Duy nhất)',
+    email VARCHAR(100) UNIQUE COMMENT 'Email đăng nhập (Duy nhất)',
+    phone VARCHAR(10) UNIQUE COMMENT 'Số điện thoại',
     password VARCHAR(255) COMMENT 'Mật khẩu đã mã hóa',
     roleId INT COMMENT 'FK: Mã nhóm quyền',
     birthday DATE COMMENT 'Ngày sinh nhân viên',
+    gender ENUM('Nam', 'Nữ') COMMENT 'Giới tính',
+    address TEXT COMMENT 'Địa chỉ',
     status INT DEFAULT 1 COMMENT 'Trạng thái: 1-Hoạt động, 0-Bị khóa',
     createdDate DATE DEFAULT (CURRENT_DATE) COMMENT 'Ngày tạo tài khoản',
     FOREIGN KEY (roleId) REFERENCES Roles(id)
@@ -226,36 +230,48 @@ VALUES (1, 'Admin'),
 INSERT INTO Accounts (
         fullName,
         email,
+        phone,
         password,
         roleId,
         birthday,
+        gender,
+        address,
         status,
         createdDate
     )
 VALUES (
         'Nguyễn Văn A',
         'admin@gmail.com',
+        '0901234567',
         '$2b$10$6zJRsJ/RGFxf2LcyUyCGauls/HunfZPUpuRO0SKWJIL9ZK7eBxaJi',
         1,
         '1990-01-01',
+        'Nam',
+        '123 Đường Lê Lợi, Quận 1, TP.HCM',
         1,
         CURDATE()
     ),
     (
         'Nguyễn Văn B',
         'staff1@example.com',
+        '0901234568',
         '123456',
         2,
         '1995-05-10',
+        'Nữ',
+        '456 Nguyễn Huệ, Quận 1, TP.HCM',
         1,
         CURDATE()
     ),
     (
         'Nguyễn Văn C',
         'staff2@example.com',
+        '0901234569',
         '123456',
         2,
         '1998-12-20',
+        'Nam',
+        '789 Trần Hưng Đạo, Quận 5, TP.HCM',
         1,
         CURDATE()
     );

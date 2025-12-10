@@ -18,7 +18,16 @@ export async function POST(req: NextRequest) {
 
         if (!user) return NextResponse.json({ message: "SĐT chưa đăng ký!" }, { status: 404 });
 
-        const validPass = await bcrypt.compare(password, user.password);
+        // Kiểm tra mật khẩu: hỗ trợ cả plain text và bcrypt hash
+        let validPass = false;
+        if (user.password.startsWith('$2b$') || user.password.startsWith('$2a$')) {
+            // Nếu password đã hash bằng bcrypt
+            validPass = await bcrypt.compare(password, user.password);
+        } else {
+            // Nếu password là plain text (cho development)
+            validPass = password === user.password;
+        }
+        
         if (!validPass) return NextResponse.json({ message: "Sai mật khẩu!" }, { status: 401 });
 
         // 2. Tạo Token (Luôn set role là customer)

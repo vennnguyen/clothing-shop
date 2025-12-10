@@ -10,6 +10,8 @@ import {
     FileCheck2,
     ClipboardPen,
     BarChart3,
+    Users,
+    UserCog,
 } from "lucide-react";
 interface User {
     id?: number;
@@ -24,6 +26,8 @@ export default function Sidebar({ user }: { user: User | null }) {
         { name: "Sản phẩm", path: "/admin/products", icon: <Package size={20} /> },
         { name: "Danh mục", path: "/admin/categories", icon: <Shapes size={20} /> },
         { name: "Đơn hàng", path: "/admin/orders", icon: <ClipboardPen size={20} /> },
+        { name: "Nhân viên", path: "/admin/employees", icon: <UserCog size={20} /> },
+        { name: "Khách hàng", path: "/admin/customers", icon: <Users size={20} /> },
         { name: "Nhà cung cấp", path: "/admin/suppliers", icon: <Truck size={20} /> },
         { name: "Phiếu nhập", path: "/admin/imports", icon: <FileCheck2 size={20} /> },
         { name: "Báo Cáo & Thống Kê", path: "/admin/reports", icon: <BarChart3 size={20} /> },

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import LogoutButton from "../ui/LogoutButton";
 import { BarChart3, Boxes, FilePlus2, Grid3X3, LayoutDashboard, ShoppingCart, ShieldCheck, Truck, UserSquare2, Users } from "lucide-react";
+
 interface User {
     id?: number;
     name?: string;
@@ -12,6 +13,7 @@ export default function Sidebar({ user }: { user: User | null }) {
     // console.log('Sidebar user:', user);
     // const router = useRouter();
     const pathname = usePathname();
+
     const menuItems = [];
     if (user.role === "Admin") {
         menuItems.push(
@@ -43,8 +45,6 @@ export default function Sidebar({ user }: { user: User | null }) {
         );
     }
 
-        
-   
 
     // Hàm kiểm tra mục có phải đang active không
     const isActive = (path: string) => pathname === path;

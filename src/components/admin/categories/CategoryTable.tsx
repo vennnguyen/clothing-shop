@@ -36,15 +36,15 @@ export default function CategoryTable({
                 />
                 <div>
                     <button
-                        className="mb-4 p-2 bg-green-600 text-white rounded cursor-pointer"
+                        className="mb-4 p-2 bg-green-600 text-white rounded cursor-pointer hover:bg-green-700"
                         onClick={() => {
                             setSelected(null);
                             setIsFormOpen(true);
                         }}
                     >
-                        <span className="flex items-center gap-2">
+                        <span className="flex items-center gap-2 cursor-pointer">
                             <Plus size={20} />
-                            Thêm sản phẩm
+                            Thêm danh mục
                         </span>
                     </button>
                 </div>

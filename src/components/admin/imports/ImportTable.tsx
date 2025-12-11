@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Import } from "../../../app/types/interfaces";
 import ImportModal from "./ImportModal";
+import { CircleEllipsis, FilePenIcon, FunnelX, Plus, Trash2 } from "lucide-react";
 
 export default function ImportTable({
   imports,
@@ -53,8 +54,8 @@ export default function ImportTable({
 
   return (
     <div className="bg-white p-4 shadow rounded">
-      <div className="flex justify-between items-center mb-4">
-        <div className="flex gap-2 items-center">
+      <div className="flex justify-between items-center">
+        <div className="flex gap-2 items-center mb-2">
           <label>Ngày từ:</label>
           <input
             type="date"
@@ -70,25 +71,28 @@ export default function ImportTable({
             className="border p-1 rounded"
           />
           <button
-            className="px-2 py-1 bg-gray-500 text-white rounded"
+            className="px-2 py-1 bg-white text-gray-500 border border-gray-500 rounded cursor-pointer hover:bg-gray-500 hover:text-white transition-colors duration-200"
             onClick={() => {
               setStartDate("");
               setEndDate("");
             }}
           >
-            Xóa lọc
+            <FunnelX/>
           </button>
         </div>
         <div>
           <button
-            className="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer"
+            className="mb-4 p-2 bg-green-600 text-white rounded cursor-pointer"
             onClick={() => {
               setSelected(null);
               setModalMode("form");
               setModalOpen(true);
             }}
           >
-            ➕ Thêm phiếu nhập
+            <span className="flex items-center gap-2">
+              <Plus size={20} />
+              Thêm nhà cung cấp
+          </span>
           </button>
         </div>
       </div>
@@ -119,37 +123,41 @@ export default function ImportTable({
               <td className="p-2 border space-x-2">
                 {s.status !== "Đã xác nhận" && (
                   <button
-                    className="px-2 py-1 bg-yellow-500 text-white rounded cursor-pointer"
+                    // className="px-2 py-1 bg-yellow-500 text-white rounded cursor-pointer"
+                  className="px-2 py-1 bg-white text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-200"
+
                     onClick={() => {
                       setSelected(s);
                       setModalMode("form");
                       setModalOpen(true);
                     }}
                   >
-                    Sửa
+                    <FilePenIcon />
                   </button>
                 )}
                 {s.status !== "Đã xác nhận" && (
                   <button
-                    className="px-2 py-1 bg-red-600 text-white rounded cursor-pointer"
+                  className="px-2 py-1 bg-white text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-200"
+
                     onClick={() => {
                       setSelected(s);
                       setModalMode("delete");
                       setModalOpen(true);
                     }}
                   >
-                    Xóa
+                  <Trash2/>
+
                   </button>
                 )}
                 <button
-                  className="px-2 py-1 bg-blue-600 text-white rounded cursor-pointer"
+                  className="px-2 py-1 bg-white text-gray-500 border border-gray-500 rounded cursor-pointer hover:bg-gray-500 hover:text-white transition-colors duration-200"
                   onClick={() => {
                     setSelected(s);
                     setModalMode("detail");
                     setModalOpen(true);
                   }}
                 >
-                  Chi tiết
+                  <CircleEllipsis/>
                 </button>
               </td>
             </tr>

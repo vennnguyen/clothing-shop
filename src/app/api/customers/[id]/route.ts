@@ -7,9 +7,9 @@ export async function GET(
   { params }: { params: { id: string } }
 ) {
   try {
-    const customerId = parseInt(params.id);
+    const { id } = await params;
 
-    if (isNaN(customerId)) {
+    if (isNaN(Number(id))) {
       return NextResponse.json({ error: "ID không hợp lệ" }, { status: 400 });
     }
 
@@ -18,7 +18,7 @@ export async function GET(
       `SELECT *
        FROM customers
        WHERE id = ?`,
-      [customerId]
+      [id]
     );
 
     if (rows.length === 0) {

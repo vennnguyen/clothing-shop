@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '../../../lib/db';
 import { Order } from '../../types/interfaces';
+import { formatDateTime, formatMoney, formatPhone } from '../../../utils/format';
 
 
 //tạo đơn hàng
@@ -44,12 +45,42 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   try {
     //lấy tất cả đơn hàng
-    const [orders] = await pool.query('SELECT * FROM orders ORDER BY createdDate DESC');
+    const [orders] = await pool.query(`
+    SELECT 
+        o.id AS orderId,
+        o.createdDate,
+        o.shippedDate,
+        o.cost,
+
+        c.id AS customerId,
+        c.fullName,
+        c.email,
+        c.phone,
+
+        a.houseNumber,
+        a.ward,
+        a.city,
+
+        s.name AS statusName
+    FROM Orders o
+    LEFT JOIN Customers c ON o.customerId = c.id
+    LEFT JOIN Address a ON o.shippingAddressId = a.id
+    LEFT JOIN Status s ON o.statusId = s.id
+    ORDER BY o.createdDate DESC
+`);
+    // Format ngày
+    const formattedOrders = (orders as any[]).map((order) => ({
+      ...order,
+      createdDate: formatDateTime(order.createdDate),
+      shippedDate: order.shippedDate ? formatDateTime(order.shippedDate) : null,
+      cost: formatMoney(order.cost),
+      phone: formatPhone(order.phone),
+    }));
 
     const [details] = await pool.query('SELECT * FROM orderdetails');
 
     //ghép chi tiết vào đơn hàng
-    const ordersWithDetails = (orders as any[]).map(order => ({
+    const ordersWithDetails = (formattedOrders as any[]).map(order => ({
       ...order,
       items: (details as any[]).filter(d => d.orderId === order.id),
     }));

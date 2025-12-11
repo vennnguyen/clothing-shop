@@ -96,10 +96,21 @@ export async function POST(request: NextRequest) {
     const quantity = 0;
     const categoryId = Number(formData.get('category'));
     const description = formData.get('description') as string;
-    const size = Number(formData.get('size'));
+    // const size = Number(formData.get('size'));
     const status = Number(formData.get('status'));
     const images = formData.getAll('images') as File[];
 
+    const sizesString = formData.get('sizes') as string;
+    let sizeIds: number[] = [];
+
+    if (sizesString) {
+      try {
+        sizeIds = JSON.parse(sizesString);
+      } catch (error) {
+        console.error("Lỗi parse JSON sizes:", error);
+        sizeIds = [];
+      }
+    }
     await conn.beginTransaction();
 
     // INSERT product
@@ -112,10 +123,17 @@ export async function POST(request: NextRequest) {
     const newProductId = (result as any).insertId;
 
     // INSERT size
-    await conn.query(
-      `INSERT INTO productsizes (productId, sizeId, quantity) VALUES (?, ?, ?)`,
-      [newProductId, size, quantity]
-    );
+    if (sizeIds.length > 0) {
+      const sizeValues: any[] = [];
+      const sizePlaceholders: string[] = [];
+      sizeIds.forEach((sizeId) => {
+        sizeValues.push(newProductId, sizeId, quantity);
+        sizePlaceholders.push('(?,?,?)');
+      })
+
+      const sqlSizes = `INSERT INTO productsizes (productId,sizeId, quantity) VALUES ${sizePlaceholders.join(', ')}`;
+      await conn.query(sqlSizes, sizeValues);
+    }
 
     // INSERT images
     if (images && images.length > 0) {

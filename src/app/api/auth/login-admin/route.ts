@@ -4,8 +4,11 @@ import { SignJWT } from "jose";
 import pool from "../../../../lib/db";
 const JWT_SECRET = process.env.JWT_SECRET;
 
+
+
 export async function POST(req: NextRequest) {
     try {
+
         const { email, password } = await req.json(); // Nhận email
 
         // 1. Tìm trong bảng accounts + roles
@@ -19,6 +22,7 @@ export async function POST(req: NextRequest) {
             [email]
         );
         const user = rows[0];
+
 
         if (!user) return NextResponse.json({ message: "Email không tồn tại!" }, { status: 404 });
 
@@ -55,4 +59,4 @@ export async function POST(req: NextRequest) {
     } catch (error) {
         return NextResponse.json({ message: error.message || "Lỗi Server" }, { status: 500 });
     }
-}
+}   

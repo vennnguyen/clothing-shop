@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Import, Product as ProductType, Supplier as SupplierType } from "../../../app/types/interfaces";
 import { useToastMessage } from "../../../../hooks/useToastMessage";
 import { getCurrentUser } from "../../../actions/auth";
+import { Trash2 } from "lucide-react";
 
 type Mode = "form" | "delete" | "detail";
 
@@ -378,20 +379,48 @@ export default function ImportModal({
   const readonly = mode === "detail";
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-4xl p-6 rounded shadow-lg max-h-[90vh] overflow-auto">
-        <h2 className="text-2xl font-bold mb-4">
+        {/* <h2 className="text-2xl font-bold mb-4">
           {mode === "detail" ? "📄 Chi tiết phiếu nhập" :
            mode === "delete" ? "❌ Xóa phiếu nhập" :
            importData ? "✏️ Sửa phiếu nhập" : "➕ Thêm phiếu nhập"}
+        </h2> */}
+
+        {mode === "delete" ? (
+        <h2 className="text-xl font-bold mb-4 flex gap-3">
+          <Trash2 className="h-6 w-6 text-red-600" />
+          Xóa phiếu nhập
         </h2>
+      ) : (
+        <div
+          className={`py-4 px-6 flex justify-center items-center mb-4 ${
+            mode === "detail"
+              ? "bg-gray-500"
+              : importData
+              ? "bg-blue-400"
+              : "bg-green-400"
+          }`}
+        >
+          <h2 className="text-xl md:text-2xl font-bold text-white uppercase tracking-wide flex items-center gap-2">
+            {mode === "detail"
+              ? "Chi tiết phiếu nhập"
+              : importData
+              ? "Sửa phiếu nhập"
+              : "Thêm phiếu nhập"}
+          </h2>
+        </div>
+      )}
+
+
+
 
         {mode === "delete" ? (
           <div>
             <p className="mb-4">Bạn có chắc chắn muốn xóa <b>phiếu nhập mã {importData?.id}</b> không?</p>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setOpen(false)} className="px-4 py-2 bg-gray-300 rounded">Hủy</button>
-              <button onClick={handleSubmit} className="px-4 py-2 bg-red-600 text-white rounded">Xóa</button>
+              <button onClick={() => setOpen(false)} className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors cursor-pointer">Hủy bỏ</button>
+              <button onClick={handleSubmit} className="cursor-pointer px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium flex items-center gap-2">Xóa</button>
             </div>
           </div>
         ) : (
@@ -399,24 +428,24 @@ export default function ImportModal({
             {/* Form fields */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block mb-1">Ngày nhập</label>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Ngày nhập</label>
                 <input type="date" name="date" value={form.date} onChange={handleChange}
                   disabled={readonly} className={`w-full p-2 border rounded ${readonly ? "bg-gray-100" : ""}`} />
               </div>
               <div>
-                <label className="block mb-1">Nhân viên</label>
-                <input type="text" value={form.employee} disabled className="w-full p-2 border rounded bg-gray-100" />
+                <label className="block text-sm font-bold text-gray-700 mb-1">Nhân viên</label>
+                <input type="text" value={form.employee} disabled className="w-full p-2.5 border rounded-lg outline-none transition-all border-gray-300 focus:ring-2 focus:ring-sky-400" />
               </div>
               <div>
-                <label className="block mb-1">Trạng thái</label>
-                {readonly ? <input type="text" value={form.status} disabled className="w-full p-2 border rounded bg-gray-100" /> :
+                <label className="block text-sm font-bold text-gray-700 mb-1">Trạng thái</label>
+                {readonly ? <input type="text" value={form.status} disabled className="w-full p-2.5 border rounded-lg outline-none transition-all border-gray-300 focus:ring-2 focus:ring-sky-400" /> :
                   <select name="status" value={form.status} onChange={handleChange} className="w-full p-2 border rounded">
                     <option value="Đang xử lý">Đang xử lý</option>
                     <option value="Đã xác nhận">Đã xác nhận</option>
                   </select>}
               </div>
               <div>
-                <label className="block mb-1">Nhà cung cấp</label>
+                <label className="block text-sm font-bold text-gray-700 mb-1">Nhà cung cấp</label>
                 <select name="supplierId" value={form.supplierId} onChange={handleChange} disabled={readonly} className={`w-full p-2 border rounded ${readonly ? "bg-gray-100" : ""}`}>
                   <option value={0} disabled>-- Chọn nhà cung cấp --</option>
                   {suppliers.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
@@ -428,7 +457,7 @@ export default function ImportModal({
             {/* Product search */}
 {!readonly && (
   <div className="relative">
-    <label className="block mb-1">Thêm sản phẩm</label>
+    <label className="block text-sm font-bold text-gray-700 mb-1">Thêm sản phẩm</label>
     <input
       type="text"
       placeholder="Tìm sản phẩm..."
@@ -503,13 +532,23 @@ export default function ImportModal({
             </div>
 
             <div>
-              <label className="block mb-1">Tổng cộng</label>
-              <input type="number" value={total} disabled className="w-full p-2 border rounded bg-gray-100" />
+              <label className="block text-sm font-bold text-gray-700 mb-1">Tổng cộng</label>
+              <input type="number" value={total} disabled className="w-full p-2.5 border rounded-lg outline-none transition-all border-gray-300 focus:ring-2 focus:ring-sky-400" />
             </div>
 
             <div className="flex justify-end gap-3 mt-4">
-              <button type="button" onClick={() => setOpen(false)} className="px-4 py-2 bg-gray-300 rounded">Đóng</button>
-              {!readonly && <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded">{importData ? "Cập nhật" : "Thêm mới"}</button>}
+              <button type="button" onClick={() => setOpen(false)} className="px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-lg transition-colors cursor-pointer">Hủy bỏ</button>
+              {!readonly && (
+                <button
+                  type="submit"
+                  className={`cursor-pointer px-8 py-2.5 text-white font-bold rounded-lg shadow-md 
+                    transition-all transform active:scale-95 flex items-center gap-2
+                    ${importData ? "bg-blue-500 hover:bg-blue-600" : "bg-green-500 hover:bg-green-600"}`}
+                >
+                  {importData ? "Cập nhật" : "Thêm mới"}
+                </button>
+              )}
+
             </div>
           </form>
         )}

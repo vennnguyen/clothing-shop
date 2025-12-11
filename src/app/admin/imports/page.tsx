@@ -45,7 +45,7 @@ export default function ImportsPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-5 flex items-center gap-2">
-        <FontAwesomeIcon icon={faCalendarPlus} />
+        {/* <FontAwesomeIcon icon={faCalendarPlus} /> */}
         Quản lý phiếu nhập
       </h1>
       <ImportTable imports={imports} refresh={loadImports} />

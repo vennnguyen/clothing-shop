@@ -67,9 +67,12 @@ interface OrderItem {
 }
 
 export interface Order {
+  orderId?: number;
   createdDate?: string;
+  fullName?:string
+  phone?:string
   shippedDate?: string | null;
-  status?: number;
+  statusName?: string;
   cost: number;
   items: OrderItem[];
 }

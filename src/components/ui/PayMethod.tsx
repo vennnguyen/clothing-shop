@@ -16,19 +16,19 @@ export default function PayMethod() {
         {/* 15% */}
         <input
           type="radio"
-          className="w-[15%]"
+          className="w-[15%] h-5"
           onChange={() => setSelected("pay")}
           checked={selected === "pay"}
           name="pay"
         />
 
         {/* 15% */}
-        <div className="w-[15%] flex justify-center">
+        <div className="w-auto flex justify-center">
           <FontAwesomeIcon icon={faDolly} className="text-[30px]" />
         </div>
 
         {/* 70% */}
-        <label className="w-[70%] text-gray-500 cursor-pointer">
+        <label className="w-[75%] text-gray-500 cursor-pointer">
           Thanh toán cho shipper khi nhận hàng (COD)
         </label>
       </div>

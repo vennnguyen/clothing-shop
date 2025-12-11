@@ -27,8 +27,14 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     try {
         const accountId = parseInt(params.id, 10);
-        await pool.query('DELETE FROM accounts WHERE id = ?', [accountId]);
-        return NextResponse.json({ message: 'Xóa tài khoản thành công' });
+        //thay đổi status tài khoản
+        await pool.query(
+            `UPDATE accounts
+             SET status = '0'
+             WHERE id = ?`,
+            [accountId]
+        );
+        return NextResponse.json({ message: 'Tài khoản đã được xóa' });
     } catch (error) {
         console.error('DELETE /accounts/[id] error:', error);
         return NextResponse.json({ error: 'Lỗi khi xóa tài khoản' }, { status: 500 });

@@ -3,18 +3,32 @@
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { Customer } from "../../../app/types/interfaces";
+import { phoneRegex } from "../../../lib/validator";
 
 export default function CustomerForm({
   customer,
   onClose,
   onSuccess,
+  customers,
 }: {
   customer: Customer | null;
   onClose: () => void;
   onSuccess: (customer: Customer) => void;
+  customers: Customer[];
 }) {
   const [email, setEmail] = useState(customer?.email || "");
   const [password, setPassword] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState(() => {
+    // Format dateOfBirth từ DB sang YYYY-MM-DD
+    if (customer?.dateOfBirth) {
+      const date = new Date(customer.dateOfBirth);
+      return date.toISOString().split('T')[0]; // "1998-12-20"
+    }
+    return "";
+  });
+  const [phone, setPhone] = useState(customer?.phone || "");
+  const [fullName, setFullName] = useState(customer?.fullName || "");
+  const [gender, setGender] = useState(customer?.gender || "");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -22,8 +36,37 @@ export default function CustomerForm({
     e.preventDefault();
     setLoading(true);
 
-    const body: any = { email };
+    //kiểm tra số điện thoại và email tồn tại bằng vòng lặp
+    for (const c of customers) {
+      if (c.phone === phone) {
+        toast.error("Số điện thoại đã tồn tại!");
+        setLoading(false);
+        return;
+      }
+      if (c.email === email) {
+        toast.error("Email đã tồn tại!");
+        setLoading(false);
+        return;
+      }
+    }
+
+    //valide tên phải là chữ có thể có dấu và khoảng trắng, độ dài tối thiểu 3 ký tự
+    if (!/^[\p{L}\s]{3,}$/u.test(fullName)) {
+      toast.error("Họ và tên không hợp lệ!");
+      setLoading(false);
+      return;
+    }
+
+    //valite số điện thoại
+    if(phoneRegex.test(phone)===false){
+      toast.error("Số điện thoại không hợp lệ!");
+      setLoading(false);
+      return;
+    }
+
+    const body: any = { email, dateOfBirth, phone, fullName, gender};
     if (password) body.password = password;
+    console.log(body);
 
     try {
       const url = customer ? `/api/customers/${customer.id}` : "/api/customers";
@@ -66,7 +109,6 @@ export default function CustomerForm({
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              disabled={!!customer}
               className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-100"
             />
           </div>
@@ -102,6 +144,57 @@ export default function CustomerForm({
               </button>
             </div>
           </div>
+          {/* birthday */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Ngày sinh</label>
+            <input
+              type="date" 
+              required
+              value={dateOfBirth}
+              onChange={(e) => setDateOfBirth(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
+
+          {/* phone */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Số điện thoại</label>
+            <input
+              type="text" 
+              required
+              value={phone}
+              onChange={(e) => {setPhone(e.target.value)}}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
+
+          {/* fullName */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Họ và tên</label>
+            <input
+              type="text" 
+              required
+              value={fullName}
+              onChange={(e) => {setFullName(e.target.value)}}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
+          </div>
+
+          {/* gender */}
+          <div>
+            <label className="block text-sm font-medium mb-1">Giới tính</label>
+            <select
+              value={gender}
+              required
+              onChange={(e) => setGender(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500"
+            >
+              <option value="">Chọn giới tính</option>
+              <option value="Nam">Nam</option>
+              <option value="Nữ">Nữ</option>
+              <option value="Khác">Khác</option>
+            </select>
+          </div>  
 
           {/* Buttons */}
           <div className="flex gap-3 pt-4">

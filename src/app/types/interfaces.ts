@@ -35,6 +35,11 @@ export interface Customer {
   email?: string | null;
   password?: string | null;
   createdDate?: string | null;
+  dateOfBirth?: string | null;
+  phone?: string | null;
+  fullName?: string | null;
+  gender?: string | null;
+  status?: number | null; 
 }
 
 export interface Import {

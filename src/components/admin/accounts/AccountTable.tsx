@@ -21,15 +21,28 @@ export default function AccountTable({ initialAccounts, roles }: { initialAccoun
 
   // Xóa tài khoản
   const handleDelete = async (id: number) => {
-    if (!confirm("Bạn có chắc muốn xóa tài khoản này?")) return;
+    //kiểm tra status để xác định hành động
+    const account = accounts.find((acc) => acc.id === id);
+    if (!account) return;
+
+    if (account.status === 1) {
+      if (!confirm("Bạn có chắc muốn khóa tài khoản này không?")) return;
+    } else {
+      if (!confirm("Bạn có chắc muốn mở khóa tài khoản này không?")) return;
+    }
 
     try {
       const res = await fetch(`/api/accounts/${id}`, { method: "DELETE" });
       if (res.ok) {
-        setAccounts(accounts.filter((acc) => acc.id !== id));
-        toast.success("Xóa tài khoản thành công!");
+        // Cập nhật trạng thái trong danh sách
+        setAccounts(
+          accounts.map((acc) =>
+            acc.id === id ? { ...acc, status: acc.status === 1 ? 0 : 1 } : acc
+          )
+        );
+        toast.success("Thành công!");
       } else {
-        toast.error("Xóa thất bại!");
+        toast.error("Thất bại!");
       }
     } catch (error) {
       toast.error("Lỗi kết nối!");
@@ -135,15 +148,28 @@ export default function AccountTable({ initialAccounts, roles }: { initialAccoun
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                       </button>
-                      <button
-                        onClick={() => handleDelete(account.id)}
-                        className="text-red-600 hover:text-red-800 border border-red-600 p-2 rounded hover:bg-red-50"
-                        title="Xóa"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
+                      {/* Kiểm tra status để hiện thị icon khóa hay mở */}
+                      {account.status === 1 ? (
+                        <button
+                          onClick={() => handleDelete(account.id)}
+                          className="text-red-600 hover:text-red-800 border border-red-600 p-2 rounded hover:bg-red-50"
+                          title="Khóa tài khoản"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                          </svg>
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleDelete(account.id)}
+                          className="text-green-600 hover:text-green-800 border border-green-600 p-2 rounded hover:bg-green-50"
+                          title="Mở khóa tài khoản"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

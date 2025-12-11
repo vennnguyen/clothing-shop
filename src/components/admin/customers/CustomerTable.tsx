@@ -18,20 +18,25 @@ export default function CustomerTable({ initialCustomers }: { initialCustomers: 
       customer.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Xóa khách hàng
-  const handleDelete = async (id: number) => {
-    if (!confirm("Bạn có chắc muốn xóa khách hàng này?")) return;
+  // Khóa, mở khóa khách hàng
+  const handleDelete = async (id: number, customer: Customer) => {
+    if(customer.status === 1) {
+      if (!confirm("Bạn có chắc muốn khóa khách hàng này không?")) return;
+    } else {
+      if (!confirm("Bạn có chắc muốn mở khóa khách hàng này không?")) return;
+    }
 
     try {
       const res = await fetch(`/api/customers/${id}`, { method: "DELETE" });
       if (res.ok) {
-        setCustomers(customers.filter((customer) => customer.id !== id));
-        toast.success("Xóa khách hàng thành công!");
+        // setCustomers(customers.filter((customer) => customer.id !== id));
+        toast.success("Thành công!");
+        setCustomers(customers.map((c) => (c.id === id ? { ...c, status: customer.status === 1 ? 0 : 1 } : c)));
       } else {
         const data = await res.json();
-        toast.error(data.message || "Xóa thất bại!");
+        toast.error(data.message || "Khóa thất bại!");
       }
-    } catch (error) {
+    } catch (error) { 
       toast.error("Lỗi kết nối!");
     }
   };
@@ -105,7 +110,8 @@ export default function CustomerTable({ initialCustomers }: { initialCustomers: 
               </tr>
             ) : (
               filteredCustomers.map((customer) => (
-                <tr key={customer.id} className="border-b hover:bg-gray-50">
+                // kiểm tra status để disble hàng
+                <tr key={customer.id} className={`border-b hover:bg-gray-50`}>
                   <td className="p-3">{customer.id}</td>
                   <td className="p-3">
                     <span className="font-medium">{customer.email}</span>
@@ -127,15 +133,29 @@ export default function CustomerTable({ initialCustomers }: { initialCustomers: 
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                       </button>
-                      <button
-                        onClick={() => handleDelete(customer.id!)}
-                        className="text-red-600 hover:text-red-800 border border-red-600 p-2 rounded hover:bg-red-50"
-                        title="Xóa"
-                      >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                      </button>
+                      {/* Kiểm tra status để hiện thị icon khóa hay mở */}
+                      {customer.status === 1 ? (
+                        <button
+                          onClick={() => handleDelete(customer.id!, customer)}
+                          className="text-red-600 hover:text-red-800 border border-red-600 p-2 rounded hover:bg-red-50"
+                          title="Khóa khách hàng"
+          
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                          </svg>
+                        </button>
+                      ) : ( 
+                        <button
+                          onClick={() => handleDelete(customer.id!, customer)}
+                          className="text-green-600 hover:text-green-800 border border-green-600 p-2 rounded hover:bg-green-50"
+                          title="Mở khóa khách hàng"
+                        >
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"> 
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -151,6 +171,7 @@ export default function CustomerTable({ initialCustomers }: { initialCustomers: 
           customer={editingCustomer}
           onClose={handleCloseForm}
           onSuccess={handleSaveSuccess}
+          customers={customers}
         />
       )}
     </div>

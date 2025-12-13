@@ -20,7 +20,7 @@ export default function CustomerTable({ initialCustomers }: { initialCustomers: 
 
   // Khóa, mở khóa khách hàng
   const handleDelete = async (id: number, customer: Customer) => {
-    if(customer.status === 1) {
+    if (customer.status === 1) {
       if (!confirm("Bạn có chắc muốn khóa khách hàng này không?")) return;
     } else {
       if (!confirm("Bạn có chắc muốn mở khóa khách hàng này không?")) return;
@@ -36,7 +36,7 @@ export default function CustomerTable({ initialCustomers }: { initialCustomers: 
         const data = await res.json();
         toast.error(data.message || "Khóa thất bại!");
       }
-    } catch (error) { 
+    } catch (error) {
       toast.error("Lỗi kết nối!");
     }
   };
@@ -89,9 +89,8 @@ export default function CustomerTable({ initialCustomers }: { initialCustomers: 
           <span className="text-xl">+</span> Thêm khách hàng
         </button>
       </div>
-
       {/* Bảng danh sách */}
-      <div className="bg-white rounded-lg shadow overflow-hidden">
+      <div className="bg-white overflow-y-auto max-h-[460px]">
         <table className="w-full border-collapse">
           <thead>
             <tr className="bg-gray-100 border-b">
@@ -117,7 +116,7 @@ export default function CustomerTable({ initialCustomers }: { initialCustomers: 
                     <span className="font-medium">{customer.email}</span>
                   </td>
                   <td className="p-3">
-                    {customer.createdDate 
+                    {customer.createdDate
                       ? new Date(customer.createdDate).toLocaleDateString("vi-VN")
                       : "N/A"
                     }
@@ -139,19 +138,19 @@ export default function CustomerTable({ initialCustomers }: { initialCustomers: 
                           onClick={() => handleDelete(customer.id!, customer)}
                           className="text-red-600 hover:text-red-800 border border-red-600 p-2 rounded hover:bg-red-50"
                           title="Khóa khách hàng"
-          
+
                         >
                           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                           </svg>
                         </button>
-                      ) : ( 
+                      ) : (
                         <button
                           onClick={() => handleDelete(customer.id!, customer)}
                           className="text-green-600 hover:text-green-800 border border-green-600 p-2 rounded hover:bg-green-50"
                           title="Mở khóa khách hàng"
                         >
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"> 
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                           </svg>
                         </button>

@@ -240,9 +240,9 @@ export default function AdminDashboard() {
                         </div>
                     )}
 
-                    <button className="w-full mt-4 py-2 border border-blue-600 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-50 transition">
+                    {/* <button className="w-full mt-4 py-2 border border-blue-600 text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-50 transition">
                         Xem kho hàng
-                    </button>
+                    </button> */}
                 </div>
 
             </div>

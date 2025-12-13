@@ -292,11 +292,11 @@ export default function PayContent() {
 
       // 5. Xử lý Thành công
       showSuccess(`Đặt hàng thành công`);
-
+      localStorage.removeItem("cartCount");
       // Clear giỏ hàng ở Client
       setProducts([]);
 
-      router.push("/");
+      window.location.href = "/";
     } catch (error) {
       console.error(error);
       showError(error.message || "Có lỗi xảy ra khi đặt hàng");

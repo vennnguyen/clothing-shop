@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
         // 1. Tìm trong bảng customers
         const [rows]: any = await pool.query(
-            "SELECT id, fullName, password, email FROM customers WHERE phone = ? LIMIT 1",
+            "SELECT id, fullName, password, email,status FROM customers WHERE phone = ? LIMIT 1",
             [phone]
         );
         const user = rows[0];
@@ -19,7 +19,8 @@ export async function POST(req: NextRequest) {
         if (!user) return NextResponse.json({ message: "SĐT chưa đăng ký!" }, { status: 404 });
 
         const validPass = await bcrypt.compare(password, user.password);
-        if (!validPass) return NextResponse.json({ message: "Sai mật khẩu!" }, { status: 401 });
+        if (!validPass) return NextResponse.json({ message: "Tài khoản hoặc mật khẩu không đúng!" }, { status: 401 });
+        if (!user.status) return NextResponse.json({ message: "Tài khoản đã bị khóa!" }, { status: 401 });
 
         // 2. Tạo Token (Luôn set role là customer)
         const secret = new TextEncoder().encode(JWT_SECRET);

@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
         // 1. Tìm trong bảng accounts + roles
         const [rows]: any = await pool.query(
             `
-            SELECT a.id, a.email, a.password, a.fullName as name, r.name AS role 
+            SELECT a.id, a.email, a.password, a.fullName as name, a.status, r.name AS role 
             FROM accounts a 
             JOIN roles r ON r.id = a.roleId 
             WHERE a.email = ? LIMIT 1
@@ -28,6 +28,7 @@ export async function POST(req: NextRequest) {
 
         const validPass = await bcrypt.compare(password, user.password);
         if (!validPass) return NextResponse.json({ message: "Tài khoản hoặc mật khẩu không đúng!" }, { status: 401 });
+        if (!user.status) return NextResponse.json({ message: "Tài khoản đã bị khóa!" }, { status: 401 });
 
         // 2. Tạo Token (Lấy role động từ DB)
         const secret = new TextEncoder().encode(JWT_SECRET);

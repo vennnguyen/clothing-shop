@@ -26,14 +26,14 @@ export default function Sidebar({ user }: { user: User | null }) {
             { name: "Phân quyền", path: "/admin/roles", icon: <ShieldCheck size={20} /> },
             { name: "Đơn hàng", path: "/admin/orders", icon: <ShoppingCart size={20} /> },
             { name: "Khách hàng", path: "/admin/customers", icon: <UserSquare2 size={20} /> },
-            { name: "Thống kê", path: "/admin/statistics", icon: <BarChart3 size={20} /> },
+            { name: "Thống kê", path: "/admin/reports", icon: <BarChart3 size={20} /> },
         );
     } else if (user.role === "Sales") {
-        menuItems.push( 
+        menuItems.push(
             { name: "Dashboard", path: "/admin", icon: <LayoutDashboard size={20} /> },
             { name: "Đơn hàng", path: "/admin/orders", icon: <ShoppingCart size={20} /> },
             { name: "Khách hàng", path: "/admin/customers", icon: <UserSquare2 size={20} /> },
-            { name: "Thống kê", path: "/admin/statistics", icon: <BarChart3 size={20} /> },
+            { name: "Thống kê", path: "/admin/reports", icon: <BarChart3 size={20} /> },
         );
     } else {
         menuItems.push(

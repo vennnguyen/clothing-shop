@@ -490,7 +490,9 @@ INSERT INTO `productimages` (`id`, `productId`, `imageUrl`, `isMain`) VALUES
 	(9, 4, '/uploads/1764693514846-1_010469a27497440ea1dd174f4a255229_master.jpg', 0),
 	(10, 4, '/uploads/1764693514849-pro1.jpg', 0),
 	(11, 4, '/uploads/1764693514859-pro2.jpg', 0),
-	(12, 4, '/uploads/1764693514869-pro3.jpg', 0);
+	(12, 4, '/uploads/1764693514869-pro3.jpg', 0),
+	(13, 2, '/uploads/product2_1.jpg', 0),
+	(14, 2, '/uploads/product2_2.jpg', 0);
 
 -- Dumping structure for table quanao.products
 CREATE TABLE IF NOT EXISTS `products` (

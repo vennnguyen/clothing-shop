@@ -58,63 +58,65 @@ export default function ProductTable({
                     </button>
                 </div>
             </div>
+            <div className="overflow-y-auto max-h-[460px]">
 
-            <table className="w-full border">
-                <thead className="bg-gray-100 text-center">
-                    <tr>
-                        <th className="p-2 border">ID</th>
-                        <th className="p-2 border">Ảnh</th>
-                        <th className="p-2 border">Tên</th>
-                        <th className="p-2 border">Giá</th>
-                        <th className="p-2 border">Danh mục</th>
-                        <th className="p-2 border">Size & Số lượng</th>
-                        <th className="p-2 border">Trạng thái</th>
-                        <th className="p-2 border">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {products.map((p) => (
-                        <tr key={p.id} className="border-t  text-center">
-                            <td className="p-2 border">{p.id}</td>
-                            <td className="p-2 border">
-                                <img src={p.imageUrl} alt="Noimg" style={{ width: "50px", height: "50px", justifySelf: "center" }} />
-                            </td>
-                            <td className="p-2 border">{p.name}</td>
-                            <td className="p-2 border">{p.price}</td>
-                            <td className="p-2 border">{p.category}</td>
-                            <td className="p-2 border">{p.sizes}</td>
-                            <td className="p-2 border">
-                                <span className={`px-2 py-1 rounded-full text-xs font-bold ${p.status === 1
-                                    ? "bg-green-100 text-green-700 border border-green-200" // Style cho Hoạt động
-                                    : "bg-gray-100 text-gray-600 border border-gray-200"     // Style cho Ẩn
-                                    }`}>
-                                    {p.status === 1 ? "Đang bán" : "Ngừng kinh doanh"}
-                                </span>
-                            </td>
-                            <td className="p-2 border space-x-2">
-                                <button
-                                    className="cursor-pointer px-2 py-1 bg-white text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-200"
-                                    onClick={() => {
-                                        setSelected(p);
-                                        setIsFormOpen(true);
-                                    }}
-                                >
-                                    <FilePenIcon />
-                                </button>
-                                <button
-                                    className="cursor-pointer px-2 py-1 bg-white text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-200"
-                                    onClick={() => {
-                                        setSelected(p);
-                                        setIsDeleteOpen(true);
-                                    }}
-                                >
-                                    <Trash2 />
-                                </button>
-                            </td>
+                <table className="w-full border">
+                    <thead className="bg-gray-100 text-center">
+                        <tr>
+                            <th className="p-2 border">ID</th>
+                            <th className="p-2 border">Ảnh</th>
+                            <th className="p-2 border">Tên</th>
+                            <th className="p-2 border">Giá</th>
+                            <th className="p-2 border">Danh mục</th>
+                            <th className="p-2 border">Size & Số lượng</th>
+                            <th className="p-2 border">Trạng thái</th>
+                            <th className="p-2 border">Hành động</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {products.map((p) => (
+                            <tr key={p.id} className="border-t  text-center">
+                                <td className="p-2 border">{p.id}</td>
+                                <td className="p-2 border">
+                                    <img src={p.imageUrl} alt="Noimg" style={{ width: "50px", height: "50px", justifySelf: "center" }} />
+                                </td>
+                                <td className="p-2 border">{p.name}</td>
+                                <td className="p-2 border">{p.price}</td>
+                                <td className="p-2 border">{p.category}</td>
+                                <td className="p-2 border">{p.sizes}</td>
+                                <td className="p-2 border">
+                                    <span className={`px-2 py-1 rounded-full text-xs font-bold ${p.status === 1
+                                        ? "bg-green-100 text-green-700 border border-green-200" // Style cho Hoạt động
+                                        : "bg-gray-100 text-gray-600 border border-gray-200"     // Style cho Ẩn
+                                        }`}>
+                                        {p.status === 1 ? "Đang bán" : "Ngừng kinh doanh"}
+                                    </span>
+                                </td>
+                                <td className="p-2 border space-x-2">
+                                    <button
+                                        className="cursor-pointer px-2 py-1 bg-white text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-200"
+                                        onClick={() => {
+                                            setSelected(p);
+                                            setIsFormOpen(true);
+                                        }}
+                                    >
+                                        <FilePenIcon />
+                                    </button>
+                                    <button
+                                        className="cursor-pointer px-2 py-1 bg-white text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-200"
+                                        onClick={() => {
+                                            setSelected(p);
+                                            setIsDeleteOpen(true);
+                                        }}
+                                    >
+                                        <Trash2 />
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
 
             <ProductForm
                 open={isFormOpen}

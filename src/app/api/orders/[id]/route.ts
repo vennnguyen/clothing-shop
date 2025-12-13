@@ -32,3 +32,54 @@ export async function GET(
         return NextResponse.json({ error: "Lỗi server" }, { status: 500 });
     }
 }
+
+
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const orderId = Number(params.id);
+    if (!orderId) {
+      return NextResponse.json({ error: "Thiếu orderId" }, { status: 400 });
+    }
+
+    const { statusId } = await req.json();
+
+    if (!statusId) {
+      return NextResponse.json(
+        { error: "Thiếu statusId" },
+        { status: 400 }
+      );
+    }
+
+    // Kiểm tra đơn hàng tồn tại
+    const [orders]: any = await pool.query(
+      "SELECT id FROM orders WHERE id = ?",
+      [orderId]
+    );
+
+    if (orders.length === 0) {
+      return NextResponse.json(
+        { error: "Đơn hàng không tồn tại" },
+        { status: 404 }
+      );
+    }
+
+    // Update trạng thái
+    await pool.query(
+      "UPDATE orders SET statusId = ? WHERE id = ?",
+      [statusId, orderId]
+    );
+
+    return NextResponse.json({
+      message: "Cập nhật trạng thái thành công",
+    });
+  } catch (error) {
+    console.error("Update order status error:", error);
+    return NextResponse.json(
+      { error: "Lỗi server" },
+      { status: 500 }
+    );
+  }
+}

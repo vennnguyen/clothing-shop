@@ -1,11 +1,10 @@
 
 import { useEffect, useState } from "react";
 import { Order } from "../../../app/types/interfaces";
-import ProductForm from "../products/ProductForm";
 // import ProductForm from "./ProductForm";
 // import DeleteConfirm from "./DeleteConfirm";
 import { Trash2, FilePenIcon, Plus } from "lucide-react";
-import DeleteConfirm from "../products/DeleteConfirm";
+import OrderDetail from "./orderDetail";
 export default function OrderTable({
     orders,
     refresh,
@@ -15,11 +14,11 @@ export default function OrderTable({
     refresh: () => void;
     onSearch: (keyword: string) => void;
 }) {
-    const [selected, setSelected] = useState<Order | null>(null);
-    const [isFormOpen, setIsFormOpen] = useState(false);
+    const [open, setOpen] = useState(false);
+const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
     const [isDeleteOpen, setIsDeleteOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-console.log(orders);
+// console.log(orders);
     // ...
     // [MỚI] Kỹ thuật Debounce
     useEffect(() => {
@@ -82,8 +81,8 @@ console.log(orders);
       : "bg-gray-100 text-gray-600 border-gray-300"           // Mặc định
     }
   `}>
-                                    { o.statusName === "Completed" ? "Đã xác nhận" :
-    o.statusName === "Pending"   ? "Chưa xác nhận" :
+                                    { o.statusName === "Completed" ? "Hoàn thành" :
+    o.statusName === "Pending"   ? "Chờ xử lí" :
     o.statusName === "Shipping"  ? "Đang giao" : "Đã hủy" }
                                 </span>
                             </td>
@@ -91,8 +90,8 @@ console.log(orders);
                                 <button
                                     className="px-2 py-1 bg-white text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-200"
                                     onClick={() => {
-                                        setSelected(o);
-                                        setIsFormOpen(true);
+                                        setSelectedOrder(o);
+                                        setOpen(true);
                                     }}
                                 >
                                     <FilePenIcon />
@@ -100,7 +99,7 @@ console.log(orders);
                                 <button
                                     className="px-2 py-1 bg-white text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-200"
                                     onClick={() => {
-                                        setSelected(o);
+                                        setSelectedOrder(o);
                                         setIsDeleteOpen(true);
                                     }}
                                 >
@@ -114,12 +113,11 @@ console.log(orders);
                 </tbody>
             </table>
 
-            {/* <ProductForm
-                open={isFormOpen}
-                setOpen={setIsFormOpen}
-                product={selected}
-                refresh={refresh}
-            /> */}
+            <OrderDetail
+                open={open}
+                setOpen={setOpen}
+                order={selectedOrder}
+            />
 
             {/* <DeleteConfirm
                 open={isDeleteOpen}

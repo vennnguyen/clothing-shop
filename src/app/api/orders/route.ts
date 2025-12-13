@@ -2,51 +2,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 import pool from '../../../lib/db';
 import { Order } from '../../types/interfaces';
-import { formatDateTime, formatMoney, formatPhone } from '../../../utils/format';
+import { formatDate, formatMoney, formatPhone } from '../../../utils/format';
 
 
-//tạo đơn hàng
-// export async function POST(req: NextRequest) {
-//   try {
-//     const body: Order = await req.json();
 
-//     if (!body.items || !Array.isArray(body.items) || body.items.length === 0) {
-//       return NextResponse.json({ error: 'Đơn hàng phải có ít nhất 1 sản phẩm' }, { status: 400 });
-//     }
-
-
-//     const createdDate = new Date().toISOString().split('T')[0];
-//     const shippedDate = body.shippedDate || null;
-//     const status = body.status || 1; //mặc định là 1 - Chưa xử lý
-
-//     //insert vào bảng orders
-//     const [orderResult] = await pool.query(
-//       'INSERT INTO orders (createdDate, shippedDate, status, cost) VALUES (?, ?, ?, ?)',
-//       [createdDate, shippedDate, status, body.cost]
-//     );
-
-//     const orderId = (orderResult as any).insertId;
-
-//     //insert từng item vào orderdetails
-//     for (const item of body.items) {
-//       await pool.query(
-//         'INSERT INTO orderdetails (orderId, productId, price, quantity) VALUES (?, ?, ?, ?)',
-//         [orderId, item.productId, item.price, item.quantity]
-//       );
-//     }
-
-//     return NextResponse.json({ message: 'Tạo đơn hàng thành công', orderId });
-//   } catch (error) {
-//     console.error('POST /orders error:', error);
-//     return NextResponse.json({ error: 'Lỗi server' }, { status: 500 });
-//   }
-// }
 //lấy đơn hàng
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    //lấy tất cả đơn hàng
-    const [orders] = await pool.query(`
-    SELECT 
+    const { searchParams } = new URL(req.url);
+    const search = searchParams.get("search");
+
+    let sql = `
+      SELECT 
         o.id AS orderId,
         o.createdDate,
         o.shippedDate,
@@ -62,33 +29,119 @@ export async function GET() {
         a.city,
 
         s.name AS statusName
-    FROM Orders o
-    LEFT JOIN Customers c ON o.customerId = c.id
-    LEFT JOIN Address a ON o.shippingAddressId = a.id
-    LEFT JOIN Status s ON o.statusId = s.id
-    ORDER BY o.createdDate DESC
-`);
-    // const [orders] = await pool.query('SELECT * FROM products')
-    // Format ngày
-    const formattedOrders = (orders as any[]).map((order) => ({
+      FROM Orders o
+      LEFT JOIN Customers c ON o.customerId = c.id
+      LEFT JOIN Address a ON o.shippingAddressId = a.id
+      LEFT JOIN Status s ON o.statusId = s.id
+    `;
+
+    const values: any[] = [];
+    const conditions: string[] = [];
+
+    if (search) {
+      if (!isNaN(Number(search))) {
+        // tìm theo orderId
+        conditions.push(`o.id = ?`);
+        values.push(Number(search));
+      } else {
+        // tìm theo tên / phone
+        conditions.push(`(c.fullName LIKE ? OR c.phone LIKE ?)`);
+        values.push(`%${search}%`, `%${search}%`);
+      }
+    }
+
+    if (conditions.length > 0) {
+      sql += ` WHERE ` + conditions.join(" AND ");
+    }
+
+    sql += ` ORDER BY o.id ASC`;
+
+    // 1️⃣ Lấy đơn hàng
+    const [orders]: any = await pool.query(sql, values);
+
+    // 2️⃣ Format dữ liệu
+    const formattedOrders = orders.map((order: any) => ({
       ...order,
-      createdDate: formatDateTime(order.createdDate),
-      shippedDate: order.shippedDate ? formatDateTime(order.shippedDate) : null,
+      createdDate: formatDate(order.createdDate),
+      shippedDate: order.shippedDate
+        ? formatDate(order.shippedDate)
+        : null,
       cost: formatMoney(order.cost),
       phone: formatPhone(order.phone),
     }));
 
-    const [details] = await pool.query('SELECT * FROM orderdetails');
+    // 3️⃣ Lấy chi tiết đơn
+    const [details]: any = await pool.query(`
+      SELECT *
+      FROM orderdetails
+    `);
 
-    //ghép chi tiết vào đơn hàng
-    const ordersWithDetails = (formattedOrders as any[]).map(order => ({
+    // 4️⃣ Ghép chi tiết vào đơn
+    const ordersWithDetails = formattedOrders.map((order: any) => ({
       ...order,
-      items: (details as any[]).filter(d => d.orderId === order.id),
+      items: details.filter(
+        (d: any) => d.orderId === order.orderId
+      ),
     }));
 
     return NextResponse.json(ordersWithDetails);
+
   } catch (error) {
-    console.error('GET /orders error:', error);
-    return NextResponse.json({ error: 'Lỗi server' }, { status: 500 });
+    console.error("GET /orders error:", error);
+    return NextResponse.json(
+      { error: "Lỗi server" },
+      { status: 500 }
+    );
+  }
+}
+
+// cập nhật đơn 
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const orderId = Number(params.id);
+    if (!orderId) {
+      return NextResponse.json({ error: "Thiếu orderId" }, { status: 400 });
+    }
+
+    const { statusId } = await req.json();
+
+    if (!statusId) {
+      return NextResponse.json(
+        { error: "Thiếu statusId" },
+        { status: 400 }
+      );
+    }
+
+    // Kiểm tra đơn hàng tồn tại
+    const [orders]: any = await pool.query(
+      "SELECT id FROM orders WHERE id = ?",
+      [orderId]
+    );
+
+    if (orders.length === 0) {
+      return NextResponse.json(
+        { error: "Đơn hàng không tồn tại" },
+        { status: 404 }
+      );
+    }
+
+    // Update trạng thái
+    await pool.query(
+      "UPDATE orders SET statusId = ? WHERE id = ?",
+      [statusId, orderId]
+    );
+
+    return NextResponse.json({
+      message: "Cập nhật trạng thái thành công",
+    });
+  } catch (error) {
+    console.error("Update order status error:", error);
+    return NextResponse.json(
+      { error: "Lỗi server" },
+      { status: 500 }
+    );
   }
 }

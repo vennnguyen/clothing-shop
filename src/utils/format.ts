@@ -1,12 +1,5 @@
-export function formatDateTime(dateString) {
-    if (!dateString) return "";
-    const date = new Date(dateString);
 
-    return date.toLocaleString("vi-VN", {
-        timeZone: "Asia/Ho_Chi_Minh",
-        hour12: false
-    });
-}
+
 
 export function formatDate(dateString) {
     if (!dateString) return "";

@@ -32,26 +32,39 @@ export async function GET(
   }
 }
 
-export async function DELETE(
+export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
-    const id = await params.id;
+    const { id } = await params;
     const customerId = parseInt(id);
+
     if (isNaN(customerId)) {
       return NextResponse.json({ error: "ID không hợp lệ" }, { status: 400 });
     }
-    // thay đổi status customer
+
+    const body = await request.json();
+    const { status } = body;
+
+    // Cập nhật status
     await pool.query(
-      `UPDATE customers
-       SET status = '0'
-       WHERE id = ?`,
+      `UPDATE customers SET status = ? WHERE id = ?`,
+      [status, customerId]
+    );
+
+    // Lấy customer sau khi update
+    const [rows]: any = await pool.query(
+      `SELECT * FROM customers WHERE id = ?`,
       [customerId]
     );
-    return NextResponse.json({ message: "Khách hàng đã được xóa" });
+
+    return NextResponse.json({ 
+      message: "Cập nhật trạng thái thành công",
+      customer: rows[0]
+    });
   } catch (error) {
-    console.error("DELETE Customer Error:", error);
+    console.error("PUT Customer Error:", error);
     return NextResponse.json({ error: "Lỗi server" }, { status: 500 });
   }
-} 
+}

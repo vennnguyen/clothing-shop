@@ -32,17 +32,22 @@ export default function AccountTable({ initialAccounts, roles }: { initialAccoun
     }
 
     try {
-      const res = await fetch(`/api/accounts/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/accounts/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: account.status === 1 ? 0 : 1 }),
+      });
       if (res.ok) {
         // Cập nhật trạng thái trong danh sách
         setAccounts(
           accounts.map((acc) =>
-            acc.id === id ? { ...acc, status: acc.status === 1 ? 0 : 1 } : acc
+            acc.id === id ? { ...acc, status: account.status === 1 ? 0 : 1 } : acc
           )
         );
         toast.success("Thành công!");
       } else {
-        toast.error("Thất bại!");
+        const data = await res.json();
+        toast.error(data.message || "Thất bại!");
       }
     } catch (error) {
       toast.error("Lỗi kết nối!");

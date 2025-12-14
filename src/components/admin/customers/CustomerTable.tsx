@@ -19,22 +19,27 @@ export default function CustomerTable({ initialCustomers }: { initialCustomers: 
   );
 
   // Khóa, mở khóa khách hàng
+  // CustomerTable.tsx
   const handleDelete = async (id: number, customer: Customer) => {
-    if (customer.status === 1) {
-      if (!confirm("Bạn có chắc muốn khóa khách hàng này không?")) return;
-    } else {
-      if (!confirm("Bạn có chắc muốn mở khóa khách hàng này không?")) return;
-    }
+    const newStatus = customer.status === 1 ? 0 : 1;
+    
+    if (!confirm(`Bạn có chắc muốn ${newStatus === 0 ? "khóa" : "mở khóa"} khách hàng này không?`)) return;
 
     try {
-      const res = await fetch(`/api/customers/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/customers/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
       if (res.ok) {
-        // setCustomers(customers.filter((customer) => customer.id !== id));
+        setCustomers(customers.map((c) => 
+          c.id === id ? { ...c, status: newStatus } : c
+        ));
         toast.success("Thành công!");
-        setCustomers(customers.map((c) => (c.id === id ? { ...c, status: customer.status === 1 ? 0 : 1 } : c)));
       } else {
         const data = await res.json();
-        toast.error(data.message || "Khóa thất bại!");
+        toast.error(data.message || "Thất bại!");
       }
     } catch (error) {
       toast.error("Lỗi kết nối!");

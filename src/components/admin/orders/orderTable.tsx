@@ -12,25 +12,26 @@ export default function OrderTable({
 }: {
     orders: Order[];
     refresh: () => void;
-    onSearch: (keyword: string) => void;
+    onSearch: (keyword: string, status: string) => void;
 }) {
     const [open, setOpen] = useState(false);
     const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-    const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+    const [statusFilter, setStatusFilter] = useState("");
+
     const [searchTerm, setSearchTerm] = useState("");
     // console.log(orders);
     // ...
     // [MỚI] Kỹ thuật Debounce
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
-            onSearch(searchTerm);
+            onSearch(searchTerm,statusFilter);
         }, 500);
 
         return () => clearTimeout(delayDebounceFn);
 
         // Nếu bạn cài ESLint chuẩn, nó sẽ bắt buộc thêm onSearch vào đây.
         // Nhờ có useCallback ở cha, việc thêm onSearch vào đây sẽ KHÔNG gây lặp nữa.
-    }, [searchTerm, onSearch]);
+    }, [searchTerm, onSearch, statusFilter]);
     // ...
 
     return (
@@ -42,6 +43,19 @@ export default function OrderTable({
                     className="w-100 px-4 py-2 my-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                     onChange={(e) => setSearchTerm(e.target.value)}
                 />
+
+                <select
+  value={statusFilter}
+  onChange={(e) => setStatusFilter(e.target.value)}
+  className="bg-white shadow border-gray-400 rounded px-3 py-2.5 text-sm"
+>
+  <option value="">Tất cả</option>
+  <option value="1">Chờ xử lí</option>
+  <option value="2">Đang giao</option>
+  <option value="3">Hoàn thành</option>
+  <option value="4">Đã hủy</option>
+</select>
+
 
             </div>
             <div className="overflow-y-auto max-h-[460px]">
@@ -96,15 +110,7 @@ export default function OrderTable({
                                     >
                                         <FilePenIcon />
                                     </button>
-                                    <button
-                                        className="px-2 py-1 bg-white text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-200"
-                                        onClick={() => {
-                                            setSelectedOrder(o);
-                                            setIsDeleteOpen(true);
-                                        }}
-                                    >
-                                        <Trash2 />
-                                    </button>
+                                    
                                 </td>
                             </tr>
 
@@ -118,6 +124,7 @@ export default function OrderTable({
                 open={open}
                 setOpen={setOpen}
                 order={selectedOrder}
+                refresh={refresh}
             />
 
             {/* <DeleteConfirm

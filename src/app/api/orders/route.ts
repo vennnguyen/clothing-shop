@@ -11,7 +11,8 @@ export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
     const search = searchParams.get("search");
-
+    const status = searchParams.get("status");
+    Number(status)
     let sql = `
       SELECT 
         o.id AS orderId,
@@ -37,6 +38,11 @@ export async function GET(req: NextRequest) {
 
     const values: any[] = [];
     const conditions: string[] = [];
+    if (status && !isNaN(Number(status))) {
+  conditions.push(`o.statusId = ?`);
+  values.push(Number(status));
+}
+
 
     if (search) {
       if (!isNaN(Number(search))) {
@@ -56,10 +62,10 @@ export async function GET(req: NextRequest) {
 
     sql += ` ORDER BY o.id ASC`;
 
-    // 1️⃣ Lấy đơn hàng
+    // Lấy đơn hàng
     const [orders]: any = await pool.query(sql, values);
 
-    // 2️⃣ Format dữ liệu
+    // Format dữ liệu
     const formattedOrders = orders.map((order: any) => ({
       ...order,
       createdDate: formatDate(order.createdDate),
@@ -70,13 +76,13 @@ export async function GET(req: NextRequest) {
       phone: formatPhone(order.phone),
     }));
 
-    // 3️⃣ Lấy chi tiết đơn
+    // Lấy chi tiết đơn
     const [details]: any = await pool.query(`
       SELECT *
       FROM orderdetails
     `);
 
-    // 4️⃣ Ghép chi tiết vào đơn
+    // Ghép chi tiết vào đơn
     const ordersWithDetails = formattedOrders.map((order: any) => ({
       ...order,
       items: details.filter(

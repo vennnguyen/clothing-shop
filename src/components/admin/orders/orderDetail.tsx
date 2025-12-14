@@ -4,11 +4,13 @@ import { useEffect, useState } from "react";
 import { X } from "lucide-react";
 import { ProductItem } from "./productItem";
 import { Order } from "../../../app/types/interfaces";
+import { useToastMessage } from "../../../../hooks/useToastMessage";
 
 interface Props {
   open: boolean;
   setOpen: (v: boolean) => void;
   order: Order | null;
+  refresh: () => void;
 }
 
 interface Product {
@@ -45,8 +47,9 @@ const STATUS_OPTIONS = [
   { id: 4, label: "Đã hủy" },
 ];
 
-export default function OrderDetailModal({ open, setOpen, order }: Props) {
+export default function OrderDetailModal({ open, setOpen, order, refresh }: Props) {
   const [data, setData] = useState<OrderDetail | null>(null);
+ 
   const [statusId, setStatusId] = useState<number>(1);
   const [loading, setLoading] = useState(false);
   const [updating, setUpdating] = useState(false);
@@ -60,9 +63,11 @@ export default function OrderDetailModal({ open, setOpen, order }: Props) {
         setLoading(true);
         const res = await fetch(`/api/orderdetails/${order.orderId}`);
         if (!res.ok) throw new Error("Fetch failed");
-        const json: OrderDetail = await res.json();
-        setData(json);
-        setStatusId(json.statusId);
+        const data: OrderDetail = await res.json();
+        setData(data);
+        setStatusId(data.statusId);
+        console.log(data);
+        
       } catch (err) {
         console.error("Lỗi lấy chi tiết đơn hàng:", err);
       } finally {
@@ -72,7 +77,9 @@ export default function OrderDetailModal({ open, setOpen, order }: Props) {
 
     fetchDetail();
   }, [open, order]);
-
+  
+  
+  const {showSuccess} = useToastMessage()
   /* Update trạng thái */
   const updateOrder = async () => {
     if (!order) return;
@@ -93,11 +100,11 @@ export default function OrderDetailModal({ open, setOpen, order }: Props) {
         const err = await res.json();
         throw new Error(err.error || "Cập nhật thất bại");
       }
-
-      alert("✅ Cập nhật trạng thái thành công");
+      showSuccess("Cập nhật đơn hàng thành công")
+      refresh()
       setOpen(false);
     } catch (error: any) {
-      alert("❌ " + error.message);
+      alert("Lỗi " + error.message);
     } finally {
       setUpdating(false);
     }
@@ -143,7 +150,6 @@ export default function OrderDetailModal({ open, setOpen, order }: Props) {
               <div className="space-y-3">
                 {data.items.map((item) => (
                   <ProductItem
-                    key={item.id}
                     image={item.imageUrl}
                     name={item.productName}
                     quantity={item.quantity}

@@ -29,7 +29,7 @@ export async function GET(
         c.fullName,
         c.phone,
 
-        s.name AS statusName,
+        s.id AS statusId,
 
         a.houseNumber,
         a.ward,
@@ -86,7 +86,7 @@ export async function GET(
       orderId: orderInfo.orderId,
       createdDate: orderInfo.createdDate,
       shippedDate: orderInfo.shippedDate,
-      status: orderInfo.statusName,
+      statusId: orderInfo.statusId,
       customer: {
         fullName: orderInfo.fullName,
         phone: orderInfo.phone,

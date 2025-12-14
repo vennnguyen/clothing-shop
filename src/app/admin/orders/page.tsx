@@ -8,14 +8,15 @@ export default function OrderssPage() {
 
     const [isLoading, setIsLoading] = useState(true); // Thêm trạng thái loading
 
-    const loadOrders = useCallback(async (searchKeyword = "") => {
+    const loadOrders = useCallback(async (searchKeyword = "",status="") => {
         try {
             // Lưu ý: Có thể bỏ setIsLoading(true) ở đây nếu muốn tránh nháy loading khi gõ phím
             // setIsLoading(true); 
 
-            const url = searchKeyword
-                ? `/api/orders?search=${encodeURIComponent(searchKeyword)}`
-                : "/api/orders";
+            let url = `/api/orders?`;
+
+      if (searchKeyword) url += `search=${encodeURIComponent(searchKeyword)}&`;
+      if (status) url += `status=${status}`;
 
             const res = await fetch(url, { cache: 'no-store' });
             if (!res.ok) throw new Error("Failed to fetch");

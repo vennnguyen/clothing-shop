@@ -52,8 +52,8 @@ export default function CategoryForm({
 
             const data = await res.json();
             if (!res.ok) {
-                throw new Error("Có lỗi xảy ra khi lưu danh mục");
                 showError(data.message);
+                throw new Error("Có lỗi xảy ra khi lưu danh mục");
             } else {
                 showSuccess(data.message);
             }

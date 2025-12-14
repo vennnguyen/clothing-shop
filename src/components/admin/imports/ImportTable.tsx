@@ -30,26 +30,26 @@ export default function ImportTable({
   // });
 
   const filteredImports = imports.filter((imp) => {
-      if (!startDate && !endDate) return true;
-      if (!imp.createdDate) return false;
+    if (!startDate && !endDate) return true;
+    if (!imp.createdDate) return false;
 
-      const created = new Date(imp.createdDate);
-      const createdDay = created.getFullYear() * 10000 + (created.getMonth()+1)*100 + created.getDate();
+    const created = new Date(imp.createdDate);
+    const createdDay = created.getFullYear() * 10000 + (created.getMonth() + 1) * 100 + created.getDate();
 
-      const start = startDate ? (() => {
-        const [y,m,d] = startDate.split("-").map(Number);
-        return y*10000 + m*100 + d;
-      })() : null;
+    const start = startDate ? (() => {
+      const [y, m, d] = startDate.split("-").map(Number);
+      return y * 10000 + m * 100 + d;
+    })() : null;
 
-      const end = endDate ? (() => {
-        const [y,m,d] = endDate.split("-").map(Number);
-        return y*10000 + m*100 + d;
-      })() : null;
+    const end = endDate ? (() => {
+      const [y, m, d] = endDate.split("-").map(Number);
+      return y * 10000 + m * 100 + d;
+    })() : null;
 
-      if (start !== null && createdDay < start) return false;
-      if (end !== null && createdDay > end) return false;
-      return true;
-    });
+    if (start !== null && createdDay < start) return false;
+    if (end !== null && createdDay > end) return false;
+    return true;
+  });
 
 
   return (
@@ -77,7 +77,7 @@ export default function ImportTable({
               setEndDate("");
             }}
           >
-            <FunnelX/>
+            <FunnelX />
           </button>
         </div>
         <div>
@@ -91,8 +91,8 @@ export default function ImportTable({
           >
             <span className="flex items-center gap-2">
               <Plus size={20} />
-              Thêm nhà cung cấp
-          </span>
+              Thêm phiếu nhập
+            </span>
           </button>
         </div>
       </div>
@@ -124,7 +124,7 @@ export default function ImportTable({
                 {s.status !== "Đã xác nhận" && (
                   <button
                     // className="px-2 py-1 bg-yellow-500 text-white rounded cursor-pointer"
-                  className="px-2 py-1 bg-white text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-200"
+                    className="px-2 py-1 bg-white text-blue-500 border border-blue-500 rounded cursor-pointer hover:bg-blue-500 hover:text-white transition-colors duration-200"
 
                     onClick={() => {
                       setSelected(s);
@@ -137,7 +137,7 @@ export default function ImportTable({
                 )}
                 {s.status !== "Đã xác nhận" && (
                   <button
-                  className="px-2 py-1 bg-white text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-200"
+                    className="px-2 py-1 bg-white text-red-500 border border-red-500 rounded cursor-pointer hover:bg-red-500 hover:text-white transition-colors duration-200"
 
                     onClick={() => {
                       setSelected(s);
@@ -145,7 +145,7 @@ export default function ImportTable({
                       setModalOpen(true);
                     }}
                   >
-                  <Trash2/>
+                    <Trash2 />
 
                   </button>
                 )}
@@ -157,7 +157,7 @@ export default function ImportTable({
                     setModalOpen(true);
                   }}
                 >
-                  <CircleEllipsis/>
+                  <CircleEllipsis />
                 </button>
               </td>
             </tr>

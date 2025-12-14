@@ -87,14 +87,14 @@ export default function Reports() {
   };
 
   return (
-    <div className="p-8">
+    <div className="p-5">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-5 flex items-center gap-2">Báo cáo & Thống kê</h1>
+      <div className="mb-4">
+        <h1 className="text-2xl font-bold mb-5 flex items-center gap-2">BÁO CÁO & THỐNG KÊ</h1>
       </div>
 
       {/* Controls Bar */}
-      <div className="bg-white rounded-lg shadow-md p-4 mb-6">
+      <div className="bg-white rounded-lg shadow-md p-4 mb-4">
         <div className="flex flex-wrap items-center justify-between gap-4">
           {/* Report Type Selection */}
           <div className="flex items-center gap-2">
@@ -157,13 +157,15 @@ export default function Reports() {
               </button>
             </div>
           )}
-            
+
         </div>
       </div>
 
       {/* Report Content */}
       <div className="bg-white rounded-lg shadow-md">
-        {renderReport()}
+        <div className="overflow-y-auto max-h-[470px]">
+          {renderReport()}
+        </div>
       </div>
     </div>
   );

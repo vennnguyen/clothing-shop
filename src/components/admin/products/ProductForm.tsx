@@ -294,23 +294,19 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
 
                                 </div>
 
-                                <div>
+                                {/* <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">Số lượng</label>
                                     <input
                                         type="number"
                                         name="quantity"
-                                        value={0}
+                                        value={!product ? 0 : product.quantity}
                                         onChange={handleChange}
                                         // className={`w-full p-2.5 border rounded-lg outline-none ${errors.quantity ? "border-red-500 bg-red-50" : "border-gray-300 focus:ring-sky-400"}`}
                                         className={`w-full p-2.5 border rounded-lg outline-none border-gray-300 focus:ring-sky-400`}
                                         disabled
                                     />
-                                    {/* {errors.quantity && <p className="text-red-500 text-xs mt-1 italic">{errors.quantity}</p>} */}
-                                </div>
-                            </div>
-                            {/* Hàng 2 cột: Số lượng & Giá */}
-                            {/* Số lượng & Giá */}
-                            <div className="grid grid-cols-2 gap-4">
+                                    {errors.quantity && <p className="text-red-500 text-xs mt-1 italic">{errors.quantity}</p>}
+                                </div> */}
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">Giá bán</label>
                                     <input
@@ -323,6 +319,28 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                                     />
                                     {errors.price && <p className="text-red-500 text-xs mt-1 italic">{errors.price}</p>}
                                 </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Danh mục</label>
+                                    <select
+                                        name="categoryId"
+                                        value={form.categoryId}
+                                        onChange={handleChange}
+                                        className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 outline-none bg-white cursor-pointer"
+                                        required
+                                    >
+                                        <option value="0">-- Chọn danh mục --</option>
+                                        {categories.map((cat) => (
+                                            <option value={cat.id} key={cat.id}>
+                                                {cat.name}
+                                            </option>
+                                        ))}
+                                    </select>
+                                    {errors.category && <p className="text-red-500 text-xs mt-1 italic">{errors.category}</p>}
+                                </div>
+
                                 <div className="flex flex-col justify-center">
                                     <label className="block text-sm font-bold text-gray-700 mb-2">Trạng thái</label>
                                     <label className="inline-flex items-center cursor-pointer w-fit">
@@ -349,24 +367,6 @@ export default function ProductForm({ open, setOpen, product, refresh }: Product
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-sm font-bold text-gray-700 mb-1">Danh mục</label>
-                                    <select
-                                        name="categoryId"
-                                        value={form.categoryId}
-                                        onChange={handleChange}
-                                        className="w-full p-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-sky-400 outline-none bg-white cursor-pointer"
-                                        required
-                                    >
-                                        <option value="0">-- Chọn danh mục --</option>
-                                        {categories.map((cat) => (
-                                            <option value={cat.id} key={cat.id}>
-                                                {cat.name}
-                                            </option>
-                                        ))}
-                                    </select>
-                                    {errors.category && <p className="text-red-500 text-xs mt-1 italic">{errors.category}</p>}
-                                </div>
                                 {!product && (
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-2">Size</label>

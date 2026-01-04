@@ -15,5 +15,6 @@
             "name": "ShopQuanAo",
             "password": ""
         }
-    ]
+    ],
+    "postman.settings.dotenv-detection-notification-visibility": false
 }

@@ -39,7 +39,7 @@ export interface Customer {
   phone?: string | null;
   fullName?: string | null;
   gender?: string | null;
-  status?: number | null; 
+  status?: number | null;
 }
 
 export interface Import {
@@ -75,8 +75,8 @@ interface OrderItem {
 export interface Order {
   orderId?: number;
   createdDate?: string;
-  fullName?:string
-  phone?:string
+  fullName?: string
+  phone?: string
   shippedDate?: string | null;
   statusName?: string;
   cost: number;
@@ -132,4 +132,13 @@ export interface Supplier {
   name?: string | null;
   address?: string | null;
   phone?: string | null;
+}
+export interface Promotion {
+  id: number;
+  promotion_name: string;
+  type_name: string;
+  discount_value: number;
+  start_date: string;
+  end_date: string;
+  status: number;
 }

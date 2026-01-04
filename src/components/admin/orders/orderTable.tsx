@@ -24,7 +24,7 @@ export default function OrderTable({
     // [MỚI] Kỹ thuật Debounce
     useEffect(() => {
         const delayDebounceFn = setTimeout(() => {
-            onSearch(searchTerm,statusFilter);
+            onSearch(searchTerm, statusFilter);
         }, 500);
 
         return () => clearTimeout(delayDebounceFn);
@@ -45,16 +45,16 @@ export default function OrderTable({
                 />
 
                 <select
-  value={statusFilter}
-  onChange={(e) => setStatusFilter(e.target.value)}
-  className="bg-white shadow border-gray-400 rounded px-3 py-2.5 text-sm"
->
-  <option value="">Tất cả</option>
-  <option value="1">Chờ xử lí</option>
-  <option value="2">Đang giao</option>
-  <option value="3">Hoàn thành</option>
-  <option value="4">Đã hủy</option>
-</select>
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    className="bg-white shadow border-gray-400 rounded px-3 py-2.5 text-sm"
+                >
+                    <option value="">Tất cả</option>
+                    <option value="1">Chờ xử lí</option>
+                    <option value="2">Đang giao</option>
+                    <option value="3">Hoàn thành</option>
+                    <option value="4">Đã hủy</option>
+                </select>
 
 
             </div>
@@ -110,7 +110,7 @@ export default function OrderTable({
                                     >
                                         <FilePenIcon />
                                     </button>
-                                    
+
                                 </td>
                             </tr>
 

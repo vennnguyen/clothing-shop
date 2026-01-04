@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import LogoutButton from "../ui/LogoutButton";
-import { BarChart3, Boxes, FilePlus2, Grid3X3, LayoutDashboard, ShoppingCart, ShieldCheck, Truck, UserSquare2, Users } from "lucide-react";
+import { BarChart3, Boxes, FilePlus2, Grid3X3, LayoutDashboard, ShoppingCart, ShieldCheck, Truck, UserSquare2, Users, Tag } from "lucide-react";
 
 interface User {
     id?: number;
@@ -27,6 +27,7 @@ export default function Sidebar({ user }: { user: User | null }) {
             { name: "Đơn hàng", path: "/admin/orders", icon: <ShoppingCart size={20} /> },
             { name: "Khách hàng", path: "/admin/customers", icon: <UserSquare2 size={20} /> },
             { name: "Thống kê", path: "/admin/reports", icon: <BarChart3 size={20} /> },
+            { name: "Khuyến mãi", path: "/admin/promotions", icon: <Tag size={20} /> },
         );
     } else if (user.role === "Sales") {
         menuItems.push(
